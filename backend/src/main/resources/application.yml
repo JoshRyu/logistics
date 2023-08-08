@@ -1,0 +1,21 @@
+server:
+  port: 8920
+
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5880/postgres
+    username: postgres
+    password: post123!
+  sql:
+    init:
+      mode: always
+
+mybatis:
+  type-aliases-package: com.madeg.logistics.domain
+  configuration.map-underscore-to-camel-case: true
+# security:
+#   jwt:
+#     token:
+#       secret-key: SecretKey
+#       expire-length: 3600000

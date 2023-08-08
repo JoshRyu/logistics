@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:15.3
+    restart: always
+    container_name: madeg_postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: post123!
+      POSTGRES_DB: postgres
+    volumes:
+      - PGDATA:/var/lib/postgresql/data:ro
+    ports:
+      - 5880:5432
+
+volumes:
+  PGDATA:
