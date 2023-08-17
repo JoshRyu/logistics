@@ -32,17 +32,17 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 
     if (request.getRequestURI().contains("/login")) {
       filterChain.doFilter(servletRequest, servletResponse);
+    } else {
+      String token = jwtUtil.resolveToken(request);
+      if (token == null || !jwtUtil.validateToken(token)) {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        return;
+      }
+
+      Authentication auth = jwtUtil.getAuthentication(token);
+      SecurityContextHolder.getContext().setAuthentication(auth);
+
+      filterChain.doFilter(servletRequest, servletResponse);
     }
-
-    String token = jwtUtil.resolveToken(request);
-    if (token == null || !jwtUtil.validateToken(token)) {
-      response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-      return;
-    }
-
-    Authentication auth = jwtUtil.getAuthentication(token);
-    SecurityContextHolder.getContext().setAuthentication(auth);
-
-    filterChain.doFilter(servletRequest, servletResponse);
   }
 }

@@ -10,8 +10,8 @@
         <v-text-field
           class="mb-3"
           variant="outlined"
-          v-model="data.credentials.id"
-          :rules="[isValid(data.credentials.id, 'id')]"
+          v-model="data.credentials.username"
+          :rules="[isValid(data.credentials.username, 'username')]"
           label="Username"
           required
           autocomplete="username"
@@ -28,17 +28,6 @@
           autocomplete="current-password"
         ></v-text-field>
 
-        <v-select
-          v-model="data.credentials.stationCode"
-          :rules="[isValid(data.credentials.stationCode, 'stationCode')]"
-          required
-          label="Station Code"
-          :items="data.stationList"
-          :no-data-text="
-            data.stationList.length < 1 ? '오류: AIMS 상태를 확인해주세요' : ''
-          "
-        >
-        </v-select>
         <v-btn type="submit" color="indigo" block class="mt-2">Sign in</v-btn>
       </v-form>
     </v-sheet>
@@ -46,31 +35,25 @@
 </template>
 
 <script setup>
-import { computed, reactive, onMounted } from "vue";
+import { computed, reactive } from "vue";
+import { login } from "@/controller/login.js";
 import { useRouter } from "vue-router";
 
-onMounted(() => {});
+const router = useRouter();
 
 const data = reactive({
-  stationList: [],
   credentials: {
-    id: "",
+    username: "",
     password: "",
-    stationCode: "",
   },
   validation: {
-    id: false,
+    username: false,
     password: false,
-    stationCode: false,
   },
 });
 
 const validLogin = computed(() => {
-  return (
-    data.validation.id &&
-    data.validation.password &&
-    data.validation.stationCode
-  );
+  return data.validation.username && data.validation.password;
 });
 
 const isValid = (v, k) => {
@@ -82,18 +65,30 @@ const isValid = (v, k) => {
   return true;
 };
 
-const executeLogin = (params) => {
+const executeLogin = async (params) => {
+  console.log(params);
   if (validLogin.value) {
+    try {
+      const response = await login({
+        username: params.username,
+        password: params.password,
+      });
+
+      handleLoginResponse(response);
+    } catch (error) {
+      console.log("Login error:", error);
+      alert("잘못된 사용자 정보입니다. 다시 확인해주세요.");
+    }
   }
 };
 
 const handleLoginResponse = (response) => {
-  let token = response.login.token;
-  let username = response.login.id;
+  let token = response.token;
+  let username = response.username;
   if (token) {
     localStorage.setItem("apollo-token", token);
     localStorage.setItem("username", username);
-    router.push({ path: "/assign" });
+    router.push({ path: "/home" });
   }
 };
 </script>
