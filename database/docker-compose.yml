@@ -10,9 +10,9 @@ services:
       POSTGRES_PASSWORD: post123!
       POSTGRES_DB: postgres
     volumes:
-      - PGDATA:/var/lib/postgresql/data:ro
+      - PGDATA:/var/lib/postgresql/data
     ports:
-      - 5880:5432
+      - 11112:5432
 
 volumes:
   PGDATA:

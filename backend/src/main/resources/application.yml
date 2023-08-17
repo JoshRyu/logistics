@@ -1,21 +1,31 @@
 server:
-  port: 8920
+  port: 11101
 
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5880/postgres
+    url: jdbc:postgresql://localhost:11112/postgres
     username: postgres
     password: post123!
   sql:
     init:
       mode: always
 
-mybatis:
-  type-aliases-package: com.madeg.logistics.domain
-  configuration.map-underscore-to-camel-case: true
-# security:
-#   jwt:
-#     token:
-#       secret-key: SecretKey
-#       expire-length: 3600000
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+
+# mybatis:
+#   type-aliases-package: com.madeg.logistics.domain
+#   configuration.map-underscore-to-camel-case: true
+
+security:
+  jwt:
+    token:
+      key: madeGIsPopular1e34-willpro13ducealotprofits-2uvb9876aacx
+      expire-length: 3600000
+
+logging:
+  level:
+    root: INFO
