@@ -1,34 +1,32 @@
 <template>
   <div class="d-flex align-center justify-center" style="height: 100vh">
-    <v-sheet width="400" class="mx-auto">
-      <v-img
-        class="mx-auto mb-10"
-        width="300"
-        src="@/assets/Logo_Blue.png"
-      ></v-img>
+    <v-sheet width="400" class="mx-auto bg_y">
+      <v-img class="mx-auto mb-10" width="300" src="@/assets/logo.png"></v-img>
       <v-form fast-fail @submit.prevent="executeLogin(data.credentials)">
         <v-text-field
-          class="mb-3"
+          class="mb-3 override-class"
           variant="outlined"
           v-model="data.credentials.username"
           :rules="[isValid(data.credentials.username, 'username')]"
-          label="Username"
+          label="아이디"
           required
           autocomplete="username"
         ></v-text-field>
 
         <v-text-field
-          class="mb-3"
+          class="mb-3 override-class"
           variant="outlined"
           v-model="data.credentials.password"
           :rules="[isValid(data.credentials.password, 'password')]"
-          label="Password"
+          label="패스워드"
           type="password"
           required
           autocomplete="current-password"
         ></v-text-field>
 
-        <v-btn type="submit" color="indigo" block class="mt-2">Sign in</v-btn>
+        <v-btn type="submit" color="grey-darken-4" block class="mt-2"
+          >로그인</v-btn
+        >
       </v-form>
     </v-sheet>
   </div>
@@ -66,7 +64,6 @@ const isValid = (v, k) => {
 };
 
 const executeLogin = async (params) => {
-  console.log(params);
   if (validLogin.value) {
     try {
       const response = await login({
@@ -92,3 +89,19 @@ const handleLoginResponse = (response) => {
   }
 };
 </script>
+
+<style scoped>
+* {
+  background-color: #fbebca;
+}
+
+.bg_y {
+  background-color: #fbebca;
+}
+
+.override-class :deep(.v-input__control) {
+  display: flex;
+  grid-area: control;
+  background-color: white;
+}
+</style>

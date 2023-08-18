@@ -1,6 +1,6 @@
 // Composables
 import { createRouter, createWebHistory } from "vue-router";
-// import { requireAuth } from "@/auth/auth.js";
+import { requireAuth } from "@/auth/auth.js";
 
 const routes = [
   {
@@ -13,23 +13,22 @@ const routes = [
         name: "Home",
         component: () => import("@/views/Home.vue"),
       },
-    // {
-      //   path: "/user",
-      //   redirect: "/user/list",
-      //   children: [
-      //     {
-      //       path: "list",
-      //       name: "UserList",
-      //       component: () => import("@/views/user/UserList.vue"),
-      //     },
-      //   ],
-      //   beforeEnter: requireAuth,
-      //   // 접근 제한이 필요한 페이지에, 아래 내용을 넣어 특정한 유저만 접근할 수 있게 한다.
-      //   meta: {
-      //     role: ["admin", "manager"],
-      //   },
-      // },
-    
+      {
+        path: "/user",
+        redirect: "/user/list",
+        children: [
+          {
+            path: "list",
+            name: "UserList",
+            component: () => import("@/views/user/UserList.vue"),
+          },
+        ],
+        beforeEnter: requireAuth,
+        // 접근 제한이 필요한 페이지에, 아래 내용을 넣어 특정한 유저만 접근할 수 있게 한다.
+        meta: {
+          role: ["admin"],
+        },
+      },
     ],
   },
   {
