@@ -7,7 +7,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import java.util.ArrayList;
 import java.util.Collection;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,6 +18,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Entity(name = "madeg_user")
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class User implements UserDetails {
 
   @Id
