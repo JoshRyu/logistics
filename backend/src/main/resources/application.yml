@@ -28,4 +28,6 @@ security:
 
 logging:
   level:
-    root: INFO
+    root: DEBUG
+    sun.rmi.transport.tcp: OFF
+    javax.management.remote.rmi: OFF

@@ -158,6 +158,7 @@
             </v-card>
           </v-dialog>
         </template>
+        <!-- eslint-disable-next-line -->
         <template v-slot:item.actions="{ item }">
           <v-icon size="small" class="me-2" @click="editItem(item.raw)">
             mdi-pencil
@@ -177,22 +178,29 @@
 </template>
 
 <script setup>
-import { computed, nextTick, reactive } from "vue";
+import { computed, nextTick, reactive, onMounted } from "vue";
+import {
+  createUser,
+  readUsers,
+  updateUser,
+  deleteUser,
+} from "@/controller/user.js";
 
 const userList = async () => {
   try {
-    // const response = await client.query({
-    //   query: getUserList,
-    // });
-
-    // data.items = response.data.users;
-    client.clearStore();
-  } catch (e) {
-    log.error(e);
+    const response = await readUsers();
+    console.log(response);
+    // data.items = response.data;
+  } catch (error) {
+    console.error(error);
   }
 };
 
-userList();
+onMounted(() => {
+  console.log("Component has been mounted!");
+  userList();
+  // You can perform any actions or setup you need here
+});
 
 const data = reactive({
   dialog: false,
@@ -367,7 +375,6 @@ const executeCreateUser = async () => {
     // });
     alert("성공적으로 사용자를 등록하였습니다.");
     closeEditPopup();
-    // userList();
   } catch (e) {
     console.error(e);
     if (e.message.includes("user.id")) {
@@ -380,19 +387,6 @@ const executeCreateUser = async () => {
 
 const executeEditUser = async () => {
   try {
-    // await client.mutate({
-    //   mutation: updateUser,
-    //   variables: {
-    //     input: {
-    //       seq: data.editedItem.seq,
-    //       id: data.editedItem.id,
-    //       password: data.editedItem.newPassword,
-    //     },
-    //   },
-    // });
-    // alert("성공적으로 사용자 정보를 업데이트 하였습니다.");
-    // closeEditPopup();
-    // userList();
   } catch (e) {
     console.error(e);
     alert("사용자 정보를 업데이트 하지 못했습니다.");
@@ -401,15 +395,6 @@ const executeEditUser = async () => {
 
 const executeDeleteUser = async () => {
   try {
-    // await client.mutate({
-    //   mutation: deleteUser,
-    //   variables: {
-    //     seq: data.editedItem.seq,
-    //   },
-    // });
-    // alert("성공적으로 사용자를 삭제하였습니다.");
-    // closeDeletePopup();
-    // userList();
   } catch (e) {
     console.error(e);
     alert("사용자 정보를 업데이트 하지 못했습니다.");
