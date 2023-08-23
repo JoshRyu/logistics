@@ -22,7 +22,6 @@ export async function createUser(userInput) {
 
 export async function readUsers() {
   try {
-    console.log(urlBuilder(userPath + "/list"));
     const response = await axios.get(urlBuilder(userPath + "/list"), {
       headers,
     });
@@ -34,22 +33,25 @@ export async function readUsers() {
   }
 }
 
-export async function updateUser(userInput) {
+export async function updateUser(id, userInput) {
   try {
-    const response = await axios.patch(urlBuilder(userPath), userInput, {
-      headers,
-    });
-
-    return response.data;
+    const response = await axios.patch(
+      urlBuilder(userPath) + `/${id}`,
+      userInput,
+      {
+        headers,
+      }
+    );
+    return response;
   } catch (error) {
     console.log("에러 데이터 : " + error.data);
     throw error;
   }
 }
 
-export async function deleteUser(userInput) {
+export async function deleteUser(id) {
   try {
-    const response = await axios.delete(urlBuilder(userPath), userInput, {
+    const response = await axios.delete(urlBuilder(userPath) + `/${id}`, {
       headers,
     });
 

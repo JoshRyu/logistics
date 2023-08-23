@@ -28,7 +28,8 @@ public class User implements UserDetails {
   @SequenceGenerator(
     name = "user_seq",
     sequenceName = "user_seq",
-    allocationSize = 1
+    allocationSize = 1,
+    initialValue = 1
   )
   private Long id;
 

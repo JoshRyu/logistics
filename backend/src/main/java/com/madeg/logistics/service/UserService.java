@@ -91,6 +91,16 @@ public class UserService {
     }
 
     if (patchInput.getRole() != null) {
+      if (
+        previousUser.getRole().equals(Role.ADMIN.name()) &&
+        patchInput.getRole() == Role.USER &&
+        userRepository.countByRole(Role.ADMIN.name()) == 1
+      ) {
+        throw new ResponseStatusException(
+          HttpStatus.BAD_REQUEST,
+          "400: CANNOT PATCH LAST ADMIN USER"
+        );
+      }
       previousUser.setRole(patchInput.getRole().name());
     }
 

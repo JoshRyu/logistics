@@ -1,6 +1,6 @@
 <template>
-  <div class="d-flex align-center justify-center ma-10">
-    <v-card color="indigo-lighten-1">
+  <div class="d-flex align-center justify-center ma-10 w-100">
+    <v-card color="#ffe2a7" class="w-50">
       <v-card-title class="pb-6">
         <v-row>
           <v-col cols="2">사용자 리스트</v-col>
@@ -11,7 +11,7 @@
               size="small"
               color="white"
               class="float-right"
-              @click="editItem"
+              @click="registerItem"
             >
               Register User
             </v-btn></v-col
@@ -53,21 +53,8 @@
                     <v-row>
                       <v-text-field
                         class="override-class"
-                        :disabled="true"
-                        v-model="data.editedItem.seq"
-                        :label="
-                          data.editedIndex == -1
-                            ? '시퀀스 / 자동으로 생성 됩니다'
-                            : '시퀀스'
-                        "
-                      >
-                      </v-text-field>
-                    </v-row>
-                    <v-row>
-                      <v-text-field
-                        class="override-class"
                         :disabled="data.editedIndex != -1"
-                        v-model="data.editedItem.id"
+                        v-model="data.editedItem.username"
                         autocomplete="id"
                         label="아이디"
                         :rules="[idRule]"
@@ -103,16 +90,12 @@
                       ></v-text-field>
                     </v-row>
                     <v-row>
-                      <v-text-field
+                      <v-select
                         class="override-class"
-                        :disabled="true"
-                        v-model="data.editedItem.createDate"
-                        :label="
-                          data.editedIndex == -1
-                            ? '생성날짜 / 자동으로 생성 됩니다'
-                            : '생성날짜'
-                        "
-                      ></v-text-field>
+                        v-model="data.editedItem.role"
+                        :items="data.availableRoles"
+                        label="사용자 권한"
+                      ></v-select>
                     </v-row>
                   </v-container>
                 </v-card-text>
@@ -189,17 +172,15 @@ import {
 const userList = async () => {
   try {
     const response = await readUsers();
-    console.log(response);
-    // data.items = response.data;
+
+    data.items = response;
   } catch (error) {
     console.error(error);
   }
 };
 
 onMounted(() => {
-  console.log("Component has been mounted!");
   userList();
-  // You can perform any actions or setup you need here
 });
 
 const data = reactive({
@@ -210,35 +191,33 @@ const data = reactive({
       title: "시퀀스",
       align: "start",
       sortable: false,
-      key: "seq",
+      key: "id",
     },
     {
       title: "아이디",
       sortable: false,
-      key: "id",
+      key: "username",
     },
     {
-      title: "생성날짜",
+      title: "권한",
       sortable: false,
-      key: "createDate",
+      key: "role",
     },
     { title: "수정/삭제", key: "actions", sortable: false },
   ],
   items: [],
   editedIndex: -1,
   editedItem: {
-    seq: 0,
-    id: "",
+    username: "",
     newPassword: "",
     confirmPassword: "",
-    createDate: "",
+    role: "USER",
   },
   defaultItem: {
-    seq: 0,
-    id: "",
+    username: "",
     newPassword: "",
     confirmPassword: "",
-    createDate: "",
+    role: "USER",
   },
   searchValue: "",
   validation: {
@@ -246,6 +225,7 @@ const data = reactive({
     password: false,
     confirmPassword: false,
   },
+  availableRoles: ["ADMIN", "USER"],
 });
 
 const formTitle = computed(() => {
@@ -287,10 +267,12 @@ const idRule = (v) => {
   return true;
 };
 
+const pattern = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*\W).{8,20}$/;
+
 const passwordRule = (v) => {
   if (!v) {
     data.validation.password = false;
-    return "패스워드는 필수 입력사항입니다.";
+    return "비밀번호는 필수 입력사항입니다.";
   }
   if (v && v.length < 5) {
     data.validation.password = false;
@@ -299,7 +281,12 @@ const passwordRule = (v) => {
 
   if (v && v.length > 30) {
     data.validation.password = false;
-    return "패스워드는 최대 30자까지 설정하실 수 있습니다.";
+    return "비밀번호는 최대 30자까지 설정하실 수 있습니다.";
+  }
+
+  if (v && !pattern.test(v)) {
+    data.validation.password = false;
+    return "비밀번호는 문자, 숫자, 특수문자를 하나 이상 포함하며 8자 이상이어야 합니다.";
   }
 
   data.validation.password = true;
@@ -309,12 +296,18 @@ const passwordRule = (v) => {
 const confirmPasswordRule = (v) => {
   if (!v) {
     data.validation.confirmPassword = false;
-    return "패스워드는 필수 입력사항입니다.";
+    return "비밀번호는 필수 입력사항입니다.";
   }
   if (v !== data.editedItem.newPassword) {
     data.validation.confirmPassword = false;
-    return "Password는 동일해야 합니다.";
+    return "비밀번호는 동일해야 합니다.";
   }
+
+  if (v && !pattern.test(v)) {
+    data.validation.confirmPassword = false;
+    return "비밀번호는 문자, 숫자, 특수문자를 하나 이상 포함하며 8자 이상이어야 합니다.";
+  }
+
   data.validation.confirmPassword = true;
   return true;
 };
@@ -322,6 +315,11 @@ const confirmPasswordRule = (v) => {
 const editItem = (item) => {
   data.editedIndex = data.items.indexOf(item);
   data.editedItem = Object.assign({}, item);
+  data.dialog = true;
+};
+
+const registerItem = () => {
+  data.editedItem = Object.assign({}, data.defaultItem);
   data.dialog = true;
 };
 
@@ -364,20 +362,18 @@ const submitForm = () => {
 
 const executeCreateUser = async () => {
   try {
-    // await client.mutate({
-    //   mutation: createUser,
-    //   variables: {
-    //     input: {
-    //       id: data.editedItem.id,
-    //       password: data.editedItem.newPassword,
-    //     },
-    //   },
-    // });
-    alert("성공적으로 사용자를 등록하였습니다.");
+    await createUser({
+      username: data.editedItem.username,
+      password: data.editedItem.newPassword,
+      role: data.editedItem.role,
+    });
+    alert("성공적으로 사용자를 등록 하였습니다.");
+    userList();
     closeEditPopup();
   } catch (e) {
     console.error(e);
-    if (e.message.includes("user.id")) {
+
+    if (e.response.data.status == 409) {
       alert("이미 등록된 사용자입니다. 다른 ID를 시도해주세요.");
     } else {
       alert("사용자를 등록하지 못했습니다.");
@@ -387,17 +383,32 @@ const executeCreateUser = async () => {
 
 const executeEditUser = async () => {
   try {
+    await updateUser(data.editedItem.id, {
+      password: data.editedItem.newPassword,
+      role: data.editedItem.role,
+    });
+    alert("성공적으로 사용자 정보를 업데이트 하였습니다.");
+    userList();
+    closeEditPopup();
   } catch (e) {
-    console.error(e);
+    console.error(e.message);
     alert("사용자 정보를 업데이트 하지 못했습니다.");
   }
 };
 
 const executeDeleteUser = async () => {
   try {
+    await deleteUser(data.editedItem.id);
+    alert("성공적으로 사용자를 삭제 하였습니다.");
+    userList();
+    closeDeletePopup();
   } catch (e) {
     console.error(e);
-    alert("사용자 정보를 업데이트 하지 못했습니다.");
+    if (e.response.data.status == 400) {
+      alert("마지막 ADMIN 사용자는 삭제할 수 없습니다.");
+    } else {
+      alert("사용자를 삭제하지 못했습니다.");
+    }
   }
 };
 </script>
@@ -406,6 +417,6 @@ const executeDeleteUser = async () => {
 .override-class :deep(.v-input__control) {
   display: flex;
   grid-area: control;
-  background-color: #ebedfa;
+  background-color: #fdf6e9;
 }
 </style>
