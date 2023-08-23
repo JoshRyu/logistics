@@ -6,15 +6,12 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
 
-@Component
 public class JwtAuthenticationFilter extends GenericFilterBean {
 
   @Autowired
@@ -28,21 +25,13 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
     FilterChain filterChain
   ) throws IOException, ServletException {
     HttpServletRequest request = (HttpServletRequest) servletRequest;
-    HttpServletResponse response = (HttpServletResponse) servletResponse;
+    String token = jwtUtil.resolveToken(request);
 
-    if (request.getRequestURI().contains("/login")) {
-      filterChain.doFilter(servletRequest, servletResponse);
-    } else {
-      String token = jwtUtil.resolveToken(request);
-      if (token == null || !jwtUtil.validateToken(token)) {
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        return;
-      }
-
+    if (token != null && jwtUtil.validateToken(token)) {
       Authentication auth = jwtUtil.getAuthentication(token);
       SecurityContextHolder.getContext().setAuthentication(auth);
-
-      filterChain.doFilter(servletRequest, servletResponse);
     }
+
+    filterChain.doFilter(servletRequest, servletResponse);
   }
 }
