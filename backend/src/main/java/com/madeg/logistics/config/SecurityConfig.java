@@ -2,7 +2,7 @@ package com.madeg.logistics.config;
 
 import com.madeg.logistics.security.JwtAuthenticationFilter;
 import java.util.Arrays;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -17,15 +17,11 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
-  @Autowired
-  private JwtAuthEntryPoint jwtAuthEntryPoint;
-
-  @Bean
-  public JwtAuthenticationFilter jwtFilter() {
-    return new JwtAuthenticationFilter();
-  }
+  private final JwtAuthEntryPoint jwtAuthEntryPoint;
+  private final JwtAuthenticationFilter jwtFilter;
 
   @Bean
   CorsConfigurationSource corsConfigurationSource() {
@@ -42,10 +38,8 @@ public class SecurityConfig {
   }
 
   @Bean
-  public DefaultSecurityFilterChain filterChain(
-    HttpSecurity http,
-    JwtAuthenticationFilter jwtFilter
-  ) throws Exception {
+  public DefaultSecurityFilterChain filterChain(HttpSecurity http)
+    throws Exception {
     http
       .cors(cors -> corsConfigurationSource())
       .csrf(csrf -> csrf.disable())
