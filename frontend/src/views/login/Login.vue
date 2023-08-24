@@ -1,7 +1,7 @@
 <template>
   <div class="d-flex align-center justify-center" style="height: 100vh">
-    <v-sheet width="400" class="mx-auto bg_y">
-      <v-img class="mx-auto mb-10" width="300" src="@/assets/logo.png"></v-img>
+    <v-sheet width="500" class="mx-auto bg_y">
+      <v-img class="mx-auto" width="500" src="@/assets/logo.png"></v-img>
       <v-form fast-fail @submit.prevent="executeLogin(data.credentials)">
         <v-text-field
           class="mb-3 override-class"
