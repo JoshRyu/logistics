@@ -28,13 +28,12 @@
           @click="this.$router.push({ path: navElements.user.route })"
         ></v-list-item>
 
-        <!-- 데이터 관리 :: dataList -->
         <v-list-group value="Folder">
           <template v-slot:activator="{ props }">
             <v-list-item
-              prepend-icon="mdi-database"
+              prepend-icon="mdi-basket"
               v-bind="props"
-              title="데이터 관리"
+              title="제품 관리"
             ></v-list-item>
           </template>
           <v-list-item
@@ -43,6 +42,7 @@
             :value="item.title"
             :title="item.title"
             :prepend-icon="item.icon"
+            @click="this.$router.push({ path: item.route })"
           ></v-list-item>
         </v-list-group>
       </v-list>
@@ -96,20 +96,8 @@ const crud = {
 const navElements = reactive({
   /** 사용자 */
   user: { route: "/user/list" },
-  /** 데이터 관리 */
-  data: [
-    { idx: 0, title: "data_조회", icon: crud.R },
-    { idx: 1, title: "data_등록", icon: crud.C },
-    { idx: 2, title: "data_엑셀 업로드", icon: crud.UPLOAD },
-    { idx: 3, title: "data_데이터 변경등록", icon: crud.U },
-  ],
-  /** Assign 관리 */
-  assign: [
-    { idx: 0, title: "assign_조회", icon: crud.R },
-    { idx: 1, title: "assign_등록", icon: crud.C },
-    { idx: 2, title: "assign_엑셀 업로드", icon: crud.UPLOAD },
-    { idx: 3, title: "assign_데이터 변경등록", icon: crud.U },
-  ],
+  /** 제품 관리 */
+  data: [{ idx: 0, title: "제품 조회", icon: crud.R, route: "/product/list" }],
 });
 
 const logout = () => {
@@ -118,3 +106,9 @@ const logout = () => {
   router.push({ path: "/login" });
 };
 </script>
+
+<style scoped>
+.v-list-group__items .v-list-item {
+  padding-inline-start: 50px !important;
+}
+</style>

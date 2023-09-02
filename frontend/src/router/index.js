@@ -29,6 +29,17 @@ const routes = [
           role: ["admin"],
         },
       },
+      {
+        path: "/product",
+        redirect: "/product/list",
+        children: [
+          {
+            path: "list",
+            name: "ProductList",
+            component: () => import("@/views/product/ProductList.vue"),
+          },
+        ],
+      },
     ],
   },
   {

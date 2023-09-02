@@ -25,7 +25,7 @@ export default defineConfig({
     extensions: [".js", ".json", ".jsx", ".mjs", ".ts", ".tsx", ".vue"],
   },
   server: {
-    port: 3000,
+    port: 3500,
     proxy: {
       "/api": {
         target: "http://localhost:8920", // Replace with your API server
