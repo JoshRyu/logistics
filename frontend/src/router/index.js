@@ -38,6 +38,11 @@ const routes = [
             name: "ProductList",
             component: () => import("@/views/product/ProductList.vue"),
           },
+          {
+            path: "register",
+            name: "ProductRegister",
+            component: () => import("@/views/product/ProductRegister.vue"),
+          },
         ],
       },
     ],

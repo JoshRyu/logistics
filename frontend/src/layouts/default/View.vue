@@ -97,7 +97,15 @@ const navElements = reactive({
   /** 사용자 */
   user: { route: "/user/list" },
   /** 제품 관리 */
-  data: [{ idx: 0, title: "제품 조회", icon: crud.R, route: "/product/list" }],
+  data: [
+    { idx: 0, title: "제품 조회", icon: crud.R, route: "/product/list" },
+    {
+      idx: 1,
+      title: "제품 등록",
+      icon: "mdi-basket-plus-outline",
+      route: "/product/register",
+    },
+  ],
 });
 
 const logout = () => {
