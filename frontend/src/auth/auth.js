@@ -8,8 +8,6 @@ export function requireAuth(to, from, next) {
     });
   } else {
     if (to.meta.role) {
-      console.log(to.meta.role);
-      console.log(getUserRole());
       if (to.meta.role.includes(getUserRole())) {
         next();
       } else {

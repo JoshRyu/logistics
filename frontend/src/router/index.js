@@ -39,11 +39,21 @@ const routes = [
             component: () => import("@/views/product/ProductList.vue"),
           },
           {
-            path: "register",
-            name: "ProductRegister",
-            component: () => import("@/views/product/ProductRegister.vue"),
+            path: "management",
+            name: "ProductManagement",
+            component: () => import("@/views/product/ProductManagement.vue"),
+          },
+          {
+            path: "category",
+            name: "ProductCategory",
+            component: () => import("@/views/product/ProductCategory.vue"),
           },
         ],
+        beforeEnter: requireAuth,
+        // 접근 제한이 필요한 페이지에, 아래 내용을 넣어 특정한 유저만 접근할 수 있게 한다.
+        meta: {
+          role: ["admin", "user"],
+        },
       },
     ],
   },

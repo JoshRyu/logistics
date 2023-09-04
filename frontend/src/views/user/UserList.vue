@@ -45,9 +45,8 @@
             <v-form fast-fail @submit.prevent="submitForm" ref="editForm">
               <v-card>
                 <v-card-title>
-                  <span class="text-h5">{{ formTitle }}</span>
+                  <span>{{ formTitle }}</span>
                 </v-card-title>
-
                 <v-card-text>
                   <v-container>
                     <v-row>
@@ -99,7 +98,6 @@
                     </v-row>
                   </v-container>
                 </v-card-text>
-
                 <v-card-actions>
                   <v-spacer></v-spacer>
                   <v-btn

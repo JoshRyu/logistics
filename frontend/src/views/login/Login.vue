@@ -82,10 +82,15 @@ const executeLogin = async (params) => {
 const handleLoginResponse = (response) => {
   let token = response.token;
   let username = response.username;
+  let userRole = response.role;
   if (token) {
     localStorage.setItem("apollo-token", token);
     localStorage.setItem("username", username);
-    router.push({ path: "/home" });
+    if (userRole == 'ADMIN') {
+      router.push({ path: "/user" });
+    } else {
+      router.push({ path: "/product" });
+    }
   }
 };
 </script>

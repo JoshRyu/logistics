@@ -1,7 +1,6 @@
 <template>
-  <v-card class="ma-5">
-    <v-container fluid>
-      <v-card dense>
+  <v-container style="max-width: 85%;" class="mt-5">
+    <v-row>
         <v-card-title class="text-h5">
           <span>제품 검색</span>
         </v-card-title>
@@ -38,64 +37,56 @@
             <v-col cols="4"> </v-col>
           </v-row>
         </v-toolbar>
-      </v-card>
-    </v-container>
-    <v-container fluid>
-      <v-row dense>
-        <v-col
-          v-for="card in data.cards"
-          :key="card.title"
-          :cols="data.cards.length >= 4 ? card.flex : 12"
-        >
-          <v-card class="borderSolid">
-            <v-card-title class="text-h4">
-              <span v-text="card.title"></span>
-            </v-card-title>
-            <v-card-subtitle class="text-h6 mb-1">
-              <span
-                v-if="card.category"
-                class="float-right text-red"
-                v-text="'#' + card.category"
-              ></span>
-            </v-card-subtitle>
-            <v-img
-              v-if="data.enableImg"
-              :src="card.src"
-              class="align-end"
-              cover
-            >
-            </v-img>
+    </v-row>
+    <v-row dense>
+      <v-col
+        v-for="card in data.cards"
+        :key="card.title"
+        :cols="data.cards.length >= 4 ? card.flex : 12"
+      >
+        <v-card class="borderSolid">
+          <v-card-title class="text-h4">
+            <span v-text="card.title"></span>
+          </v-card-title>
+          <v-card-subtitle class="text-h6 mb-1">
+            <span
+              v-if="card.category"
+              class="float-right text-red"
+              v-text="'#' + card.category"
+            ></span>
+          </v-card-subtitle>
+          <v-img v-if="data.enableImg" :src="card.src" class="align-end" cover>
+          </v-img>
 
-            <v-card-text class="text-body-1 text-grey" v-if="card.memo">
-              <span v-text="card.memo"></span>
-            </v-card-text>
+          <v-card-text class="text-body-1 text-grey" v-if="card.memo">
+            <span v-text="card.memo"></span>
+          </v-card-text>
 
-            <v-card-text class="text-right text-h6" v-if="card.price">
-              <span v-text="'판매가: ' + card.price"></span>
-              <v-spacer></v-spacer>
-              <span v-text="'재고: ' + card.stock + '개'"></span>
-            </v-card-text>
+          <v-card-text class="text-right text-h6" v-if="card.price">
+            <span v-text="'판매가: ' + card.price"></span>
+            <v-spacer></v-spacer>
+            <span v-text="'재고: ' + card.stock + '개'"></span>
+          </v-card-text>
 
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn
-                size="large"
-                color="surface-variant"
-                variant="text"
-                icon="mdi-pencil-circle"
-              ></v-btn>
-              <v-btn
-                size="large"
-                color="surface-variant"
-                variant="text"
-                icon="mdi-delete-circle"
-              ></v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-container>
-  </v-card>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn
+              size="large"
+              color="surface-variant"
+              variant="text"
+              icon="mdi-pencil-circle"
+            ></v-btn>
+            <v-btn
+              size="large"
+              color="surface-variant"
+              variant="text"
+              icon="mdi-delete-circle"
+            ></v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script setup>
@@ -167,5 +158,6 @@ const data = reactive({
 <style scoped>
 .borderSolid {
   border: 1px solid rgb(118, 118, 118);
+  /* box-shadow: 1px 1px 2px 2px rgb(118, 118, 118); */
 }
 </style>

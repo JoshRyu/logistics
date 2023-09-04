@@ -24,7 +24,7 @@
         <v-list-item
           v-if="isAdmin"
           prepend-icon="mdi-account"
-          title="사용자 관리"
+          title="사용자"
           @click="this.$router.push({ path: navElements.user.route })"
         ></v-list-item>
 
@@ -33,7 +33,7 @@
             <v-list-item
               prepend-icon="mdi-basket"
               v-bind="props"
-              title="제품 관리"
+              title="제품"
             ></v-list-item>
           </template>
           <v-list-item
@@ -101,9 +101,15 @@ const navElements = reactive({
     { idx: 0, title: "제품 조회", icon: crud.R, route: "/product/list" },
     {
       idx: 1,
-      title: "제품 등록",
+      title: "제품 관리",
       icon: "mdi-basket-plus-outline",
-      route: "/product/register",
+      route: "/product/management",
+    },
+    {
+      idx: 2,
+      title: "제품 카테고리",
+      icon: "mdi-view-list",
+      route: "/product/category",
     },
   ],
 });
