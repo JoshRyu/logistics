@@ -16,7 +16,7 @@
 </template>
 
 <script setup>
-import { reactive, defineProps, defineEmits, watchEffect } from "vue";
+import { reactive, watchEffect } from "vue";
 
 const props = defineProps({
   propObj: Object,
