@@ -8,9 +8,8 @@
 
 <style>
 /* Global 폰트 적용 */
-@import url("https://fonts.googleapis.com/css2?family=Gowun+Batang");
+@import url("https://webfontworld.github.io/NanumSquareNeo/NanumSquareNeo.css");
 * {
-  font-family: "Gowun Batang", serif;
-  font-weight: 800;
+  font-family: "NanumSquareNeo", sans-serif;
 }
 </style>

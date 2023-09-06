@@ -45,7 +45,7 @@
               ></v-text-field>
             </v-col>
             <v-col cols="3">
-              <v-text-field
+              <v-autocomplete
                 v-model="data.information.category"
                 label="제품 카테고리"
                 hide-details
@@ -53,8 +53,10 @@
                 variant="outlined"
                 clear-icon="mdi-close-circle"
                 clearable
+                no-data-text="카테고리를 먼저 생성해주세요"
                 type="text"
-              ></v-text-field>
+              >
+              </v-autocomplete>
             </v-col>
             <v-spacer></v-spacer>
           </v-row>
@@ -135,9 +137,5 @@ const data = reactive({
 <style scoped>
 .borderSolid {
   border: 1px solid rgb(118, 118, 118);
-}
-
-.largeHeight {
-  height: 200px !important;
 }
 </style>

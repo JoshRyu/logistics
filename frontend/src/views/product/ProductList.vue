@@ -1,42 +1,42 @@
 <template>
-  <v-container style="max-width: 85%;" class="mt-5">
+  <v-container style="max-width: 85%" class="mt-5">
     <v-row>
-        <v-card-title class="text-h5">
-          <span>제품 검색</span>
-        </v-card-title>
+      <v-card-title class="text-h4">
+        <span>제품 검색</span>
+      </v-card-title>
 
-        <v-toolbar color="white" class="mb-5">
-          <v-row>
-            <v-col cols="2">
-              <v-autocomplete
-                v-model="data.selectedCategory"
-                class="ml-4"
-                label="카테고리 선택"
-                variant="outlined"
-                :items="data.categoryList"
-                no-data-text="검색된 카테고리가 없습니다"
-                hide-details
-                clearable
-              ></v-autocomplete>
-            </v-col>
-            <v-col cols="4">
-              <v-text-field
-                v-model="data.searchValue"
-                label="검색어"
-                hide-details
-                placeholder="검색어"
-                variant="outlined"
-                clear-icon="mdi-close-circle"
-                clearable
-                type="text"
-              ></v-text-field>
-            </v-col>
-            <v-col cols="2">
-              <v-btn size="x-large" variant="outlined">검색</v-btn>
-            </v-col>
-            <v-col cols="4"> </v-col>
-          </v-row>
-        </v-toolbar>
+      <v-toolbar color="white" class="mb-5">
+        <v-row>
+          <v-col cols="2" class="mt-2">
+            <v-autocomplete
+              v-model="data.selectedCategory"
+              class="ml-4"
+              label="카테고리 선택"
+              variant="outlined"
+              :items="data.categoryList"
+              no-data-text="검색된 카테고리가 없습니다"
+              hide-details
+              clearable
+            ></v-autocomplete>
+          </v-col>
+          <v-col cols="4" class="mt-2">
+            <v-text-field
+              v-model="data.searchValue"
+              label="검색어"
+              hide-details
+              placeholder="검색어"
+              variant="outlined"
+              clear-icon="mdi-close-circle"
+              clearable
+              type="text"
+            ></v-text-field>
+          </v-col>
+          <v-col cols="2" class="mt-2">
+            <v-btn size="x-large" variant="outlined">검색</v-btn>
+          </v-col>
+          <v-col cols="4"> </v-col>
+        </v-row>
+      </v-toolbar>
     </v-row>
     <v-row dense>
       <v-col
@@ -45,7 +45,7 @@
         :cols="data.cards.length >= 4 ? card.flex : 12"
       >
         <v-card class="borderSolid">
-          <v-card-title class="text-h4">
+          <v-card-title class="text-h5">
             <span v-text="card.title"></span>
           </v-card-title>
           <v-card-subtitle class="text-h6 mb-1">

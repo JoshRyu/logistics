@@ -13,14 +13,14 @@
               class="float-right"
               @click="registerItem"
             >
-              Register User
+              사용자 생성
             </v-btn></v-col
           >
         </v-row>
         <v-text-field
           v-model="data.searchValue"
           append-icon="mdi-magnify"
-          label="Search"
+          label="검색"
           single-line
           hide-details
           variant="underlined"
