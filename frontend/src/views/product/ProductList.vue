@@ -144,8 +144,8 @@ const data = reactive({
       flex: 3,
     },
     {
-      category: "뜨게 가방",
       title: "파스텔파우치",
+      category: "뜨게 가방",
       src: "/src/assets/images/파스텔파우치.jpg",
       memo: "파스텔파우치에 대한 내용입니다.",
       price: "18,000원",

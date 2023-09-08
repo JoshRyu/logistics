@@ -111,6 +111,12 @@ const navElements = reactive({
       icon: "mdi-view-list",
       route: "/product/category",
     },
+    {
+      idx: 3,
+      title: "제품 통계",
+      icon: "mdi-chart-bar",
+      route: "/product/statistics",
+    },
   ],
 });
 

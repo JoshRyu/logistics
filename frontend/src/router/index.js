@@ -48,6 +48,11 @@ const routes = [
             name: "ProductCategory",
             component: () => import("@/views/product/ProductCategory.vue"),
           },
+          {
+            path: "statistics",
+            name: "ProductStatistics",
+            component: () => import("@/views/product/ProductStatistics.vue"),
+          },
         ],
         beforeEnter: requireAuth,
         // 접근 제한이 필요한 페이지에, 아래 내용을 넣어 특정한 유저만 접근할 수 있게 한다.
