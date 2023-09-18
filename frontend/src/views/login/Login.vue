@@ -86,7 +86,8 @@ const handleLoginResponse = (response) => {
   if (token) {
     localStorage.setItem("apollo-token", token);
     localStorage.setItem("username", username);
-    if (userRole == 'ADMIN') {
+    localStorage.setItem("role", userRole);
+    if (userRole == "ADMIN") {
       router.push({ path: "/user" });
     } else {
       router.push({ path: "/product" });

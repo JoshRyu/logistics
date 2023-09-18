@@ -47,5 +47,5 @@ function isTokenExpired(token) {
 
 function getUserRole() {
   const idToken = getIdToken();
-  return decode(idToken).sub;
+  return decode(idToken).role;
 }

@@ -28,7 +28,7 @@
           @click="this.$router.push({ path: navElements.user.route })"
         ></v-list-item>
 
-        <v-list-group value="Folder">
+        <v-list-group value="Product">
           <template v-slot:activator="{ props }">
             <v-list-item
               prepend-icon="mdi-basket"
@@ -37,7 +37,25 @@
             ></v-list-item>
           </template>
           <v-list-item
-            v-for="item in navElements.data"
+            v-for="item in navElements.data.product"
+            :key="item.idx"
+            :value="item.title"
+            :title="item.title"
+            :prepend-icon="item.icon"
+            @click="this.$router.push({ path: item.route })"
+          ></v-list-item>
+        </v-list-group>
+
+        <v-list-group value="Store" v-if="isAdmin">
+          <template v-slot:activator="{ props }">
+            <v-list-item
+              prepend-icon="mdi-store"
+              v-bind="props"
+              title="매장"
+            ></v-list-item>
+          </template>
+          <v-list-item
+            v-for="item in navElements.data.store"
             :key="item.idx"
             :value="item.title"
             :title="item.title"
@@ -77,47 +95,66 @@ const router = useRouter();
 const data = reactive({
   drawer: true,
   group: null,
-  username: localStorage.getItem("username"),
+  userRole: localStorage.getItem("role"),
 });
 
 const isAdmin = computed(() => {
-  return data.username == "admin" || data.username == "manager";
+  return data.userRole == "ADMIN";
 });
 
-/** CURD ICON SETTINGS */
-const crud = {
-  C: "mdi-database-plus",
-  R: "mdi-magnify",
-  U: "mdi-pencil",
-  D: "mdi-database-minus",
-  UPLOAD: "mdi-upload",
-};
 /** 화면 콤보박스 셋팅 */
 const navElements = reactive({
   /** 사용자 */
   user: { route: "/user/list" },
   /** 제품 관리 */
-  data: [
-    { idx: 0, title: "제품 조회", icon: crud.R, route: "/product/list" },
-    {
-      idx: 1,
-      title: "제품 관리",
-      icon: "mdi-basket-plus-outline",
-      route: "/product/management",
-    },
-    {
-      idx: 2,
-      title: "제품 카테고리",
-      icon: "mdi-view-list",
-      route: "/product/category",
-    },
-    {
-      idx: 3,
-      title: "제품 통계",
-      icon: "mdi-chart-bar",
-      route: "/product/statistics",
-    },
-  ],
+  data: {
+    product: [
+      {
+        idx: 0,
+        title: "제품 조회",
+        icon: "mdi-magnify",
+        route: "/product/list",
+      },
+      {
+        idx: 1,
+        title: "제품 관리",
+        icon: "mdi-basket-plus-outline",
+        route: "/product/management",
+      },
+      {
+        idx: 2,
+        title: "제품 카테고리",
+        icon: "mdi-view-list",
+        route: "/product/category",
+      },
+      {
+        idx: 3,
+        title: "제품 통계",
+        icon: "mdi-chart-bar",
+        route: "/product/statistics",
+      },
+    ],
+    store: [
+      {
+        idx: 0,
+        title: "매장 현황",
+        icon: "mdi-store-outline",
+        route: "/store/status",
+      },
+      {
+        idx: 1,
+        title: "매장 등록",
+        icon: "mdi-store-plus",
+        route: "/store/register",
+      },
+      {
+        idx: 2,
+        title: "매장 설정",
+        icon: "mdi-store-cog",
+        route: "/store/config",
+      },
+    ],
+  },
 });
 
 const logout = () => {

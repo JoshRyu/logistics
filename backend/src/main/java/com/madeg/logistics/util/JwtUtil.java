@@ -1,5 +1,6 @@
 package com.madeg.logistics.util;
 
+import com.madeg.logistics.enums.Role;
 import com.madeg.logistics.service.UserServiceImpl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -40,8 +41,9 @@ public class JwtUtil {
       new SecretKeySpec(apiKeySecretBytes, signatureAlgorithm.getJcaName());
   }
 
-  public String generateToken(String username) {
+  public String generateToken(String username, Role userRole) {
     Map<String, Object> claims = new HashMap<>();
+    claims.put("role", userRole);
     return createToken(claims, username);
   }
 

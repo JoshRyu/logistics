@@ -26,7 +26,7 @@ const routes = [
         beforeEnter: requireAuth,
         // 접근 제한이 필요한 페이지에, 아래 내용을 넣어 특정한 유저만 접근할 수 있게 한다.
         meta: {
-          role: ["admin"],
+          role: ["ADMIN"],
         },
       },
       {
@@ -57,7 +57,23 @@ const routes = [
         beforeEnter: requireAuth,
         // 접근 제한이 필요한 페이지에, 아래 내용을 넣어 특정한 유저만 접근할 수 있게 한다.
         meta: {
-          role: ["admin", "user"],
+          role: ["ADMIN", "USER"],
+        },
+      },
+      {
+        path: "/store",
+        redirect: "/store/status",
+        children: [
+          {
+            path: "status",
+            name: "StoreStatus",
+            component: () => import("@/views/store/StoreStatus.vue"),
+          },
+        ],
+        beforeEnter: requireAuth,
+        // 접근 제한이 필요한 페이지에, 아래 내용을 넣어 특정한 유저만 접근할 수 있게 한다.
+        meta: {
+          role: ["ADMIN"],
         },
       },
     ],

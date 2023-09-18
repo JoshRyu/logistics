@@ -37,7 +37,7 @@ public class UserService {
 
     if (passwordEncoder.matches(loginInfo.getPassword(), user.getPassword())) {
       loginInfo.setRole(Role.valueOf(user.getRole()));
-      loginInfo.setToken(jwtUtil.generateToken(user.getUsername()));
+      loginInfo.setToken(jwtUtil.generateToken(user.getUsername(), Role.valueOf(user.getRole())));
 
       return loginInfo;
     }
