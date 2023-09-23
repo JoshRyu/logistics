@@ -13,6 +13,17 @@ docker-compose up -d
 
 ## Frontend Setup
 
+- Node Version: v18.12.0
+
+  - nvm 사용시 아래 명령어로 버전 변경 가능
+
+  ```
+    nvm install 18.12.0
+    nvm use 18.12.0
+  ```
+
+- Frontend 설치 및 실행
+
 ```
 cd frontend
 npm i
@@ -20,6 +31,8 @@ npm run dev
 ```
 
 ## Backend Setup
+
+- Java Version: v17
 
 - Spring Boot 실행 전 application.yml 수정
 
