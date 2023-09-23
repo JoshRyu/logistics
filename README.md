@@ -21,4 +21,18 @@ npm run dev
 
 ## Backend Setup
 
-- Vscode 기준 Spring Boot Extension 설치 후 실행
+- Spring Boot 실행 전 application.yml 수정
+
+```
+  sql:
+    init:
+      mode: always -> never
+```
+
+- Spring Boot 실행 후 (JPA Entity 생성 후)
+
+```
+  sql:
+    init:
+      mode: never -> always
+```
