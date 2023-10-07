@@ -15,7 +15,7 @@ import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-@Entity(name = "madeg_user")
+@Entity(name = "member")
 @Getter
 @Setter
 @Builder
@@ -25,12 +25,7 @@ public class User implements UserDetails {
 
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_seq")
-  @SequenceGenerator(
-    name = "user_seq",
-    sequenceName = "user_seq",
-    allocationSize = 1,
-    initialValue = 1
-  )
+  @SequenceGenerator(name = "user_seq", sequenceName = "user_seq", allocationSize = 1, initialValue = 1)
   private Long id;
 
   private String username;

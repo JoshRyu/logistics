@@ -1,4 +1,4 @@
-INSERT INTO madeg_user (id, username, password, role)
+INSERT INTO member (id, username, password, role)
 VALUES (
         1,
         'admin',

@@ -59,4 +59,11 @@
 - product_code(fk): 제품 코드
 - month: 월
 - month_revenue: 상품 월별 총 매출 (store_product.sale_cnt \* proudct.price | discount.discount_price)
-- month_profit: 상품 월별 총 순이익 (revenue \* (1-store.commision_rate) - fixed_cost)
+- month_profit: 상품 월별 총 순이익 (month_revenue \* (1-store.commision_rate) - fixed_cost)
+
+### member
+
+- id(pk): 사용자의 아이디
+- password: 사용자의 비밀번호
+- role: 사용자 권한 ADMIN | USER
+- username: 사용자의 이름

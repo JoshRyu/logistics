@@ -9,7 +9,7 @@ spring:
     password: post123!
   sql:
     init:
-      mode: always
+      mode: never
 
   jpa:
     show-sql: true
