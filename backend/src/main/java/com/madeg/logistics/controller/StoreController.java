@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(path = "/api/v1")
-public class ShopController {
+public class StoreController {
 
   @GetMapping(path = "/store/list")
   public List<String> getStoreList() {
