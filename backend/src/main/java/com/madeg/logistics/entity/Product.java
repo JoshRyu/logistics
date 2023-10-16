@@ -1,9 +1,13 @@
 package com.madeg.logistics.entity;
 
 import java.math.BigDecimal;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -19,6 +23,10 @@ import lombok.NoArgsConstructor;
 @Table(name = "product")
 public class Product {
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "custom-sequence")
+    @GenericGenerator(name = "custom-sequence", strategy = "com.madeg.logistics.entity.CustomSequenceGenerator", parameters = {
+            @Parameter(name = "prefix", value = "product_code_") // Set the desired prefix here
+    })
     @Column(name = "product_code", unique = true, nullable = false)
     private String productCode;
 

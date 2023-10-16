@@ -28,22 +28,13 @@ public class ProductService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "409: PRODUCT ALREADY EXIST");
         }
 
-        String lastProductCode = productRepository.findLastProductCode();
-
-        if (lastProductCode == null) {
-            lastProductCode = "product_0";
-        }
-
-        int sequence = Integer.parseInt(lastProductCode.split("_")[1]);
-
-        String newProductCode = "product_" + (sequence + 1);
         Category existCategory = categoryRepository.findByName(productInput.getCategoryName());
 
         if (existCategory == null) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "404: CATEGORY NOT FOUND");
         }
 
-        Product product = Product.builder().productCode(newProductCode).category(existCategory)
+        Product product = Product.builder().category(existCategory)
                 .name(productInput.getName()).price(productInput.getPrice()).stock(productInput.getStock())
                 .img(productInput.getImg()).barcode(productInput.getBarcode())
                 .description(productInput.getDescription()).build();
