@@ -31,7 +31,7 @@ public class CustomSequenceGenerator extends SequenceStyleGenerator {
 
             if (resultSet.next()) {
                 int nextValue = resultSet.getInt(1);
-                String generatedId = prefix + nextValue;
+                String generatedId = prefix.split("_")[0] + "_" + nextValue;
                 return generatedId;
             }
         } catch (SQLException e) {

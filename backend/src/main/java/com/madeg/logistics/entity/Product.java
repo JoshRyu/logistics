@@ -23,9 +23,9 @@ import lombok.NoArgsConstructor;
 @Table(name = "product")
 public class Product {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "custom-sequence")
-    @GenericGenerator(name = "custom-sequence", strategy = "com.madeg.logistics.entity.CustomSequenceGenerator", parameters = {
-            @Parameter(name = "prefix", value = "product_code_") // Set the desired prefix here
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "custom_sequence")
+    @GenericGenerator(name = "custom_sequence", strategy = "com.madeg.logistics.entity.CustomSequenceGenerator", parameters = {
+            @Parameter(name = "prefix", value = "product_code_")
     })
     @Column(name = "product_code", unique = true, nullable = false)
     private String productCode;
