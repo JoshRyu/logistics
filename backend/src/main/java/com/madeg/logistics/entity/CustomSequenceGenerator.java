@@ -6,6 +6,8 @@ import org.hibernate.engine.jdbc.connections.spi.ConnectionProvider;
 import org.hibernate.id.enhanced.SequenceStyleGenerator;
 import org.hibernate.type.Type;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,8 +15,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Properties;
 
+@Slf4j
 public class CustomSequenceGenerator extends SequenceStyleGenerator {
-    private String prefix = "product_"; // Default prefix
+    private String prefix = "_";
 
     @Override
     public Serializable generate(SharedSessionContractImplementor session, Object object) throws HibernateException {
@@ -31,7 +34,7 @@ public class CustomSequenceGenerator extends SequenceStyleGenerator {
 
             if (resultSet.next()) {
                 int nextValue = resultSet.getInt(1);
-                String generatedId = prefix.split("_")[0] + "_" + nextValue;
+                String generatedId = (prefix.contains("_") ? prefix.split("_")[0] : "") + "_" + nextValue;
                 return generatedId;
             }
         } catch (SQLException e) {
@@ -41,11 +44,10 @@ public class CustomSequenceGenerator extends SequenceStyleGenerator {
                 try {
                     connection.close();
                 } catch (SQLException e) {
-                    // Handle the exception
+                    log.debug("Unexpected error occurs while closing the connection");
                 }
             }
         }
-
         return null;
     }
 
