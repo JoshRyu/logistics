@@ -19,16 +19,23 @@
 
     <!-- 좌측 메뉴바 START -->
     <v-navigation-drawer v-model="data.drawer" permanent color="#fdf6e9">
-      <v-list>
+      <v-list v-model:opened="data.openedGroups">
         <!-- 사용자 :: userList -->
         <v-list-item
           v-if="isAdmin"
-          prepend-icon="mdi-account"
-          title="사용자"
-          @click="this.$router.push({ path: navElements.user.route })"
+          :prepend-icon="navElements.data.user.icon"
+          :title="navElements.data.user.title"
+          @click="
+            navClick(
+              'user',
+              navElements.data.user.title,
+              navElements.data.user.route
+            )
+          "
+          :class="selectedNav == navElements.data.user.title ? 'navColor' : ''"
         ></v-list-item>
 
-        <v-list-group value="Product">
+        <v-list-group value="product">
           <template v-slot:activator="{ props }">
             <v-list-item
               prepend-icon="mdi-basket"
@@ -42,11 +49,12 @@
             :value="item.title"
             :title="item.title"
             :prepend-icon="item.icon"
-            @click="this.$router.push({ path: item.route })"
+            @click="navClick('product', item.title, item.route)"
+            :class="selectedNav == item.title ? 'navColor' : ''"
           ></v-list-item>
         </v-list-group>
 
-        <v-list-group value="Store" v-if="isAdmin">
+        <v-list-group v-if="isAdmin" value="store">
           <template v-slot:activator="{ props }">
             <v-list-item
               prepend-icon="mdi-store"
@@ -60,7 +68,8 @@
             :value="item.title"
             :title="item.title"
             :prepend-icon="item.icon"
-            @click="this.$router.push({ path: item.route })"
+            @click="navClick('store', item.title, item.route)"
+            :class="selectedNav == item.title ? 'navColor' : ''"
           ></v-list-item>
         </v-list-group>
       </v-list>
@@ -88,26 +97,42 @@
 
 <script setup>
 import { computed, reactive } from "vue";
+import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
+const store = useStore();
 
 const data = reactive({
   drawer: true,
-  group: null,
+  openedGroups: [localStorage.getItem("current-group")],
   userRole: localStorage.getItem("role"),
+  navClass: "navColor",
 });
 
 const isAdmin = computed(() => {
   return data.userRole == "ADMIN";
 });
 
+const selectedNav = computed(() => {
+  return store.getters.getNav;
+});
+
+const navClick = (group, title, route) => {
+  store.commit("updateNav", title);
+  localStorage.setItem("current-nav", title);
+  localStorage.setItem("current-group", group);
+  router.push({ path: route });
+};
+
+const selectedMenu = () => {
+  return { navColor: true };
+};
+
 /** 화면 콤보박스 셋팅 */
 const navElements = reactive({
-  /** 사용자 */
-  user: { route: "/user/list" },
-  /** 제품 관리 */
   data: {
+    user: { idx: 0, title: "사용자", icon: "mdi-account", route: "/user/list" },
     product: [
       {
         idx: 0,
@@ -167,5 +192,9 @@ const logout = () => {
 <style scoped>
 .v-list-group__items .v-list-item {
   padding-inline-start: 50px !important;
+}
+
+.navColor {
+  background-color: rgb(197, 197, 197) !important;
 }
 </style>

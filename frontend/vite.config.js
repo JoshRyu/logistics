@@ -24,6 +24,9 @@ export default defineConfig({
     },
     extensions: [".js", ".json", ".jsx", ".mjs", ".ts", ".tsx", ".vue"],
   },
+  optimizeDeps: {
+    exclude: ["vuetify"],
+  },
   server: {
     port: 3500,
     proxy: {
