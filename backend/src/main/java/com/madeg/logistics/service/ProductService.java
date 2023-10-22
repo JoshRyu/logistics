@@ -25,19 +25,23 @@ public class ProductService {
         Product existProduct = productRepository.findByName(productInput.getName());
 
         if (existProduct != null) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "409: PRODUCT ALREADY EXIST");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "PRODUCT ALREADY EXIST");
         }
 
         Category existCategory = categoryRepository.findByName(productInput.getCategoryName());
 
         if (existCategory == null) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "404: CATEGORY NOT FOUND");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "CATEGORY NOT FOUND");
         }
 
         Product product = Product.builder().category(existCategory)
-                .name(productInput.getName()).price(productInput.getPrice()).stock(productInput.getStock())
-                .img(productInput.getImg()).barcode(productInput.getBarcode())
-                .description(productInput.getDescription()).build();
+                .name(productInput.getName())
+                .price(productInput.getPrice())
+                .stock(productInput.getStock())
+                .img(productInput.getImg())
+                .barcode(productInput.getBarcode())
+                .description(productInput.getDescription())
+                .build();
 
         productRepository.save(product);
     }

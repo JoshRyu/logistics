@@ -26,7 +26,7 @@ public class UserService {
   @Autowired
   private PasswordEncoder passwordEncoder;
 
-  private static final String NOT_FOUND_MSG = "404: USER NOT_FOUND";
+  private static final String NOT_FOUND_MSG = "USER NOT_FOUND";
 
   public UserLogin userLogin(UserLogin loginInfo) {
     User user = userRepository.findByUsername(loginInfo.getUsername());
@@ -43,9 +43,8 @@ public class UserService {
     }
 
     throw new ResponseStatusException(
-      HttpStatus.BAD_REQUEST,
-      "400: INVALID PASSWORD"
-    );
+        HttpStatus.BAD_REQUEST,
+        "INVALID PASSWORD");
   }
 
   public List<User> getUsers() {
@@ -56,9 +55,8 @@ public class UserService {
     User previousUser = userRepository.findByUsername(userInput.getUsername());
     if (previousUser != null) {
       throw new ResponseStatusException(
-        HttpStatus.CONFLICT,
-        "409: USER ALREADY EXIST"
-      );
+          HttpStatus.CONFLICT,
+          "USER ALREADY EXIST");
     }
 
     Role userRole = Role.USER;
@@ -68,38 +66,32 @@ public class UserService {
     }
 
     User user = User
-      .builder()
-      .username(userInput.getUsername())
-      .password(passwordEncoder.encode(userInput.getPassword()))
-      .role(userRole.name())
-      .build();
+        .builder()
+        .username(userInput.getUsername())
+        .password(passwordEncoder.encode(userInput.getPassword()))
+        .role(userRole.name())
+        .build();
 
     userRepository.save(user);
   }
 
   public void patchUser(Long id, UserPatch patchInput) {
     User previousUser = userRepository
-      .findById(id)
-      .orElseThrow(() ->
-        new ResponseStatusException(HttpStatus.NOT_FOUND, NOT_FOUND_MSG)
-      );
+        .findById(id)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, NOT_FOUND_MSG));
 
     if (patchInput.getPassword() != null) {
       previousUser.setPassword(
-        passwordEncoder.encode(patchInput.getPassword())
-      );
+          passwordEncoder.encode(patchInput.getPassword()));
     }
 
     if (patchInput.getRole() != null) {
-      if (
-        previousUser.getRole().equals(Role.ADMIN.name()) &&
-        patchInput.getRole() == Role.USER &&
-        userRepository.countByRole(Role.ADMIN.name()) == 1
-      ) {
+      if (previousUser.getRole().equals(Role.ADMIN.name()) &&
+          patchInput.getRole() == Role.USER &&
+          userRepository.countByRole(Role.ADMIN.name()) == 1) {
         throw new ResponseStatusException(
-          HttpStatus.BAD_REQUEST,
-          "400: CANNOT PATCH LAST ADMIN USER"
-        );
+            HttpStatus.BAD_REQUEST,
+            "CANNOT PATCH LAST ADMIN USER");
       }
       previousUser.setRole(patchInput.getRole().name());
     }
@@ -109,19 +101,14 @@ public class UserService {
 
   public void deleteUser(Long id) {
     User previousUser = userRepository
-      .findById(id)
-      .orElseThrow(() ->
-        new ResponseStatusException(HttpStatus.NOT_FOUND, NOT_FOUND_MSG)
-      );
+        .findById(id)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, NOT_FOUND_MSG));
 
-    if (
-      previousUser.getRole().equals(Role.ADMIN.name()) &&
-      userRepository.countByRole(Role.ADMIN.name()) == 1
-    ) {
+    if (previousUser.getRole().equals(Role.ADMIN.name()) &&
+        userRepository.countByRole(Role.ADMIN.name()) == 1) {
       throw new ResponseStatusException(
-        HttpStatus.BAD_REQUEST,
-        "400: CANNOT DELETE LAST ADMIN USER"
-      );
+          HttpStatus.BAD_REQUEST,
+          "CANNOT DELETE LAST ADMIN USER");
     }
 
     userRepository.delete(previousUser);
