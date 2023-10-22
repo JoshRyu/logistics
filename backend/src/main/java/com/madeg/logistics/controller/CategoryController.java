@@ -8,10 +8,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.madeg.logistics.domain.CategoryInput;
+import com.madeg.logistics.domain.ResponseCommon;
 import com.madeg.logistics.service.CategoryService;
-import com.madeg.logistics.util.ErrorUtil;
 
 import jakarta.validation.Valid;
 
@@ -22,20 +23,23 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
-    @Autowired
-    private ErrorUtil errorUtil;
-
     @PostMapping
     public ResponseEntity<Object> create(
             @RequestBody @Valid CategoryInput categoryInput, Errors errors) {
 
         if (errors.hasErrors()) {
-            return new ResponseEntity<>(errorUtil.getErrorMessages(errors), HttpStatus.BAD_REQUEST);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ResponseCommon(HttpStatus.BAD_REQUEST.value(),
+                            errors.getFieldError().getDefaultMessage()));
         }
 
-        categoryService.createCategory(categoryInput);
-
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        try {
+            categoryService.createCategory(categoryInput);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(new ResponseCommon(HttpStatus.CREATED.value(), "CATEGORY IS CREATED"));
+        } catch (ResponseStatusException ex) {
+            return ResponseEntity.status(ex.getStatusCode())
+                    .body(new ResponseCommon(ex.getStatusCode().value(), ex.getReason()));
+        }
     }
-
 }
