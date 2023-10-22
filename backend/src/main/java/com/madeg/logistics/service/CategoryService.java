@@ -16,23 +16,24 @@ public class CategoryService {
     private CategoryRepository categoryRepository;
 
     public void createCategory(CategoryInput categoryInput) {
-
         Category existCategory = categoryRepository.findByName(categoryInput.getCategoryName());
 
         if (existCategory != null) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "409: CATEGORY ALREADY EXIST");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "CATEGORY ALREADY EXIST");
         }
 
         Category parentCategory = categoryRepository.findByName(categoryInput.getParentCategoryName());
 
         if (categoryInput.getParentCategoryName() != null && parentCategory == null) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "404: PARENT CATEGORY NOT FOUND");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "PARENT CATEGORY NOT FOUND");
         }
 
-        Category category = (Category.builder().description(categoryInput.getDescription())
-                .name(categoryInput.getCategoryName())).parentCategory(parentCategory).build();
+        Category category = Category.builder()
+                .description(categoryInput.getDescription())
+                .name(categoryInput.getCategoryName())
+                .parentCategory(parentCategory)
+                .build();
 
         categoryRepository.save(category);
     }
-
 }
