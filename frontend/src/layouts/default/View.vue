@@ -122,6 +122,9 @@ const navClick = (group, title, route) => {
   store.commit("updateNav", title);
   localStorage.setItem("current-nav", title);
   localStorage.setItem("current-group", group);
+  if (group == "user") {
+    data.openedGroups = [];
+  }
   router.push({ path: route });
 };
 
