@@ -2,11 +2,15 @@ package com.madeg.logistics.controller;
 
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import com.madeg.logistics.domain.ProductInput;
 import com.madeg.logistics.domain.ResponseCommon;
+import com.madeg.logistics.entity.Product;
 import com.madeg.logistics.service.ProductService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -46,4 +50,8 @@ public class ProductController {
         }
     }
 
+    @GetMapping("/list")
+    public List<Product> getProductList() {
+        return productService.getProducts();
+    }
 }
