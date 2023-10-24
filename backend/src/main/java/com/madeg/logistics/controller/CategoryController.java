@@ -1,5 +1,7 @@
 package com.madeg.logistics.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,9 +11,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import com.madeg.logistics.domain.CategoryInput;
 import com.madeg.logistics.domain.ResponseCommon;
+import com.madeg.logistics.entity.Category;
 import com.madeg.logistics.service.CategoryService;
 
 import jakarta.validation.Valid;
@@ -41,5 +45,10 @@ public class CategoryController {
             return ResponseEntity.status(ex.getStatusCode())
                     .body(new ResponseCommon(ex.getStatusCode().value(), ex.getReason()));
         }
+    }
+
+    @GetMapping("/list")
+    public List<Category> getCategoryList() {
+        return categoryService.getCategories();
     }
 }
