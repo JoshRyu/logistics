@@ -54,10 +54,10 @@ public class CategoryController {
         return categoryService.getCategories();
     }
 
-    @DeleteMapping("/{name}")
-    public ResponseEntity<Object> delete(@PathVariable(name = "name", required = true) String name) {
+    @DeleteMapping("/{code}")
+    public ResponseEntity<Object> delete(@PathVariable(name = "code", required = true) String code) {
         try {
-            categoryService.deleteCategory(name);
+            categoryService.deleteCategory(code);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (ResponseStatusException ex) {
             return ResponseEntity.status(ex.getStatusCode())

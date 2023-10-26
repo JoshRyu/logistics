@@ -44,11 +44,11 @@ public class CategoryService {
         return categoryRepository.findAll();
     }
 
-    public void deleteCategory(String name) {
-        Category previousCategory = categoryRepository
-                .findByName(name);
+    public void deleteCategory(String code) {
+        Category previousCategory = categoryRepository.findByCategoryCode(code);
         if (previousCategory == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("CATEGORY %s NOT FOUND", name));
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    String.format("CATEGORY %s NOT FOUND", code));
         }
         categoryRepository.delete(previousCategory);
     }
