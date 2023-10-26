@@ -93,7 +93,13 @@ public class UserController {
   }
 
   @DeleteMapping("/{id}")
-  public void delete(@PathVariable(name = "id", required = true) Long id) {
-    userService.deleteUser(id);
+  public ResponseEntity<Object> delete(@PathVariable(name = "id", required = true) Long id) {
+    try {
+      userService.deleteUser(id);
+      return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    } catch (ResponseStatusException ex) {
+      return ResponseEntity.status(ex.getStatusCode())
+          .body(new ResponseCommon(ex.getStatusCode().value(), ex.getReason()));
+    }
   }
 }

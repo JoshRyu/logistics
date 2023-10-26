@@ -21,7 +21,8 @@ public class CategoryService {
         Category existCategory = categoryRepository.findByName(categoryInput.getCategoryName());
 
         if (existCategory != null) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "CATEGORY ALREADY EXIST");
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    String.format("CATEGORY %s ALREADY EXIST", categoryInput.getCategoryName()));
         }
 
         Category parentCategory = categoryRepository.findByName(categoryInput.getParentCategoryName());
@@ -41,5 +42,14 @@ public class CategoryService {
 
     public List<Category> getCategories() {
         return categoryRepository.findAll();
+    }
+
+    public void deleteCategory(String name) {
+        Category previousCategory = categoryRepository
+                .findByName(name);
+        if (previousCategory == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("CATEGORY %s NOT FOUND", name));
+        }
+        categoryRepository.delete(previousCategory);
     }
 }
