@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.madeg.logistics.domain.CategoryInput;
+import com.madeg.logistics.domain.CategoryPatch;
 import com.madeg.logistics.entity.Category;
 import com.madeg.logistics.repository.CategoryRepository;
 
@@ -42,6 +43,29 @@ public class CategoryService {
 
     public List<Category> getCategories() {
         return categoryRepository.findAll();
+    }
+
+    public void patchCategory(String code, CategoryPatch patchInput) {
+        Category previousCategory = categoryRepository.findByCategoryCode(code);
+
+        if (previousCategory == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "CATEGORY NOT FOUND");
+        }
+
+        if (patchInput.getName() != null) {
+            previousCategory.updateName(patchInput.getName());
+        }
+        if (patchInput.getDescription() != null) {
+            previousCategory.updateDescription(patchInput.getDescription());
+        }
+        if (patchInput.getParentCategoryName() != null) {
+            Category parentCategory = categoryRepository.findByName(patchInput.getParentCategoryName());
+            if (parentCategory == null) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "PARENT CATEGORY NOT FOUND");
+            }
+            previousCategory.updateParentCategory(parentCategory);
+        }
+        categoryRepository.save(previousCategory);
     }
 
     public void deleteCategory(String code) {

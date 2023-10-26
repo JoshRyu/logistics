@@ -42,4 +42,16 @@ public class Category {
     @Column(name = "description")
     private String description;
 
+    public void updateName(String name) {
+        this.name = name;
+    }
+
+    public void updateDescription(String description) {
+        this.description = description;
+    }
+
+    public void updateParentCategory(Category parentCategory) {
+        this.parentCategory = parentCategory;
+    }
+
 }
