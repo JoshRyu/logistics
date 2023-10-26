@@ -6,7 +6,9 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import com.madeg.logistics.domain.ProductInput;
 import com.madeg.logistics.domain.ResponseCommon;
@@ -53,5 +55,16 @@ public class ProductController {
     @GetMapping("/list")
     public List<Product> getProductList() {
         return productService.getProducts();
+    }
+
+    @DeleteMapping("/{code}")
+    public ResponseEntity<Object> delete(@PathVariable(name = "code", required = true) String code) {
+        try {
+            productService.deleteProduct(code);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } catch (ResponseStatusException ex) {
+            return ResponseEntity.status(ex.getStatusCode())
+                    .body(new ResponseCommon(ex.getStatusCode().value(), ex.getReason()));
+        }
     }
 }

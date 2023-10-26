@@ -15,6 +15,8 @@ public interface ProductRepository extends CrudRepository<Product, String> {
 
     Product findByName(String name);
 
+    Product findByProductCode(String code);
+
     @Query("SELECT MAX(p.productCode) FROM Product p")
     String findLastProductCode();
 }

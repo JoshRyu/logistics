@@ -48,7 +48,7 @@ public class CategoryService {
         Category previousCategory = categoryRepository.findByCategoryCode(code);
         if (previousCategory == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                    String.format("CATEGORY %s NOT FOUND", code));
+                    "CATEGORY NOT FOUND");
         }
         categoryRepository.delete(previousCategory);
     }

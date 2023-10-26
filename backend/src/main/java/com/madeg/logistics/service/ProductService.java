@@ -51,4 +51,14 @@ public class ProductService {
     public List<Product> getProducts() {
         return productRepository.findAll();
     }
+
+    public void deleteProduct(String code) {
+        Product previousProduct = productRepository.findByProductCode(code);
+
+        if (previousProduct == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "PRODUCT NOT FOUND");
+        }
+        productRepository.delete(previousProduct);
+    }
 }
