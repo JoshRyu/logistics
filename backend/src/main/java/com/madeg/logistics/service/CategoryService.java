@@ -46,20 +46,24 @@ public class CategoryService {
     }
 
     public void patchCategory(String code, CategoryPatch patchInput) {
+
+        if (patchInput.getName() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "CATEGORY NAME CANNOT BE NULL");
+        }
+
         Category previousCategory = categoryRepository.findByCategoryCode(code);
 
         if (previousCategory == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "CATEGORY NOT FOUND");
         }
-
         if (patchInput.getName() != null) {
             previousCategory.updateName(patchInput.getName());
         }
-        if (patchInput.getDescription() != null) {
-            previousCategory.updateDescription(patchInput.getDescription());
-        }
-        if (patchInput.getParentCategoryName() != null) {
-            Category parentCategory = categoryRepository.findByName(patchInput.getParentCategoryName());
+
+        previousCategory.updateDescription(patchInput.getDescription());
+
+        if (patchInput.getParentCategoryCode() != null) {
+            Category parentCategory = categoryRepository.findByCategoryCode(patchInput.getParentCategoryCode());
             if (parentCategory == null) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "PARENT CATEGORY NOT FOUND");
             }

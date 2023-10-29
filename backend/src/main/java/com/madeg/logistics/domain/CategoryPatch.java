@@ -13,6 +13,6 @@ public class CategoryPatch {
 
     private String description;
 
-    private String ParentCategoryName;
+    private String parentCategoryCode;
 
 }
