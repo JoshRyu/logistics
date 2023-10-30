@@ -46,7 +46,6 @@ public class CategoryService {
     }
 
     public void patchCategory(String code, CategoryPatch patchInput) {
-
         if (patchInput.getName() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "CATEGORY NAME CANNOT BE NULL");
         }
@@ -56,20 +55,48 @@ public class CategoryService {
         if (previousCategory == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "CATEGORY NOT FOUND");
         }
-        if (patchInput.getName() != null) {
+
+        boolean isUpdated = false;
+
+        if (!patchInput.getName().equals(previousCategory.getName())) {
             previousCategory.updateName(patchInput.getName());
+            isUpdated = true;
         }
 
-        previousCategory.updateDescription(patchInput.getDescription());
+        if (patchInput.getDescription() != null) {
+            if (!patchInput.getDescription().equals(previousCategory.getDescription())) {
+                previousCategory.updateDescription(patchInput.getDescription());
+                isUpdated = true;
+            }
+        } else {
+            if (previousCategory.getDescription() != null) {
+                previousCategory.updateDescription(null);
+                isUpdated = true;
+            }
+        }
 
         if (patchInput.getParentCategoryCode() != null) {
-            Category parentCategory = categoryRepository.findByCategoryCode(patchInput.getParentCategoryCode());
-            if (parentCategory == null) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "PARENT CATEGORY NOT FOUND");
+            if (previousCategory.getParentCategory() == null || !patchInput.getParentCategoryCode()
+                    .equals(previousCategory.getParentCategory().getCategoryCode())) {
+                Category parentCategory = categoryRepository.findByCategoryCode(patchInput.getParentCategoryCode());
+                if (parentCategory == null) {
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "PARENT CATEGORY NOT FOUND");
+                }
+                previousCategory.updateParentCategory(parentCategory);
+                isUpdated = true;
             }
-            previousCategory.updateParentCategory(parentCategory);
+        } else {
+            if (previousCategory.getParentCategory() != null) {
+                previousCategory.updateParentCategory(null);
+                isUpdated = true;
+            }
         }
-        categoryRepository.save(previousCategory);
+
+        if (isUpdated) {
+            categoryRepository.save(previousCategory);
+        } else {
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "CATEGORY IS NOT UPDATED");
+        }
     }
 
     public void deleteCategory(String code) {
