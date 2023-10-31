@@ -68,7 +68,7 @@ public class ProductService {
             isUpdated = true;
         }
 
-        if (patchInput.getPrice() != previousProduct.getPrice()) {
+        if (patchInput.getPrice().compareTo(previousProduct.getPrice()) != 0) {
             previousProduct.updatePrice(patchInput.getPrice());
             isUpdated = true;
         }
