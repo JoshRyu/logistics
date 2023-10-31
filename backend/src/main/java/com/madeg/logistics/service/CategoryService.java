@@ -46,9 +46,6 @@ public class CategoryService {
     }
 
     public void patchCategory(String code, CategoryPatch patchInput) {
-        if (patchInput.getName() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "CATEGORY NAME CANNOT BE NULL");
-        }
 
         Category previousCategory = categoryRepository.findByCategoryCode(code);
 
