@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.madeg.logistics.domain.ProductInput;
+import com.madeg.logistics.domain.ProductPatch;
 import com.madeg.logistics.entity.Category;
 import com.madeg.logistics.entity.Product;
 import com.madeg.logistics.repository.CategoryRepository;
@@ -50,6 +51,85 @@ public class ProductService {
 
     public List<Product> getProducts() {
         return productRepository.findAll();
+    }
+
+    public void patchProduct(String code, ProductPatch patchInput) {
+
+        Product previousProduct = productRepository.findByProductCode(code);
+
+        if (previousProduct == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "PRODUCT NOT FOUND");
+        }
+
+        Boolean isUpdated = false;
+
+        if (!patchInput.getName().equals(previousProduct.getName())) {
+            previousProduct.updateName(patchInput.getName());
+            isUpdated = true;
+        }
+
+        if (patchInput.getPrice() != previousProduct.getPrice()) {
+            previousProduct.updatePrice(patchInput.getPrice());
+            isUpdated = true;
+        }
+
+        if (patchInput.getStock() != previousProduct.getStock()) {
+            previousProduct.updateStock(patchInput.getStock());
+            isUpdated = true;
+        }
+
+        if (previousProduct.getCategory() == null || !patchInput.getCategoryCode()
+                .equals(previousProduct.getCategory().getCategoryCode())) {
+            Category category = categoryRepository.findByCategoryCode(patchInput.getCategoryCode());
+            if (category == null) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "CATEGORY NOT FOUND");
+            }
+            previousProduct.updateCategory(category);
+            isUpdated = true;
+        }
+
+        if (patchInput.getDescription() != null) {
+            if (!patchInput.getDescription().equals(previousProduct.getDescription())) {
+                previousProduct.updateDescription(patchInput.getDescription());
+                isUpdated = true;
+            }
+        } else {
+            if (previousProduct.getDescription() != null) {
+                previousProduct.updateDescription(null);
+                isUpdated = true;
+            }
+        }
+
+        if (patchInput.getImg() != null) {
+            if (!patchInput.getImg().equals(previousProduct.getImg())) {
+                previousProduct.updateImg(patchInput.getImg());
+                isUpdated = true;
+            }
+        } else {
+            if (previousProduct.getImg() != null) {
+                previousProduct.updateImg(null);
+                isUpdated = true;
+            }
+        }
+
+        if (patchInput.getBarcode() != null) {
+            if (!patchInput.getBarcode().equals(previousProduct.getBarcode())) {
+                previousProduct.updateBarcode(patchInput.getBarcode());
+                isUpdated = true;
+            }
+        } else {
+            if (previousProduct.getBarcode() != null) {
+                previousProduct.updateBarcode(null);
+                isUpdated = true;
+            }
+        }
+
+        if (isUpdated) {
+            productRepository.save(previousProduct);
+        } else {
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "PRODUCT IS NOT UPDATED");
+        }
+
     }
 
     public void deleteProduct(String code) {

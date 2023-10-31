@@ -54,4 +54,32 @@ public class Product {
     @Column(name = "description")
     private String description;
 
+    public void updateName(String name) {
+        this.name = name;
+    }
+
+    public void updatePrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    public void updateStock(int stock) {
+        this.stock = stock;
+    }
+
+    public void updateCategory(Category category) {
+        this.category = category;
+    }
+
+    public void updateImg(String img) {
+        this.img = img;
+    }
+
+    public void updateBarcode(String barcode) {
+        this.barcode = barcode;
+    }
+
+    public void updateDescription(String description) {
+        this.description = description;
+    }
+
 }

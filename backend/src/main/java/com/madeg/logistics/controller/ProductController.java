@@ -8,9 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import com.madeg.logistics.domain.ProductInput;
+import com.madeg.logistics.domain.ProductPatch;
 import com.madeg.logistics.domain.ResponseCommon;
 import com.madeg.logistics.entity.Product;
 import com.madeg.logistics.service.ProductService;
@@ -55,6 +57,26 @@ public class ProductController {
     @GetMapping("/list")
     public List<Product> getProductList() {
         return productService.getProducts();
+    }
+
+    @PatchMapping("/{code}")
+    public ResponseEntity<Object> patch(@PathVariable(name = "code", required = true) String code,
+            @RequestBody @Valid ProductPatch patchInput, Errors errors) {
+
+        if (errors.hasErrors()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ResponseCommon(HttpStatus.BAD_REQUEST.value(),
+                            errors.getFieldError().getDefaultMessage()));
+        }
+        try {
+            productService.patchProduct(code, patchInput);
+            return ResponseEntity.status(HttpStatus.ACCEPTED)
+                    .body(new ResponseCommon(HttpStatus.ACCEPTED.value(), "PRODUCT IS UPDATED"));
+
+        } catch (ResponseStatusException ex) {
+            return ResponseEntity.status(ex.getStatusCode())
+                    .body(new ResponseCommon(ex.getStatusCode().value(), ex.getReason()));
+        }
     }
 
     @DeleteMapping("/{code}")
