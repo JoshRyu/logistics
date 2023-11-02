@@ -50,6 +50,13 @@ public class SecurityConfig {
           .permitAll()
           .requestMatchers(CorsUtils::isPreFlightRequest)
           .permitAll()
+          // Allow Swagger Relevant Path
+          .requestMatchers(HttpMethod.GET, "/swagger-ui/*")
+          .permitAll()
+          .requestMatchers(HttpMethod.GET, "/api/swagger-config")
+          .permitAll()
+          .requestMatchers(HttpMethod.GET, "/api/Logistics*")
+          .permitAll()
           .anyRequest()
           .authenticated()
       )
