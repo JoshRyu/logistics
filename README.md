@@ -49,3 +49,7 @@ npm run dev
     init:
       mode: never -> always
 ```
+
+## Swagger URL
+
+http://localhost:11101/swagger-ui/index.html
