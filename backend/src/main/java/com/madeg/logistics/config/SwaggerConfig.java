@@ -13,7 +13,7 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 
 @OpenAPIDefinition(info = @Info(title = "Logistics API", description = "제품,상점을 관리 관리를 위한 인터페이스 규격서", version = "1.0"))
 @Configuration
-public class ConfigSwagger {
+public class SwaggerConfig {
 
     @Bean
     public GroupedOpenApi chatOpenApi() {
