@@ -29,8 +29,7 @@ public class SecurityConfig {
     configuration.setAllowedOrigins(Arrays.asList("http://localhost:3500"));
     configuration.addAllowedHeader("*");
     configuration.setAllowedMethods(
-      Arrays.asList("GET", "POST", "PATCH", "DELETE")
-    );
+        Arrays.asList("GET", "POST", "PATCH", "DELETE"));
     configuration.setAllowCredentials(true);
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", configuration);
@@ -39,34 +38,32 @@ public class SecurityConfig {
 
   @Bean
   public DefaultSecurityFilterChain filterChain(HttpSecurity http)
-    throws Exception {
+      throws Exception {
     http
-      .cors(cors -> corsConfigurationSource())
-      .csrf(csrf -> csrf.disable())
-      .exceptionHandling(req -> req.authenticationEntryPoint(jwtAuthEntryPoint))
-      .authorizeHttpRequests(authorizeRequests ->
-        authorizeRequests
-          .requestMatchers(HttpMethod.POST, "/api/v1/user/login")
-          .permitAll()
-          .requestMatchers(CorsUtils::isPreFlightRequest)
-          .permitAll()
-          // Allow Swagger Relevant Path
-          .requestMatchers(HttpMethod.GET, "/swagger-ui/*")
-          .permitAll()
-          .requestMatchers(HttpMethod.GET, "/api/swagger-config")
-          .permitAll()
-          .requestMatchers(HttpMethod.GET, "/api/Logistics*")
-          .permitAll()
-          .anyRequest()
-          .authenticated()
-      )
-      .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        .cors(cors -> corsConfigurationSource())
+        .csrf(csrf -> csrf.disable())
+        .exceptionHandling(req -> req.authenticationEntryPoint(jwtAuthEntryPoint))
+        .authorizeHttpRequests(authorizeRequests -> authorizeRequests
+            .requestMatchers(HttpMethod.POST, "/api/v1/user/login")
+            .permitAll()
+            .requestMatchers(CorsUtils::isPreFlightRequest)
+            .permitAll()
+            // Allow Swagger Relevant Path
+            .requestMatchers(HttpMethod.GET, "/swagger-ui/*")
+            .permitAll()
+            .requestMatchers(HttpMethod.GET, "/api/swagger-config")
+            .permitAll()
+            .requestMatchers(HttpMethod.GET, "/api/logistics")
+            .permitAll()
+            .anyRequest()
+            .authenticated())
+        .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
   }
   // @Bean
   // public WebSecurityCustomizer webSecurityCustomizer() {
-  //   return web ->
-  //     web.ignoring().requestMatchers(HttpMethod.POST, "/api/v1/user/login");
+  // return web ->
+  // web.ignoring().requestMatchers(HttpMethod.POST, "/api/v1/user/login");
   // }
 }

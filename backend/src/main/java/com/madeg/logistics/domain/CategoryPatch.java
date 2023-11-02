@@ -10,7 +10,7 @@ import jakarta.validation.constraints.Pattern;
 public class CategoryPatch {
 
     @NotBlank
-    @Pattern(regexp = "^.{1,29}$", message = "카테고리 명은 2자 이상 30자 미만이어야 합니다.")
+    @Pattern(regexp = "^.{2,29}$", message = "카테고리 명은 2자 이상 30자 미만이어야 합니다.")
     private String name;
 
     private String description;

@@ -13,17 +13,11 @@ import lombok.Setter;
 public class UserInput {
 
   @NotBlank(message = "사용자 명은 반드시 있어야 합니다.")
-  @Pattern(
-    regexp = "^.{4,19}$",
-    message = "사용자 명은 5자 이상 20자 미만이어야 합니다."
-  )
+  @Pattern(regexp = "^.{5,19}$", message = "사용자 명은 5자 이상 20자 미만이어야 합니다.")
   private String username;
 
   @NotBlank(message = "비밀번호는 반드시 있어야 합니다.")
-  @Pattern(
-    regexp = "^(?=.*[a-zA-Z])(?=.*\\d)(?=.*\\W).{8,20}$",
-    message = "비밀번호는 문자, 숫자, 특수문자를 하나 이상 포함하며 8자 이상이어야 합니다."
-  )
+  @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*\\d)(?=.*\\W).{8,20}$", message = "비밀번호는 문자, 숫자, 특수문자를 하나 이상 포함하며 8자 이상이어야 합니다.")
   private String password;
 
   private Role role;

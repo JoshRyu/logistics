@@ -19,7 +19,7 @@ public class ConfigSwagger {
     public GroupedOpenApi chatOpenApi() {
         String[] paths = { "/" };
 
-        return GroupedOpenApi.builder().group("Logistics API").pathsToMatch(paths).build();
+        return GroupedOpenApi.builder().group("logistics").pathsToMatch(paths).build();
     }
 
     @Bean
