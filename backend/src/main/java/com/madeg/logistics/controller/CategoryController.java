@@ -22,8 +22,14 @@ import com.madeg.logistics.domain.ResponseCommon;
 import com.madeg.logistics.entity.Category;
 import com.madeg.logistics.service.CategoryService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
+@Tag(name = "Category")
 @RestController
 @RequestMapping(path = "/api/v1/category")
 public class CategoryController {
@@ -31,6 +37,8 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
+    @Operation(summary = "Create Category")
+    @ApiResponse(content = @Content(schema = @Schema(implementation = ResponseCommon.class)))
     @PostMapping
     public ResponseEntity<Object> create(
             @RequestBody @Valid CategoryInput categoryInput, Errors errors) {
