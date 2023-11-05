@@ -11,12 +11,14 @@ import lombok.Setter;
 @AllArgsConstructor
 public class CategoryInput {
 
-    @NotBlank(message = "카테고리 명은 반드시 있어야 합니다")
-    @Pattern(regexp = "^.{1,29}$", message = "카테고리 명은 2자 이상 30자 미만이어야 합니다.")
-    private String categoryName;
+  @NotBlank(message = "카테고리 명은 반드시 있어야 합니다")
+  @Pattern(
+    regexp = "^.{2,29}$",
+    message = "카테고리 명은 2자 이상 30자 미만이어야 합니다."
+  )
+  private String categoryName;
 
-    private String ParentCategoryName;
+  private String ParentCategoryName;
 
-    private String description;
-
+  private String description;
 }

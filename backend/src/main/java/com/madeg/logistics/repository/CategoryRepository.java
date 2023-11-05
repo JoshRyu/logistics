@@ -1,16 +1,15 @@
 package com.madeg.logistics.repository;
 
-import org.springframework.stereotype.Repository;
+import com.madeg.logistics.entity.Category;
 import java.util.List;
 import org.springframework.data.repository.CrudRepository;
-import com.madeg.logistics.entity.Category;
+import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CategoryRepository extends CrudRepository<Category, String> {
+  Category findByName(String name);
 
-    Category findByName(String name);
+  Category findByCategoryCode(String code);
 
-    Category findByCategoryCode(String code);
-
-    List<Category> findAll();
+  List<Category> findAll();
 }

@@ -6,6 +6,7 @@ import com.madeg.logistics.domain.UserLogin;
 import com.madeg.logistics.domain.UserPatch;
 import com.madeg.logistics.entity.User;
 import com.madeg.logistics.service.UserService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+@Tag(name = "User")
 @RestController
 @RequestMapping(path = "/api/v1/user")
 public class UserController {
@@ -31,36 +33,51 @@ public class UserController {
 
   @PostMapping("/login")
   public ResponseEntity<Object> login(
-      @RequestBody @Valid UserLogin loginInfo,
-      Errors errors) {
-
+    @RequestBody @Valid UserLogin loginInfo,
+    Errors errors
+  ) {
     if (errors.hasErrors()) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-          .body(new ResponseCommon(HttpStatus.BAD_REQUEST.value(),
-              errors.getFieldError().getDefaultMessage()));
+      return ResponseEntity
+        .status(HttpStatus.BAD_REQUEST)
+        .body(
+          new ResponseCommon(
+            HttpStatus.BAD_REQUEST.value(),
+            errors.getFieldError().getDefaultMessage()
+          )
+        );
     }
     return new ResponseEntity<>(
-        userService.userLogin(loginInfo),
-        HttpStatus.ACCEPTED);
+      userService.userLogin(loginInfo),
+      HttpStatus.ACCEPTED
+    );
   }
 
   @PostMapping
   public ResponseEntity<Object> create(
-      @RequestBody @Valid UserInput userInput,
-      Errors errors) {
-
+    @RequestBody @Valid UserInput userInput,
+    Errors errors
+  ) {
     if (errors.hasErrors()) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-          .body(new ResponseCommon(HttpStatus.BAD_REQUEST.value(),
-              errors.getFieldError().getDefaultMessage()));
+      return ResponseEntity
+        .status(HttpStatus.BAD_REQUEST)
+        .body(
+          new ResponseCommon(
+            HttpStatus.BAD_REQUEST.value(),
+            errors.getFieldError().getDefaultMessage()
+          )
+        );
     }
     try {
       userService.createUser(userInput);
-      return ResponseEntity.status(HttpStatus.CREATED)
-          .body(new ResponseCommon(HttpStatus.CREATED.value(), "USER IS PATCHED"));
+      return ResponseEntity
+        .status(HttpStatus.CREATED)
+        .body(
+          new ResponseCommon(HttpStatus.CREATED.value(), "USER IS PATCHED")
+        );
     } catch (ResponseStatusException ex) {
-      return ResponseEntity.status(ex.getStatusCode())
-          .body(new ResponseCommon(ex.getStatusCode().value(), ex.getReason()));
+      return ResponseEntity
+        .status(ex.getStatusCode())
+        .body(new ResponseCommon(ex.getStatusCode().value(), ex.getReason()));
     }
   }
 
@@ -71,35 +88,46 @@ public class UserController {
 
   @PatchMapping("/{id}")
   public ResponseEntity<Object> patch(
-      @PathVariable(name = "id", required = true) Long id,
-      @RequestBody @Valid UserPatch patchInfo,
-      Errors errors) {
-
+    @PathVariable(name = "id", required = true) Long id,
+    @RequestBody @Valid UserPatch patchInfo,
+    Errors errors
+  ) {
     if (errors.hasErrors()) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-          .body(new ResponseCommon(HttpStatus.BAD_REQUEST.value(),
-              errors.getFieldError().getDefaultMessage()));
+      return ResponseEntity
+        .status(HttpStatus.BAD_REQUEST)
+        .body(
+          new ResponseCommon(
+            HttpStatus.BAD_REQUEST.value(),
+            errors.getFieldError().getDefaultMessage()
+          )
+        );
     }
 
     try {
       userService.patchUser(id, patchInfo);
-      return ResponseEntity.status(HttpStatus.ACCEPTED)
-          .body(new ResponseCommon(HttpStatus.ACCEPTED.value(), "USER IS UPDATED"));
+      return ResponseEntity
+        .status(HttpStatus.ACCEPTED)
+        .body(
+          new ResponseCommon(HttpStatus.ACCEPTED.value(), "USER IS UPDATED")
+        );
     } catch (ResponseStatusException ex) {
-      return ResponseEntity.status(ex.getStatusCode())
-          .body(new ResponseCommon(ex.getStatusCode().value(), ex.getReason()));
+      return ResponseEntity
+        .status(ex.getStatusCode())
+        .body(new ResponseCommon(ex.getStatusCode().value(), ex.getReason()));
     }
-
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<Object> delete(@PathVariable(name = "id", required = true) Long id) {
+  public ResponseEntity<Object> delete(
+    @PathVariable(name = "id", required = true) Long id
+  ) {
     try {
       userService.deleteUser(id);
       return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     } catch (ResponseStatusException ex) {
-      return ResponseEntity.status(ex.getStatusCode())
-          .body(new ResponseCommon(ex.getStatusCode().value(), ex.getReason()));
+      return ResponseEntity
+        .status(ex.getStatusCode())
+        .body(new ResponseCommon(ex.getStatusCode().value(), ex.getReason()));
     }
   }
 }

@@ -7,13 +7,14 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ResponseCommon {
-    private String timestamp;
-    private int status;
-    private String message;
 
-    public ResponseCommon(int status, String message) {
-        this.timestamp = LocalDateTime.now().toString();
-        this.status = status;
-        this.message = message;
-    }
+  private String timestamp;
+  private int status;
+  private String message;
+
+  public ResponseCommon(int status, String message) {
+    this.timestamp = LocalDateTime.now().toString();
+    this.status = status;
+    this.message = message;
+  }
 }

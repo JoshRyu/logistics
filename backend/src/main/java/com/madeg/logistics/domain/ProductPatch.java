@@ -1,9 +1,8 @@
 package com.madeg.logistics.domain;
 
-import java.math.BigDecimal;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import java.math.BigDecimal;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,22 +10,21 @@ import lombok.Setter;
 @Setter
 public class ProductPatch {
 
-    @NotBlank
-    private String categoryCode;
+  @NotBlank
+  private String categoryCode;
 
-    @NotBlank
-    private String name;
+  @NotBlank
+  private String name;
 
-    @NotNull
-    private BigDecimal price;
+  @NotNull
+  private BigDecimal price;
 
-    @NotNull
-    private int stock;
+  @NotNull
+  private int stock;
 
-    private String img;
+  private String img;
 
-    private String barcode;
+  private String barcode;
 
-    private String description;
-
+  private String description;
 }
