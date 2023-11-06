@@ -7,8 +7,19 @@
       >
       <h2 class="ma-5">새 카테고리</h2>
       <v-spacer></v-spacer>
-      <v-btn size="x-large" variant="outlined" class="ma-3">취소</v-btn>
-      <v-btn size="x-large" variant="flat" color="grey-darken-3" class="ma-3"
+      <v-btn
+        size="x-large"
+        variant="outlined"
+        class="ma-3"
+        @click="resetCategory"
+        >취소</v-btn
+      >
+      <v-btn
+        size="x-large"
+        variant="flat"
+        color="grey-darken-3"
+        class="ma-3"
+        @click="registerCategory"
         >저장</v-btn
       >
       <v-divider class="border-opacity-100" color="black"></v-divider>
@@ -97,8 +108,50 @@
 </template>
 
 <script setup>
-import { reactive, computed } from "vue";
+import { reactive, computed, onMounted } from "vue";
+import { createCategory, getCategoryList } from "@/controller/category.js";
 import YesNoModal from "../components/YesNoModal.vue";
+
+const resetCategory = () => {
+  if (data.newCategoryEnabled) {
+    data.newCategoryEnabled = false;
+    data.categoryList.shift();
+  }
+};
+
+const registerCategory = async () => {
+  try {
+    await createCategory({
+      categoryName: data.selectedCategory.name,
+      description: data.selectedCategory.description,
+      parentCategoryName: data.selectedCategory.parentCategory,
+    });
+    alert("성공적으로 카테고리를 등록 하였습니다.");
+    categoryList();
+  } catch (e) {
+    console.error(e);
+
+    if (e.response.data.status == 409) {
+      alert("이미 카테고리 입니다. 다른 명칭을 시도해주세요.");
+    } else {
+      alert("카테고리를 등록하지 못했습니다.");
+    }
+  }
+};
+
+const categoryList = async () => {
+  try {
+    const response = await getCategoryList();
+
+    data.categoryList = response;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+onMounted(() => {
+  categoryList();
+});
 
 const data = reactive({
   categoryList: [
