@@ -36,7 +36,7 @@ public class SwaggerConfig {
     SecurityScheme apiKey = new SecurityScheme()
       .type(SecurityScheme.Type.APIKEY)
       .in(SecurityScheme.In.HEADER)
-      .name("session_id_1");
+      .name("Authorization");
 
     SecurityRequirement securityRequirement = new SecurityRequirement()
       .addList("apiKey");
