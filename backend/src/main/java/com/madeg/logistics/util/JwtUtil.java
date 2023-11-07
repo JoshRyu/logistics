@@ -20,6 +20,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.ContentCachingRequestWrapper;
 
 @Component
 public class JwtUtil {
@@ -93,12 +94,15 @@ public class JwtUtil {
       .getBody();
   }
 
-  public String resolveToken(HttpServletRequest req) {
-    String bearerToken = req.getHeader("Authorization");
-    if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-      return bearerToken.substring(7, bearerToken.length());
+  public String resolveToken(HttpServletRequest request) {
+    ContentCachingRequestWrapper wrappedRequest = new ContentCachingRequestWrapper(
+      request
+    );
+    String token = wrappedRequest.getHeader("Authorization");
+    if (token != null && token.startsWith("Bearer ")) {
+      token = token.substring(7);
     }
-    return null;
+    return token;
   }
 
   public Authentication getAuthentication(String token) {

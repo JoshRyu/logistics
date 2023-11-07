@@ -5,6 +5,10 @@ import com.madeg.logistics.domain.ProductPatch;
 import com.madeg.logistics.domain.ResponseCommon;
 import com.madeg.logistics.entity.Product;
 import com.madeg.logistics.service.ProductService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -61,6 +65,10 @@ public class ProductController {
     }
   }
 
+  @Operation(summary = "Get All Product List")
+  @ApiResponse(
+    content = @Content(schema = @Schema(implementation = List.class))
+  )
   @GetMapping("/list")
   public List<Product> getProductList() {
     return productService.getProducts();

@@ -3,9 +3,14 @@ package com.madeg.logistics.controller;
 import com.madeg.logistics.domain.ResponseCommon;
 import com.madeg.logistics.domain.UserInput;
 import com.madeg.logistics.domain.UserLogin;
+import com.madeg.logistics.domain.UserLoginInput;
 import com.madeg.logistics.domain.UserPatch;
 import com.madeg.logistics.entity.User;
 import com.madeg.logistics.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -31,9 +36,13 @@ public class UserController {
   @Autowired
   private UserService userService;
 
+  @Operation(summary = "Login with username and password")
+  @ApiResponse(
+    content = @Content(schema = @Schema(implementation = UserLogin.class))
+  )
   @PostMapping("/login")
   public ResponseEntity<Object> login(
-    @RequestBody @Valid UserLogin loginInfo,
+    @RequestBody @Valid UserLoginInput loginInfo,
     Errors errors
   ) {
     if (errors.hasErrors()) {
