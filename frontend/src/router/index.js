@@ -44,6 +44,11 @@ const routes = [
             component: () => import("@/views/product/ProductManagement.vue"),
           },
           {
+            path: "management/:id",
+            name: "ProductManagementWithId",
+            component: () => import("@/views/product/ProductManagement.vue"),
+          },
+          {
             path: "category",
             name: "ProductCategory",
             component: () => import("@/views/product/ProductCategory.vue"),

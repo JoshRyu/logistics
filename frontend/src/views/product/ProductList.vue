@@ -41,25 +41,25 @@
     <v-row dense>
       <v-col
         v-for="card in data.cards"
-        :key="card.title"
-        :cols="data.cards.length >= 4 ? card.flex : 12"
+        :key="card.name"
+        :cols="data.cards.length >= 4 ? card.flex : 4"
       >
         <v-card class="borderSolid">
           <v-card-title class="text-h5">
-            <span v-text="card.title"></span>
+            <span v-text="card.name"></span>
           </v-card-title>
           <v-card-subtitle class="text-h6 mb-1">
             <span
               v-if="card.category"
               class="float-right text-red"
-              v-text="'#' + card.category"
+              v-text="'#' + card.category.name"
             ></span>
           </v-card-subtitle>
-          <v-img v-if="data.enableImg" :src="card.src" class="align-end" cover>
+          <v-img v-if="data.enableImg" :src="card.img" class="align-end" cover>
           </v-img>
 
-          <v-card-text class="text-body-1 text-grey" v-if="card.memo">
-            <span v-text="card.memo"></span>
+          <v-card-text class="text-body-1 text-grey" v-if="card.description">
+            <span v-text="card.description"></span>
           </v-card-text>
 
           <v-card-text class="text-right text-h6" v-if="card.price">
@@ -75,6 +75,7 @@
               color="surface-variant"
               variant="text"
               icon="mdi-pencil-circle"
+              @click="routeTo(card.productCode)"
             ></v-btn>
             <v-btn
               size="large"
@@ -90,64 +91,98 @@
 </template>
 
 <script setup>
-import { reactive } from "vue";
+import { reactive, onMounted } from "vue";
+import { getProductList } from "@/controller/product.js";
+import { getCategoryList } from "@/controller/category.js";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+
+const productList = async () => {
+  try {
+    const response = await getProductList();
+
+    data.cards = response;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const categoryList = async () => {
+  try {
+    const response = await getCategoryList();
+
+    data.categoryList = response.map((x) => x.name);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+onMounted(() => {
+  productList();
+  categoryList();
+});
+
+const routeTo = (path) => {
+  router.push({ path: `/product/management/${path}` });
+};
 
 const data = reactive({
   enableImg: true,
   selectedCategory: "",
   searchValue: "",
-  categoryList: ["뜨게 가방", "뜨게 케이스", "뜨게 지갑"],
+  categoryList: [],
   cards: [
     {
-      title: "라탄 가방단지 토트백",
+      name: "라탄 가방단지 토트백",
       category: "뜨게 가방",
-      src: "/src/assets/images/고급라탄가방단지토드백.jpg",
-      memo: "라탄 가방단지 토트백에 대한 내용입니다.",
+      img: "/src/assets/images/고급라탄가방단지토드백.jpg",
+      description: "라탄 가방단지 토트백에 대한 내용입니다.",
       price: "80,000원",
       stock: 1,
       flex: 3,
     },
     {
-      title: "과일파우치",
+      name: "과일파우치",
       category: "뜨게 가방",
-      src: "/src/assets/images/과일파우치.jpg",
-      memo: "과일파우치에 대한 내용입니다.",
+      img: "/img/assets/images/과일파우치.jpg",
+      description: "과일파우치에 대한 내용입니다.",
       price: "13,000원",
       stock: 5,
       flex: 3,
     },
     {
-      title: "몽글퍼토트백",
+      name: "몽글퍼토트백",
       category: "뜨게 가방",
-      src: "/src/assets/images/몽글퍼토트백.jpg",
-      memo: "몽글퍼토트백에 대한 내용입니다.",
+      img: "/img/assets/images/몽글퍼토트백.jpg",
+      description: "몽글퍼토트백에 대한 내용입니다.",
       price: "20,000원",
       stock: 2,
       flex: 3,
     },
     {
-      title: "새틴카드지갑",
+      name: "새틴카드지갑",
       category: "뜨게 지갑",
-      src: "/src/assets/images/새틴카드지갑.jpg",
-      memo: "새틴카드지갑에 대한 내용입니다.",
+      img: "/img/assets/images/새틴카드지갑.jpg",
+      description: "새틴카드지갑에 대한 내용입니다.",
       price: "17,000원",
       stock: 5,
       flex: 3,
     },
     {
-      title: "토토로케이스",
+      name: "토토로케이스",
       category: "뜨게 케이스",
-      src: "/src/assets/images/토토로케이스.jpg",
-      memo: "토토로케이스에 대한 내용입니다.",
+      img: "/img/assets/images/토토로케이스.jpg",
+      description: "토토로케이스에 대한 내용입니다.",
       price: "20,000원",
       stock: 1,
       flex: 3,
     },
     {
-      title: "파스텔파우치",
+      name: "파스텔파우치",
       category: "뜨게 가방",
-      src: "/src/assets/images/파스텔파우치.jpg",
-      memo: "파스텔파우치에 대한 내용입니다.",
+      img: "/img/assets/images/파스텔파우치.jpg",
+      description: "파스텔파우치에 대한 내용입니다.",
       price: "18,000원",
       stock: 10,
       flex: 3,
