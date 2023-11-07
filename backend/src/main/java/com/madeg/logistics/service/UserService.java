@@ -2,6 +2,7 @@ package com.madeg.logistics.service;
 
 import com.madeg.logistics.domain.UserInput;
 import com.madeg.logistics.domain.UserLogin;
+import com.madeg.logistics.domain.UserLoginInput;
 import com.madeg.logistics.domain.UserPatch;
 import com.madeg.logistics.entity.User;
 import com.madeg.logistics.enums.Role;
@@ -28,7 +29,7 @@ public class UserService {
 
   private static final String NOT_FOUND_MSG = "USER NOT_FOUND";
 
-  public UserLogin userLogin(UserLogin loginInfo) {
+  public UserLogin userLogin(UserLoginInput loginInfo) {
     User user = userRepository.findByUsername(loginInfo.getUsername());
 
     if (user == null) {
@@ -36,12 +37,19 @@ public class UserService {
     }
 
     if (passwordEncoder.matches(loginInfo.getPassword(), user.getPassword())) {
-      loginInfo.setRole(Role.valueOf(user.getRole()));
-      loginInfo.setToken(
-        jwtUtil.generateToken(user.getUsername(), Role.valueOf(user.getRole()))
-      );
-
-      return loginInfo;
+      UserLogin userLogin = UserLogin
+        .builder()
+        .username(loginInfo.getUsername())
+        .password(loginInfo.getPassword())
+        .role(Role.valueOf(user.getRole()))
+        .token(
+          jwtUtil.generateToken(
+            user.getUsername(),
+            Role.valueOf(user.getRole())
+          )
+        )
+        .build();
+      return userLogin;
     }
 
     throw new ResponseStatusException(
