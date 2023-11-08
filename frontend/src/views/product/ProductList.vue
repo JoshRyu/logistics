@@ -82,12 +82,18 @@
               color="surface-variant"
               variant="text"
               icon="mdi-delete-circle"
+              @click="deleteProduct(card.productCode, card.name)"
             ></v-btn>
           </v-card-actions>
         </v-card>
       </v-col>
     </v-row>
   </v-container>
+  <YesNoModal
+    :propObj="data.modalProps"
+    @confirmed="handleConfirmation"
+    @canceled="handleCancellation"
+  />
 </template>
 
 <script setup>
@@ -95,6 +101,7 @@ import { reactive, onMounted } from "vue";
 import { getProductList } from "@/controller/product.js";
 import { getCategoryList } from "@/controller/category.js";
 import { useRouter } from "vue-router";
+import YesNoModal from "../components/YesNoModal.vue";
 
 const router = useRouter();
 
@@ -127,67 +134,37 @@ const routeTo = (path) => {
   router.push({ path: `/product/management/${path}` });
 };
 
+const deleteProduct = (productId, productName) => {
+  data.modalProps = {
+    enabled: true,
+    title: "확인 필요",
+    message: `정말 "${productName}" 제품을 삭제하시겠습니까?`,
+    confirmOnly: false,
+  };
+};
+
+const handleConfirmation = () => {
+  data.modalProps.enabled = false;
+  // Handle the confirmation action here
+};
+
+const handleCancellation = () => {
+  data.modalProps.enabled = false;
+  // Handle the cancellation action here
+};
+
 const data = reactive({
   enableImg: true,
   selectedCategory: "",
   searchValue: "",
   categoryList: [],
-  cards: [
-    {
-      name: "라탄 가방단지 토트백",
-      category: "뜨게 가방",
-      img: "/src/assets/images/고급라탄가방단지토드백.jpg",
-      description: "라탄 가방단지 토트백에 대한 내용입니다.",
-      price: "80,000원",
-      stock: 1,
-      flex: 3,
-    },
-    {
-      name: "과일파우치",
-      category: "뜨게 가방",
-      img: "/img/assets/images/과일파우치.jpg",
-      description: "과일파우치에 대한 내용입니다.",
-      price: "13,000원",
-      stock: 5,
-      flex: 3,
-    },
-    {
-      name: "몽글퍼토트백",
-      category: "뜨게 가방",
-      img: "/img/assets/images/몽글퍼토트백.jpg",
-      description: "몽글퍼토트백에 대한 내용입니다.",
-      price: "20,000원",
-      stock: 2,
-      flex: 3,
-    },
-    {
-      name: "새틴카드지갑",
-      category: "뜨게 지갑",
-      img: "/img/assets/images/새틴카드지갑.jpg",
-      description: "새틴카드지갑에 대한 내용입니다.",
-      price: "17,000원",
-      stock: 5,
-      flex: 3,
-    },
-    {
-      name: "토토로케이스",
-      category: "뜨게 케이스",
-      img: "/img/assets/images/토토로케이스.jpg",
-      description: "토토로케이스에 대한 내용입니다.",
-      price: "20,000원",
-      stock: 1,
-      flex: 3,
-    },
-    {
-      name: "파스텔파우치",
-      category: "뜨게 가방",
-      img: "/img/assets/images/파스텔파우치.jpg",
-      description: "파스텔파우치에 대한 내용입니다.",
-      price: "18,000원",
-      stock: 10,
-      flex: 3,
-    },
-  ],
+  cards: [],
+  modalProps: {
+    enabled: false,
+    title: "",
+    message: "",
+    confirmOnly: false,
+  },
 });
 </script>
 <style scoped>
