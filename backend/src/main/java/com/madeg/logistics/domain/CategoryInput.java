@@ -1,5 +1,6 @@
 package com.madeg.logistics.domain;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
@@ -16,9 +17,11 @@ public class CategoryInput {
     regexp = "^.{2,29}$",
     message = "카테고리 명은 2자 이상 30자 미만이어야 합니다."
   )
+  @Schema(example = "사과")
   private String categoryName;
 
-  private String ParentCategoryName;
+  @Schema(example = "과일")
+  private String parentCategoryName;
 
   private String description;
 }

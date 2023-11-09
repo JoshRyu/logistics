@@ -10,10 +10,10 @@ import lombok.Setter;
 public class UserLoginInput {
 
   @NotBlank(message = "사용자 명은 반드시 있어야 합니다.")
-  @Schema(example = "Jenny")
+  @Schema(example = "admin")
   private String username;
 
-  @Schema(example = "password123!")
+  @Schema(example = "admin")
   @NotBlank(message = "비밀번호는 반드시 있어야 합니다.")
   private String password;
 }

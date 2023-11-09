@@ -34,7 +34,7 @@ public class CategoryController {
   @Autowired
   private CategoryService categoryService;
 
-  @Operation(summary = "Create Category")
+  @Operation(summary = "Register new Category")
   @ApiResponse(
     content = @Content(schema = @Schema(implementation = ResponseCommon.class))
   )
@@ -68,11 +68,19 @@ public class CategoryController {
     }
   }
 
+  @Operation(summary = "Get All Category List")
+  @ApiResponse(
+    content = @Content(schema = @Schema(implementation = List.class))
+  )
   @GetMapping("/list")
   public List<Category> getCategoryList() {
     return categoryService.getCategories();
   }
 
+  @Operation(summary = "Update a Specific Category by Code")
+  @ApiResponse(
+    content = @Content(schema = @Schema(implementation = ResponseCommon.class))
+  )
   @PatchMapping("/{code}")
   public ResponseEntity<Object> patch(
     @PathVariable(name = "code", required = true) String code,
@@ -103,6 +111,10 @@ public class CategoryController {
     }
   }
 
+  @Operation(summary = "Delete a Specific Category by Code")
+  @ApiResponse(
+    content = @Content(schema = @Schema(implementation = ResponseCommon.class))
+  )
   @DeleteMapping("/{code}")
   public ResponseEntity<Object> delete(
     @PathVariable(name = "code", required = true) String code

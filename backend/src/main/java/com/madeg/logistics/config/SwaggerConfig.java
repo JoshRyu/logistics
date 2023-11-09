@@ -39,10 +39,10 @@ public class SwaggerConfig {
       .name("Authorization");
 
     SecurityRequirement securityRequirement = new SecurityRequirement()
-      .addList("apiKey");
+      .addList("Bearer Token");
 
     return new OpenAPI()
-      .components(new Components().addSecuritySchemes("apiKey", apiKey))
+      .components(new Components().addSecuritySchemes("Bearer Token", apiKey))
       .addSecurityItem(securityRequirement);
   }
 }
