@@ -34,6 +34,10 @@ public class ProductController {
   @Autowired
   private ProductService productService;
 
+  @Operation(summary = "Register new Product")
+  @ApiResponse(
+    content = @Content(schema = @Schema(implementation = ResponseCommon.class))
+  )
   @PostMapping
   public ResponseEntity<Object> create(
     @RequestBody @Valid ProductInput productInput,
@@ -74,6 +78,10 @@ public class ProductController {
     return productService.getProducts();
   }
 
+  @Operation(summary = "Update a Specific Product by Code")
+  @ApiResponse(
+    content = @Content(schema = @Schema(implementation = ResponseCommon.class))
+  )
   @PatchMapping("/{code}")
   public ResponseEntity<Object> patch(
     @PathVariable(name = "code", required = true) String code,
@@ -104,6 +112,10 @@ public class ProductController {
     }
   }
 
+  @Operation(summary = "Delete a Specific Product by Code")
+  @ApiResponse(
+    content = @Content(schema = @Schema(implementation = ResponseCommon.class))
+  )
   @DeleteMapping("/{code}")
   public ResponseEntity<Object> delete(
     @PathVariable(name = "code", required = true) String code
