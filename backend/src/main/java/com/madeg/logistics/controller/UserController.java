@@ -61,6 +61,10 @@ public class UserController {
     );
   }
 
+  @Operation(summary = "Register new User")
+  @ApiResponse(
+    content = @Content(schema = @Schema(implementation = UserLogin.class))
+  )
   @PostMapping
   public ResponseEntity<Object> create(
     @RequestBody @Valid UserInput userInput,
@@ -81,7 +85,7 @@ public class UserController {
       return ResponseEntity
         .status(HttpStatus.CREATED)
         .body(
-          new ResponseCommon(HttpStatus.CREATED.value(), "USER IS PATCHED")
+          new ResponseCommon(HttpStatus.CREATED.value(), "USER IS CREATED")
         );
     } catch (ResponseStatusException ex) {
       return ResponseEntity
@@ -90,11 +94,19 @@ public class UserController {
     }
   }
 
+  @Operation(summary = "Get All User List")
+  @ApiResponse(
+    content = @Content(schema = @Schema(implementation = List.class))
+  )
   @GetMapping("/list")
   public List<User> getUserList() {
     return userService.getUsers();
   }
 
+  @Operation(summary = "Update a Specific User by Id")
+  @ApiResponse(
+    content = @Content(schema = @Schema(implementation = ResponseCommon.class))
+  )
   @PatchMapping("/{id}")
   public ResponseEntity<Object> patch(
     @PathVariable(name = "id", required = true) Long id,
@@ -126,6 +138,10 @@ public class UserController {
     }
   }
 
+  @Operation(summary = "Delete a Specific User by Id")
+  @ApiResponse(
+    content = @Content(schema = @Schema(implementation = ResponseCommon.class))
+  )
   @DeleteMapping("/{id}")
   public ResponseEntity<Object> delete(
     @PathVariable(name = "id", required = true) Long id

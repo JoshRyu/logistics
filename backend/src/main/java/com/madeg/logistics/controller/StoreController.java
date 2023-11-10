@@ -1,5 +1,9 @@
 package com.madeg.logistics.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(path = "/api/v1")
 public class StoreController {
 
+  @Operation(summary = "Get All Store List")
+  @ApiResponse(
+    content = @Content(schema = @Schema(implementation = List.class))
+  )
   @GetMapping(path = "/store/list")
   public List<String> getStoreList() {
     List<String> dummyStores = new ArrayList<>();
