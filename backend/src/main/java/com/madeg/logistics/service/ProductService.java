@@ -44,14 +44,7 @@ public class ProductService {
     }
 
     byte[] imageBytes;
-    try {
-      imageBytes = productInput.getFile().getBytes();
-    } catch (IOException e) {
-      throw new ResponseStatusException(
-        HttpStatus.BAD_REQUEST,
-        "INPUT IMAGE FILE IS NOT VALID"
-      );
-    }
+    imageBytes = productInput.getImg();
 
     Product product = Product
       .builder()

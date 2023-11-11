@@ -40,10 +40,7 @@ public class ProductController {
   @ApiResponse(
     content = @Content(schema = @Schema(implementation = ResponseCommon.class))
   )
-  @PostMapping(
-    produces = "application/json; charset=UTF-8",
-    consumes = { "multipart/form-data" }
-  )
+  @PostMapping
   public ResponseEntity<Object> create(
     @RequestBody @Valid ProductInput productInput,
     Errors errors
