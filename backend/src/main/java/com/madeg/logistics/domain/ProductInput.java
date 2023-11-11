@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
@@ -34,7 +35,7 @@ public class ProductInput {
   @Schema(example = "11")
   private int stock;
 
-  private String img;
+  private MultipartFile file;
 
   private String barcode;
 

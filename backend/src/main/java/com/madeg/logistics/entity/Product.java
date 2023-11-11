@@ -55,7 +55,7 @@ public class Product {
   private int stock;
 
   @Column(name = "img")
-  private String img;
+  private byte[] img;
 
   @Column(name = "barcode")
   private String barcode;
@@ -79,7 +79,7 @@ public class Product {
     this.category = category;
   }
 
-  public void updateImg(String img) {
+  public void updateImg(byte[] img) {
     this.img = img;
   }
 

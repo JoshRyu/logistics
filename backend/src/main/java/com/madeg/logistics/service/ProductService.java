@@ -6,6 +6,7 @@ import com.madeg.logistics.entity.Category;
 import com.madeg.logistics.entity.Product;
 import com.madeg.logistics.repository.CategoryRepository;
 import com.madeg.logistics.repository.ProductRepository;
+import java.io.IOException;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -42,13 +43,23 @@ public class ProductService {
       );
     }
 
+    byte[] imageBytes;
+    try {
+      imageBytes = productInput.getFile().getBytes();
+    } catch (IOException e) {
+      throw new ResponseStatusException(
+        HttpStatus.BAD_REQUEST,
+        "INPUT IMAGE FILE IS NOT VALID"
+      );
+    }
+
     Product product = Product
       .builder()
       .category(existCategory)
       .name(productInput.getName())
       .price(productInput.getPrice())
       .stock(productInput.getStock())
-      .img(productInput.getImg())
+      .img(imageBytes)
       .barcode(productInput.getBarcode())
       .description(productInput.getDescription())
       .build();
@@ -120,17 +131,17 @@ public class ProductService {
       }
     }
 
-    if (patchInput.getImg() != null) {
-      if (!patchInput.getImg().equals(previousProduct.getImg())) {
-        previousProduct.updateImg(patchInput.getImg());
-        isUpdated = true;
-      }
-    } else {
-      if (previousProduct.getImg() != null) {
-        previousProduct.updateImg(null);
-        isUpdated = true;
-      }
-    }
+    // if (patchInput.getImg() != null) {
+    //   if (!patchInput.getImg().equals(previousProduct.getImg())) {
+    //     previousProduct.updateImg(patchInput.getImg());
+    //     isUpdated = true;
+    //   }
+    // } else {
+    //   if (previousProduct.getImg() != null) {
+    //     previousProduct.updateImg(null);
+    //     isUpdated = true;
+    //   }
+    // }
 
     if (patchInput.getBarcode() != null) {
       if (!patchInput.getBarcode().equals(previousProduct.getBarcode())) {

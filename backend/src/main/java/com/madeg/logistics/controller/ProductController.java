@@ -23,7 +23,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 @Tag(name = "Product")
@@ -38,7 +40,10 @@ public class ProductController {
   @ApiResponse(
     content = @Content(schema = @Schema(implementation = ResponseCommon.class))
   )
-  @PostMapping
+  @PostMapping(
+    produces = "application/json; charset=UTF-8",
+    consumes = { "multipart/form-data" }
+  )
   public ResponseEntity<Object> create(
     @RequestBody @Valid ProductInput productInput,
     Errors errors
