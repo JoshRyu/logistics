@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
@@ -27,7 +28,7 @@ public class ProductPatch {
   @Schema(example = "10")
   private int stock;
 
-  private String img;
+  private MultipartFile img;
 
   private String barcode;
 

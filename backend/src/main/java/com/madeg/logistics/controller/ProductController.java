@@ -18,10 +18,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
@@ -38,9 +38,9 @@ public class ProductController {
   @ApiResponse(
     content = @Content(schema = @Schema(implementation = ResponseCommon.class))
   )
-  @PostMapping
+  @PostMapping(consumes = { "multipart/form-data" })
   public ResponseEntity<Object> create(
-    @RequestBody @Valid ProductInput productInput,
+    @ModelAttribute @Valid ProductInput productInput,
     Errors errors
   ) {
     if (errors.hasErrors()) {
@@ -82,10 +82,10 @@ public class ProductController {
   @ApiResponse(
     content = @Content(schema = @Schema(implementation = ResponseCommon.class))
   )
-  @PatchMapping("/{code}")
+  @PatchMapping(value = "/{code}", consumes = { "multipart/form-data" })
   public ResponseEntity<Object> patch(
     @PathVariable(name = "code", required = true) String code,
-    @RequestBody @Valid ProductPatch patchInput,
+    @ModelAttribute @Valid ProductPatch patchInput,
     Errors errors
   ) {
     if (errors.hasErrors()) {
