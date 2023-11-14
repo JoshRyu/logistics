@@ -1,11 +1,11 @@
 package com.madeg.logistics.controller;
 
-import com.madeg.logistics.domain.ResponseCommon;
+import com.madeg.logistics.domain.CommonRes;
 import com.madeg.logistics.domain.UserInput;
 import com.madeg.logistics.domain.UserLogin;
 import com.madeg.logistics.domain.UserLoginInput;
 import com.madeg.logistics.domain.UserPatch;
-import com.madeg.logistics.entity.User;
+import com.madeg.logistics.domain.UserRes;
 import com.madeg.logistics.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -49,7 +49,7 @@ public class UserController {
       return ResponseEntity
         .status(HttpStatus.BAD_REQUEST)
         .body(
-          new ResponseCommon(
+          new CommonRes(
             HttpStatus.BAD_REQUEST.value(),
             errors.getFieldError().getDefaultMessage()
           )
@@ -74,7 +74,7 @@ public class UserController {
       return ResponseEntity
         .status(HttpStatus.BAD_REQUEST)
         .body(
-          new ResponseCommon(
+          new CommonRes(
             HttpStatus.BAD_REQUEST.value(),
             errors.getFieldError().getDefaultMessage()
           )
@@ -84,13 +84,11 @@ public class UserController {
       userService.createUser(userInput);
       return ResponseEntity
         .status(HttpStatus.CREATED)
-        .body(
-          new ResponseCommon(HttpStatus.CREATED.value(), "USER IS CREATED")
-        );
+        .body(new CommonRes(HttpStatus.CREATED.value(), "USER IS CREATED"));
     } catch (ResponseStatusException ex) {
       return ResponseEntity
         .status(ex.getStatusCode())
-        .body(new ResponseCommon(ex.getStatusCode().value(), ex.getReason()));
+        .body(new CommonRes(ex.getStatusCode().value(), ex.getReason()));
     }
   }
 
@@ -98,14 +96,22 @@ public class UserController {
   @ApiResponse(
     content = @Content(schema = @Schema(implementation = List.class))
   )
-  @GetMapping("/list")
-  public List<User> getUserList() {
-    return userService.getUsers();
+  @GetMapping
+  public ResponseEntity<UserRes> getUserList() {
+    return ResponseEntity
+      .status(HttpStatus.OK)
+      .body(
+        new UserRes(
+          HttpStatus.OK.value(),
+          "USERS ARE RETRIEVED",
+          userService.getUsers()
+        )
+      );
   }
 
   @Operation(summary = "Update a Specific User by Id")
   @ApiResponse(
-    content = @Content(schema = @Schema(implementation = ResponseCommon.class))
+    content = @Content(schema = @Schema(implementation = CommonRes.class))
   )
   @PatchMapping("/{id}")
   public ResponseEntity<Object> patch(
@@ -117,7 +123,7 @@ public class UserController {
       return ResponseEntity
         .status(HttpStatus.BAD_REQUEST)
         .body(
-          new ResponseCommon(
+          new CommonRes(
             HttpStatus.BAD_REQUEST.value(),
             errors.getFieldError().getDefaultMessage()
           )
@@ -128,19 +134,17 @@ public class UserController {
       userService.patchUser(id, patchInfo);
       return ResponseEntity
         .status(HttpStatus.ACCEPTED)
-        .body(
-          new ResponseCommon(HttpStatus.ACCEPTED.value(), "USER IS UPDATED")
-        );
+        .body(new CommonRes(HttpStatus.ACCEPTED.value(), "USER IS UPDATED"));
     } catch (ResponseStatusException ex) {
       return ResponseEntity
         .status(ex.getStatusCode())
-        .body(new ResponseCommon(ex.getStatusCode().value(), ex.getReason()));
+        .body(new CommonRes(ex.getStatusCode().value(), ex.getReason()));
     }
   }
 
   @Operation(summary = "Delete a Specific User by Id")
   @ApiResponse(
-    content = @Content(schema = @Schema(implementation = ResponseCommon.class))
+    content = @Content(schema = @Schema(implementation = CommonRes.class))
   )
   @DeleteMapping("/{id}")
   public ResponseEntity<Object> delete(
@@ -152,7 +156,7 @@ public class UserController {
     } catch (ResponseStatusException ex) {
       return ResponseEntity
         .status(ex.getStatusCode())
-        .body(new ResponseCommon(ex.getStatusCode().value(), ex.getReason()));
+        .body(new CommonRes(ex.getStatusCode().value(), ex.getReason()));
     }
   }
 }

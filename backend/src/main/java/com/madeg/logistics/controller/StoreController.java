@@ -13,14 +13,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Store")
 @RestController
-@RequestMapping(path = "/api/v1")
+@RequestMapping(path = "/api/v1/store")
 public class StoreController {
 
   @Operation(summary = "Get All Store List")
   @ApiResponse(
     content = @Content(schema = @Schema(implementation = List.class))
   )
-  @GetMapping(path = "/store/list")
+  @GetMapping
   public List<String> getStoreList() {
     List<String> dummyStores = new ArrayList<>();
 

@@ -72,6 +72,17 @@ public class ProductService {
     return productRepository.findAll();
   }
 
+  public Product getProductByCode(String code) {
+    Product product = productRepository.findByProductCode(code);
+    if (product == null) {
+      throw new ResponseStatusException(
+        HttpStatus.NOT_FOUND,
+        "PRODUCT NOT FOUND"
+      );
+    }
+    return product;
+  }
+
   public void patchProduct(String code, ProductPatch patchInput) {
     Product previousProduct = productRepository.findByProductCode(code);
 
