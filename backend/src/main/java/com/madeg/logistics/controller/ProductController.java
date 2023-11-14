@@ -1,9 +1,9 @@
 package com.madeg.logistics.controller;
 
+import com.madeg.logistics.domain.CommonRes;
 import com.madeg.logistics.domain.ProductInput;
 import com.madeg.logistics.domain.ProductPatch;
 import com.madeg.logistics.domain.ProductRes;
-import com.madeg.logistics.domain.ResponseCommon;
 import com.madeg.logistics.entity.Product;
 import com.madeg.logistics.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,7 +38,7 @@ public class ProductController {
 
   @Operation(summary = "Register new Product")
   @ApiResponse(
-    content = @Content(schema = @Schema(implementation = ResponseCommon.class))
+    content = @Content(schema = @Schema(implementation = CommonRes.class))
   )
   @PostMapping(consumes = { "multipart/form-data" })
   public ResponseEntity<Object> create(
@@ -49,7 +49,7 @@ public class ProductController {
       return ResponseEntity
         .status(HttpStatus.BAD_REQUEST)
         .body(
-          new ResponseCommon(
+          new CommonRes(
             HttpStatus.BAD_REQUEST.value(),
             errors.getFieldError().getDefaultMessage()
           )
@@ -61,13 +61,11 @@ public class ProductController {
 
       return ResponseEntity
         .status(HttpStatus.CREATED)
-        .body(
-          new ResponseCommon(HttpStatus.CREATED.value(), "PRODUCT IS CREATED")
-        );
+        .body(new CommonRes(HttpStatus.CREATED.value(), "PRODUCT IS CREATED"));
     } catch (ResponseStatusException ex) {
       return ResponseEntity
         .status(ex.getStatusCode())
-        .body(new ResponseCommon(ex.getStatusCode().value(), ex.getReason()));
+        .body(new CommonRes(ex.getStatusCode().value(), ex.getReason()));
     }
   }
 
@@ -116,7 +114,7 @@ public class ProductController {
 
   @Operation(summary = "Update a Specific Product by Code")
   @ApiResponse(
-    content = @Content(schema = @Schema(implementation = ResponseCommon.class))
+    content = @Content(schema = @Schema(implementation = CommonRes.class))
   )
   @PatchMapping(value = "/{code}", consumes = { "multipart/form-data" })
   public ResponseEntity<Object> patch(
@@ -128,7 +126,7 @@ public class ProductController {
       return ResponseEntity
         .status(HttpStatus.BAD_REQUEST)
         .body(
-          new ResponseCommon(
+          new CommonRes(
             HttpStatus.BAD_REQUEST.value(),
             errors.getFieldError().getDefaultMessage()
           )
@@ -138,19 +136,17 @@ public class ProductController {
       productService.patchProduct(code, patchInput);
       return ResponseEntity
         .status(HttpStatus.ACCEPTED)
-        .body(
-          new ResponseCommon(HttpStatus.ACCEPTED.value(), "PRODUCT IS UPDATED")
-        );
+        .body(new CommonRes(HttpStatus.ACCEPTED.value(), "PRODUCT IS UPDATED"));
     } catch (ResponseStatusException ex) {
       return ResponseEntity
         .status(ex.getStatusCode())
-        .body(new ResponseCommon(ex.getStatusCode().value(), ex.getReason()));
+        .body(new CommonRes(ex.getStatusCode().value(), ex.getReason()));
     }
   }
 
   @Operation(summary = "Delete a Specific Product by Code")
   @ApiResponse(
-    content = @Content(schema = @Schema(implementation = ResponseCommon.class))
+    content = @Content(schema = @Schema(implementation = CommonRes.class))
   )
   @DeleteMapping("/{code}")
   public ResponseEntity<Object> delete(
@@ -162,7 +158,7 @@ public class ProductController {
     } catch (ResponseStatusException ex) {
       return ResponseEntity
         .status(ex.getStatusCode())
-        .body(new ResponseCommon(ex.getStatusCode().value(), ex.getReason()));
+        .body(new CommonRes(ex.getStatusCode().value(), ex.getReason()));
     }
   }
 }

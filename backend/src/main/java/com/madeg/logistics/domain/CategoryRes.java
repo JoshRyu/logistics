@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class CategoryRes extends ResponseCommon {
+public class CategoryRes extends CommonRes {
 
   private List<Category> category;
 

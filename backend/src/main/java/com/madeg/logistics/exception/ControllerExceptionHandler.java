@@ -1,6 +1,6 @@
 package com.madeg.logistics.exception;
 
-import com.madeg.logistics.domain.ResponseCommon;
+import com.madeg.logistics.domain.CommonRes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class ControllerExceptionHandler {
 
   @ExceptionHandler(HttpMessageNotReadableException.class)
-  public ResponseEntity<ResponseCommon> handleHttpMessageNotReadableException(
+  public ResponseEntity<CommonRes> handleHttpMessageNotReadableException(
     HttpMessageNotReadableException ex
   ) {
     String errorMessage = "INVALID JSON FORMAT";
     return ResponseEntity
       .status(HttpStatus.BAD_REQUEST)
-      .body(new ResponseCommon(HttpStatus.BAD_REQUEST.value(), errorMessage));
+      .body(new CommonRes(HttpStatus.BAD_REQUEST.value(), errorMessage));
   }
 }

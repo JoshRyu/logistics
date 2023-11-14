@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UserRes extends ResponseCommon {
+public class UserRes extends CommonRes {
 
   private List<User> user;
 

@@ -1,6 +1,6 @@
 package com.madeg.logistics.controller;
 
-import com.madeg.logistics.domain.ResponseCommon;
+import com.madeg.logistics.domain.CommonRes;
 import com.madeg.logistics.domain.UserInput;
 import com.madeg.logistics.domain.UserLogin;
 import com.madeg.logistics.domain.UserLoginInput;
@@ -49,7 +49,7 @@ public class UserController {
       return ResponseEntity
         .status(HttpStatus.BAD_REQUEST)
         .body(
-          new ResponseCommon(
+          new CommonRes(
             HttpStatus.BAD_REQUEST.value(),
             errors.getFieldError().getDefaultMessage()
           )
@@ -74,7 +74,7 @@ public class UserController {
       return ResponseEntity
         .status(HttpStatus.BAD_REQUEST)
         .body(
-          new ResponseCommon(
+          new CommonRes(
             HttpStatus.BAD_REQUEST.value(),
             errors.getFieldError().getDefaultMessage()
           )
@@ -84,13 +84,11 @@ public class UserController {
       userService.createUser(userInput);
       return ResponseEntity
         .status(HttpStatus.CREATED)
-        .body(
-          new ResponseCommon(HttpStatus.CREATED.value(), "USER IS CREATED")
-        );
+        .body(new CommonRes(HttpStatus.CREATED.value(), "USER IS CREATED"));
     } catch (ResponseStatusException ex) {
       return ResponseEntity
         .status(ex.getStatusCode())
-        .body(new ResponseCommon(ex.getStatusCode().value(), ex.getReason()));
+        .body(new CommonRes(ex.getStatusCode().value(), ex.getReason()));
     }
   }
 
@@ -113,7 +111,7 @@ public class UserController {
 
   @Operation(summary = "Update a Specific User by Id")
   @ApiResponse(
-    content = @Content(schema = @Schema(implementation = ResponseCommon.class))
+    content = @Content(schema = @Schema(implementation = CommonRes.class))
   )
   @PatchMapping("/{id}")
   public ResponseEntity<Object> patch(
@@ -125,7 +123,7 @@ public class UserController {
       return ResponseEntity
         .status(HttpStatus.BAD_REQUEST)
         .body(
-          new ResponseCommon(
+          new CommonRes(
             HttpStatus.BAD_REQUEST.value(),
             errors.getFieldError().getDefaultMessage()
           )
@@ -136,19 +134,17 @@ public class UserController {
       userService.patchUser(id, patchInfo);
       return ResponseEntity
         .status(HttpStatus.ACCEPTED)
-        .body(
-          new ResponseCommon(HttpStatus.ACCEPTED.value(), "USER IS UPDATED")
-        );
+        .body(new CommonRes(HttpStatus.ACCEPTED.value(), "USER IS UPDATED"));
     } catch (ResponseStatusException ex) {
       return ResponseEntity
         .status(ex.getStatusCode())
-        .body(new ResponseCommon(ex.getStatusCode().value(), ex.getReason()));
+        .body(new CommonRes(ex.getStatusCode().value(), ex.getReason()));
     }
   }
 
   @Operation(summary = "Delete a Specific User by Id")
   @ApiResponse(
-    content = @Content(schema = @Schema(implementation = ResponseCommon.class))
+    content = @Content(schema = @Schema(implementation = CommonRes.class))
   )
   @DeleteMapping("/{id}")
   public ResponseEntity<Object> delete(
@@ -160,7 +156,7 @@ public class UserController {
     } catch (ResponseStatusException ex) {
       return ResponseEntity
         .status(ex.getStatusCode())
-        .body(new ResponseCommon(ex.getStatusCode().value(), ex.getReason()));
+        .body(new CommonRes(ex.getStatusCode().value(), ex.getReason()));
     }
   }
 }

@@ -3,7 +3,7 @@ package com.madeg.logistics.controller;
 import com.madeg.logistics.domain.CategoryInput;
 import com.madeg.logistics.domain.CategoryPatch;
 import com.madeg.logistics.domain.CategoryRes;
-import com.madeg.logistics.domain.ResponseCommon;
+import com.madeg.logistics.domain.CommonRes;
 import com.madeg.logistics.service.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -36,7 +36,7 @@ public class CategoryController {
 
   @Operation(summary = "Register new Category")
   @ApiResponse(
-    content = @Content(schema = @Schema(implementation = ResponseCommon.class))
+    content = @Content(schema = @Schema(implementation = CommonRes.class))
   )
   @PostMapping
   public ResponseEntity<Object> create(
@@ -47,7 +47,7 @@ public class CategoryController {
       return ResponseEntity
         .status(HttpStatus.BAD_REQUEST)
         .body(
-          new ResponseCommon(
+          new CommonRes(
             HttpStatus.BAD_REQUEST.value(),
             errors.getFieldError().getDefaultMessage()
           )
@@ -58,13 +58,11 @@ public class CategoryController {
       categoryService.createCategory(categoryInput);
       return ResponseEntity
         .status(HttpStatus.CREATED)
-        .body(
-          new ResponseCommon(HttpStatus.CREATED.value(), "CATEGORY IS CREATED")
-        );
+        .body(new CommonRes(HttpStatus.CREATED.value(), "CATEGORY IS CREATED"));
     } catch (ResponseStatusException ex) {
       return ResponseEntity
         .status(ex.getStatusCode())
-        .body(new ResponseCommon(ex.getStatusCode().value(), ex.getReason()));
+        .body(new CommonRes(ex.getStatusCode().value(), ex.getReason()));
     }
   }
 
@@ -87,7 +85,7 @@ public class CategoryController {
 
   @Operation(summary = "Update a Specific Category by Code")
   @ApiResponse(
-    content = @Content(schema = @Schema(implementation = ResponseCommon.class))
+    content = @Content(schema = @Schema(implementation = CommonRes.class))
   )
   @PatchMapping("/{code}")
   public ResponseEntity<Object> patch(
@@ -99,7 +97,7 @@ public class CategoryController {
       return ResponseEntity
         .status(HttpStatus.BAD_REQUEST)
         .body(
-          new ResponseCommon(
+          new CommonRes(
             HttpStatus.BAD_REQUEST.value(),
             errors.getFieldError().getDefaultMessage()
           )
@@ -110,18 +108,18 @@ public class CategoryController {
       return ResponseEntity
         .status(HttpStatus.ACCEPTED)
         .body(
-          new ResponseCommon(HttpStatus.ACCEPTED.value(), "CATEGORY IS UPDATED")
+          new CommonRes(HttpStatus.ACCEPTED.value(), "CATEGORY IS UPDATED")
         );
     } catch (ResponseStatusException ex) {
       return ResponseEntity
         .status(ex.getStatusCode())
-        .body(new ResponseCommon(ex.getStatusCode().value(), ex.getReason()));
+        .body(new CommonRes(ex.getStatusCode().value(), ex.getReason()));
     }
   }
 
   @Operation(summary = "Delete a Specific Category by Code")
   @ApiResponse(
-    content = @Content(schema = @Schema(implementation = ResponseCommon.class))
+    content = @Content(schema = @Schema(implementation = CommonRes.class))
   )
   @DeleteMapping("/{code}")
   public ResponseEntity<Object> delete(
@@ -133,7 +131,7 @@ public class CategoryController {
     } catch (ResponseStatusException ex) {
       return ResponseEntity
         .status(ex.getStatusCode())
-        .body(new ResponseCommon(ex.getStatusCode().value(), ex.getReason()));
+        .body(new CommonRes(ex.getStatusCode().value(), ex.getReason()));
     }
   }
 }
