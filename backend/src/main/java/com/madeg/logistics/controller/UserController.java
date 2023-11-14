@@ -5,7 +5,7 @@ import com.madeg.logistics.domain.UserInput;
 import com.madeg.logistics.domain.UserLogin;
 import com.madeg.logistics.domain.UserLoginInput;
 import com.madeg.logistics.domain.UserPatch;
-import com.madeg.logistics.entity.User;
+import com.madeg.logistics.domain.UserRes;
 import com.madeg.logistics.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -99,8 +99,16 @@ public class UserController {
     content = @Content(schema = @Schema(implementation = List.class))
   )
   @GetMapping
-  public List<User> getUserList() {
-    return userService.getUsers();
+  public ResponseEntity<UserRes> getUserList() {
+    return ResponseEntity
+      .status(HttpStatus.OK)
+      .body(
+        new UserRes(
+          HttpStatus.OK.value(),
+          "USERS ARE RETRIEVED",
+          userService.getUsers()
+        )
+      );
   }
 
   @Operation(summary = "Update a Specific User by Id")

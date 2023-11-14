@@ -2,8 +2,8 @@ package com.madeg.logistics.controller;
 
 import com.madeg.logistics.domain.CategoryInput;
 import com.madeg.logistics.domain.CategoryPatch;
+import com.madeg.logistics.domain.CategoryRes;
 import com.madeg.logistics.domain.ResponseCommon;
-import com.madeg.logistics.entity.Category;
 import com.madeg.logistics.service.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -73,8 +73,16 @@ public class CategoryController {
     content = @Content(schema = @Schema(implementation = List.class))
   )
   @GetMapping
-  public List<Category> getCategoryList() {
-    return categoryService.getCategories();
+  public ResponseEntity<CategoryRes> getCategoryList() {
+    return ResponseEntity
+      .status(HttpStatus.OK)
+      .body(
+        new CategoryRes(
+          HttpStatus.OK.value(),
+          "CATEGORIES ARE RETRIEVED",
+          categoryService.getCategories()
+        )
+      );
   }
 
   @Operation(summary = "Update a Specific Category by Code")
