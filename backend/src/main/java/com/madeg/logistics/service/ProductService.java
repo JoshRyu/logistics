@@ -72,6 +72,10 @@ public class ProductService {
     return productRepository.findAll();
   }
 
+  public Product getProductByCode(String code) {
+    return productRepository.findByProductCode(code);
+  }
+
   public void patchProduct(String code, ProductPatch patchInput) {
     Product previousProduct = productRepository.findByProductCode(code);
 

@@ -73,9 +73,20 @@ public class ProductController {
   @ApiResponse(
     content = @Content(schema = @Schema(implementation = List.class))
   )
-  @GetMapping("/list")
+  @GetMapping
   public List<Product> getProductList() {
     return productService.getProducts();
+  }
+
+  @Operation(summary = "Get a Specific Product by Code")
+  @ApiResponse(
+    content = @Content(schema = @Schema(implementation = Product.class))
+  )
+  @GetMapping("/{code}")
+  public Product getProductByCode(
+    @PathVariable(name = "code", required = true) String code
+  ) {
+    return productService.getProductByCode(code);
   }
 
   @Operation(summary = "Update a Specific Product by Code")

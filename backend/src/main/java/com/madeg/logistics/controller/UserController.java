@@ -98,7 +98,7 @@ public class UserController {
   @ApiResponse(
     content = @Content(schema = @Schema(implementation = List.class))
   )
-  @GetMapping("/list")
+  @GetMapping
   public List<User> getUserList() {
     return userService.getUsers();
   }
