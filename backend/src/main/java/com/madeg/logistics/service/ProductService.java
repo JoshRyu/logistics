@@ -33,8 +33,8 @@ public class ProductService {
       );
     }
 
-    Category existCategory = categoryRepository.findByName(
-      productInput.getCategoryName()
+    Category existCategory = categoryRepository.findByCategoryCode(
+      productInput.getCategoryCode()
     );
 
     if (existCategory == null) {
@@ -44,9 +44,12 @@ public class ProductService {
       );
     }
 
-    byte[] imageBytes;
+    byte[] imageBytes = null;
+
     try {
-      imageBytes = productInput.getImg().getBytes();
+      if (productInput.getImg() != null) {
+        imageBytes = productInput.getImg().getBytes();
+      }
     } catch (IOException e) {
       throw new ResponseStatusException(
         HttpStatus.BAD_REQUEST,

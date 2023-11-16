@@ -20,8 +20,8 @@ public class CategoryInput {
   @Schema(example = "사과")
   private String categoryName;
 
-  @Schema(example = "과일")
-  private String parentCategoryName;
+  @Schema(example = "category_15")
+  private String parentCategoryCode;
 
   private String description;
 }

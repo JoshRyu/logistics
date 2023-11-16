@@ -31,12 +31,12 @@ public class CategoryService {
       );
     }
 
-    Category parentCategory = categoryRepository.findByName(
-      categoryInput.getParentCategoryName()
+    Category parentCategory = categoryRepository.findByCategoryCode(
+      categoryInput.getParentCategoryCode()
     );
 
     if (
-      categoryInput.getParentCategoryName() != null && parentCategory == null
+      categoryInput.getParentCategoryCode() != null && parentCategory == null
     ) {
       throw new ResponseStatusException(
         HttpStatus.NOT_FOUND,
