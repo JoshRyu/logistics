@@ -12,9 +12,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
@@ -71,17 +75,19 @@ public class ProductController {
 
   @Operation(summary = "Get All Product List")
   @ApiResponse(
-    content = @Content(schema = @Schema(implementation = List.class))
+    content = @Content(schema = @Schema(implementation = Page.class))
   )
   @GetMapping
-  public ResponseEntity<ProductRes> getProductList() {
+  public ResponseEntity<ProductRes> getProductList(
+    @PageableDefault Pageable pageable
+  ) {
     return ResponseEntity
       .status(HttpStatus.OK)
       .body(
         new ProductRes(
           HttpStatus.OK.value(),
           "PRODUCTS ARE RETRIEVED",
-          productService.getProducts()
+          productService.getProducts(pageable)
         )
       );
   }
@@ -94,10 +100,13 @@ public class ProductController {
   public ResponseEntity<ProductRes> getProductByCode(
     @PathVariable(name = "code", required = true) String code
   ) {
-    List<Product> result = new ArrayList<>();
+    Page<Product> result = new PageImpl<>(Collections.emptyList());
 
     try {
-      result.add(productService.getProductByCode(code));
+      result =
+        new PageImpl<>(
+          Collections.singletonList(productService.getProductByCode(code))
+        );
       return ResponseEntity
         .status(HttpStatus.OK)
         .body(
