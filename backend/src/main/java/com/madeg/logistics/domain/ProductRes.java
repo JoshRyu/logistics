@@ -1,18 +1,36 @@
 package com.madeg.logistics.domain;
 
 import com.madeg.logistics.entity.Product;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.domain.Page;
 
 @Getter
 @Setter
 public class ProductRes extends CommonRes {
 
-  private Page<Product> product;
+  private List<Product> content;
+  private SimplePageInfo pageable;
 
-  public ProductRes(int status, String message, Page<Product> product) {
+  @Getter
+  @Setter
+  public static class SimplePageInfo {
+
+    private boolean last;
+    private int page;
+    private int size;
+    private int totalPages;
+    private long totalElements;
+  }
+
+  public ProductRes(
+    int status,
+    String message,
+    List<Product> content,
+    SimplePageInfo pageable
+  ) {
     super(status, message);
-    this.product = product;
+    this.content = content;
+    this.pageable = pageable;
   }
 }

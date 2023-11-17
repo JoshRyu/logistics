@@ -12,11 +12,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -83,13 +83,7 @@ public class ProductController {
   ) {
     return ResponseEntity
       .status(HttpStatus.OK)
-      .body(
-        new ProductRes(
-          HttpStatus.OK.value(),
-          "PRODUCTS ARE RETRIEVED",
-          productService.getProducts(pageable)
-        )
-      );
+      .body(productService.getProducts(pageable));
   }
 
   @Operation(summary = "Get a Specific Product by Code")
@@ -100,23 +94,29 @@ public class ProductController {
   public ResponseEntity<ProductRes> getProductByCode(
     @PathVariable(name = "code", required = true) String code
   ) {
-    Page<Product> result = new PageImpl<>(Collections.emptyList());
-
     try {
-      result =
-        new PageImpl<>(
-          Collections.singletonList(productService.getProductByCode(code))
-        );
+      Product product = productService.getProductByCode(code);
+
       return ResponseEntity
         .status(HttpStatus.OK)
         .body(
-          new ProductRes(HttpStatus.OK.value(), "PRODUCT is RETRIEVED", result)
+          new ProductRes(
+            HttpStatus.OK.value(),
+            "PRODUCT is RETRIEVED",
+            Collections.singletonList(product),
+            null
+          )
         );
     } catch (ResponseStatusException ex) {
       return ResponseEntity
         .status(ex.getStatusCode())
         .body(
-          new ProductRes(ex.getStatusCode().value(), ex.getReason(), result)
+          new ProductRes(
+            ex.getStatusCode().value(),
+            ex.getReason(),
+            new ArrayList<>(),
+            null
+          )
         );
     }
   }
