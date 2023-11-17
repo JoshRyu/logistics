@@ -2,6 +2,8 @@ package com.madeg.logistics.service;
 
 import com.madeg.logistics.domain.ProductInput;
 import com.madeg.logistics.domain.ProductPatch;
+import com.madeg.logistics.domain.ProductRes;
+import com.madeg.logistics.domain.ProductRes.SimplePageInfo;
 import com.madeg.logistics.entity.Category;
 import com.madeg.logistics.entity.Product;
 import com.madeg.logistics.repository.CategoryRepository;
@@ -10,6 +12,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -33,8 +37,8 @@ public class ProductService {
       );
     }
 
-    Category existCategory = categoryRepository.findByName(
-      productInput.getCategoryName()
+    Category existCategory = categoryRepository.findByCategoryCode(
+      productInput.getCategoryCode()
     );
 
     if (existCategory == null) {
@@ -44,9 +48,12 @@ public class ProductService {
       );
     }
 
-    byte[] imageBytes;
+    byte[] imageBytes = null;
+
     try {
-      imageBytes = productInput.getImg().getBytes();
+      if (productInput.getImg() != null) {
+        imageBytes = productInput.getImg().getBytes();
+      }
     } catch (IOException e) {
       throw new ResponseStatusException(
         HttpStatus.BAD_REQUEST,
@@ -68,8 +75,23 @@ public class ProductService {
     productRepository.save(product);
   }
 
-  public List<Product> getProducts() {
-    return productRepository.findAll();
+  public ProductRes getProducts(Pageable pageable) {
+    Page<Product> page = productRepository.findAll(pageable);
+    List<Product> content = page.getContent();
+
+    SimplePageInfo simplePageInfo = new SimplePageInfo();
+    simplePageInfo.setLast(page.isLast());
+    simplePageInfo.setPage(page.getNumber());
+    simplePageInfo.setSize(page.getSize());
+    simplePageInfo.setTotalPages(page.getTotalPages());
+    simplePageInfo.setTotalElements(page.getTotalElements());
+
+    return new ProductRes(
+      HttpStatus.OK.value(),
+      "PRODUCTS ARE RETRIEVED",
+      content,
+      simplePageInfo
+    );
   }
 
   public Product getProductByCode(String code) {

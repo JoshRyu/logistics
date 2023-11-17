@@ -9,10 +9,28 @@ import lombok.Setter;
 @Setter
 public class ProductRes extends CommonRes {
 
-  private List<Product> product;
+  private List<Product> content;
+  private SimplePageInfo pageable;
 
-  public ProductRes(int status, String message, List<Product> product) {
+  @Getter
+  @Setter
+  public static class SimplePageInfo {
+
+    private boolean last;
+    private int page;
+    private int size;
+    private int totalPages;
+    private long totalElements;
+  }
+
+  public ProductRes(
+    int status,
+    String message,
+    List<Product> content,
+    SimplePageInfo pageable
+  ) {
     super(status, message);
-    this.product = product;
+    this.content = content;
+    this.pageable = pageable;
   }
 }
