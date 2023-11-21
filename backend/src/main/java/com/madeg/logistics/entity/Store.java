@@ -1,45 +1,54 @@
 package com.madeg.logistics.entity;
 
+import com.madeg.logistics.enums.StoreType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-import java.math.BigDecimal;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
 @Table(name = "store")
 public class Store {
 
   @Id
   @GeneratedValue(
     strategy = GenerationType.SEQUENCE,
-    generator = "store_code_seq"
+    generator = "custom_sequence"
   )
-  @SequenceGenerator(
-    name = "store_code_seq",
-    sequenceName = "store_code_seq",
-    allocationSize = 1
+  @GenericGenerator(
+    name = "custom_sequence",
+    strategy = "com.madeg.logistics.entity.CustomSequenceGenerator",
+    parameters = { @Parameter(name = "prefix", value = "store_code_") }
   )
   @Column(name = "store_code", unique = true, nullable = false)
-  private Long storeCode;
+  private String storeCode;
 
-  @Column(name = "name")
+  @Column(name = "name", nullable = false)
   private String name;
 
   @Column(name = "address")
   private String address;
 
-  @Column(name = "type")
-  private String type;
+  @Column(name = "type", nullable = false)
+  private StoreType type;
 
   @Column(name = "fixed_cost")
-  private BigDecimal fixedCost;
+  private Integer fixedCost;
 
   @Column(name = "commission_rate")
-  private BigDecimal commissionRate;
+  private Double commissionRate;
 
   @Column(name = "description")
   private String description;
