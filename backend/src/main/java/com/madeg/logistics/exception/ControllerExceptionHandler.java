@@ -14,7 +14,7 @@ public class ControllerExceptionHandler {
   public ResponseEntity<CommonRes> handleHttpMessageNotReadableException(
     HttpMessageNotReadableException ex
   ) {
-    String errorMessage = "INVALID JSON FORMAT";
+    String errorMessage = ex.getLocalizedMessage();
     return ResponseEntity
       .status(HttpStatus.BAD_REQUEST)
       .body(new CommonRes(HttpStatus.BAD_REQUEST.value(), errorMessage));
