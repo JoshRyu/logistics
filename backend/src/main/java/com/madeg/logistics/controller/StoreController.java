@@ -15,7 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -77,5 +79,23 @@ public class StoreController {
           storeService.getStores()
         )
       );
+  }
+
+  @Operation(summary = "Delete a Specific Store By Code")
+  @ApiResponse(
+    content = @Content(schema = @Schema(implementation = CommonRes.class))
+  )
+  @DeleteMapping("/{code}")
+  public ResponseEntity<Object> delete(
+    @PathVariable(name = "code", required = true) String code
+  ) {
+    try {
+      storeService.deleteStore(code);
+      return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    } catch (ResponseStatusException ex) {
+      return ResponseEntity
+        .status(ex.getStatusCode())
+        .body(new CommonRes(ex.getStatusCode().value(), ex.getReason()));
+    }
   }
 }

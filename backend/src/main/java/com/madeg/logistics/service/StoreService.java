@@ -41,4 +41,16 @@ public class StoreService {
   public List<Store> getStores() {
     return storeRepository.findAll();
   }
+
+  public void deleteStore(String code) {
+    Store previousStore = storeRepository.findByStoreCode(code);
+
+    if (previousStore == null) {
+      throw new ResponseStatusException(
+        HttpStatus.NOT_FOUND,
+        "STORE NOT FOUND"
+      );
+    }
+    storeRepository.delete(previousStore);
+  }
 }

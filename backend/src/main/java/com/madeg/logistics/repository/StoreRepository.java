@@ -8,5 +8,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface StoreRepository extends CrudRepository<Store, String> {
   Store findByName(String name);
+
+  Store findByStoreCode(String code);
+
   List<Store> findAll();
 }
