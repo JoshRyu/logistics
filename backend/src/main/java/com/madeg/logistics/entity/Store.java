@@ -52,4 +52,28 @@ public class Store {
 
   @Column(name = "description")
   private String description;
+
+  public void updateName(String name) {
+    this.name = name;
+  }
+
+  public void updateAddress(String address) {
+    this.address = address;
+  }
+
+  public void updateType(StoreType type) {
+    this.type = type;
+  }
+
+  public void updateFixedCost(Integer fixedCost) {
+    this.fixedCost = fixedCost;
+  }
+
+  public void updateComissionRate(Double commissionRate) {
+    this.commissionRate = commissionRate;
+  }
+
+  public void updateDescription(String description) {
+    this.description = description;
+  }
 }

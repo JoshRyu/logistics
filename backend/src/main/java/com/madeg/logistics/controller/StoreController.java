@@ -2,6 +2,7 @@ package com.madeg.logistics.controller;
 
 import com.madeg.logistics.domain.CommonRes;
 import com.madeg.logistics.domain.StoreInput;
+import com.madeg.logistics.domain.StorePatch;
 import com.madeg.logistics.domain.StoreRes;
 import com.madeg.logistics.service.StoreService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -79,6 +81,39 @@ public class StoreController {
           storeService.getStores()
         )
       );
+  }
+
+  @Operation(summary = "Update a Specific Store by Code")
+  @ApiResponse(
+    content = @Content(schema = @Schema(implementation = CommonRes.class))
+  )
+  @PatchMapping("/{code}")
+  public ResponseEntity<Object> patch(
+    @PathVariable(name = "code", required = true) String code,
+    @RequestBody @Valid StorePatch patchInput,
+    Errors errors
+  ) {
+    if (errors.hasErrors()) {
+      return ResponseEntity
+        .status(HttpStatus.BAD_REQUEST)
+        .body(
+          new CommonRes(
+            HttpStatus.BAD_REQUEST.value(),
+            errors.getFieldError().getDefaultMessage()
+          )
+        );
+    }
+
+    try {
+      storeService.patchStore(code, patchInput);
+      return ResponseEntity
+        .status(HttpStatus.ACCEPTED)
+        .body(new CommonRes(HttpStatus.ACCEPTED.value(), "STORE IS UPDATED"));
+    } catch (ResponseStatusException ex) {
+      return ResponseEntity
+        .status(ex.getStatusCode())
+        .body(new CommonRes(ex.getStatusCode().value(), ex.getReason()));
+    }
   }
 
   @Operation(summary = "Delete a Specific Store By Code")
