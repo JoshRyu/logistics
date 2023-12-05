@@ -5,6 +5,7 @@ import com.madeg.logistics.domain.CategoryPatch;
 import com.madeg.logistics.entity.Category;
 import com.madeg.logistics.repository.CategoryRepository;
 import java.util.List;
+import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -70,49 +71,46 @@ public class CategoryService {
 
     boolean isUpdated = false;
 
-    if (!patchInput.getName().equals(previousCategory.getName())) {
+    if (!Objects.equals(patchInput.getName(), previousCategory.getName())) {
       previousCategory.updateName(patchInput.getName());
       isUpdated = true;
     }
 
-    if (patchInput.getDescription() != null) {
-      if (
-        !patchInput.getDescription().equals(previousCategory.getDescription())
-      ) {
-        previousCategory.updateDescription(patchInput.getDescription());
-        isUpdated = true;
-      }
-    } else {
-      if (previousCategory.getDescription() != null) {
-        previousCategory.updateDescription(null);
-        isUpdated = true;
-      }
+    if (
+      !Objects.equals(
+        patchInput.getDescription(),
+        previousCategory.getDescription()
+      )
+    ) {
+      previousCategory.updateDescription(patchInput.getDescription());
+      isUpdated = true;
     }
 
-    if (patchInput.getParentCategoryCode() != null) {
-      if (
-        previousCategory.getParentCategory() == null ||
-        !patchInput
-          .getParentCategoryCode()
-          .equals(previousCategory.getParentCategory().getCategoryCode())
-      ) {
-        Category parentCategory = categoryRepository.findByCategoryCode(
-          patchInput.getParentCategoryCode()
+    String parentCategoryCode = patchInput.getParentCategoryCode();
+    Category currentParentCategory = previousCategory.getParentCategory();
+
+    if (
+      !Objects.equals(
+        parentCategoryCode,
+        currentParentCategory != null
+          ? currentParentCategory.getCategoryCode()
+          : null
+      )
+    ) {
+      Category parentCategory = categoryRepository.findByCategoryCode(
+        patchInput.getParentCategoryCode()
+      );
+      if (parentCategory == null) {
+        throw new ResponseStatusException(
+          HttpStatus.NOT_FOUND,
+          "PARENT CATEGORY NOT FOUND"
         );
-        if (parentCategory == null) {
-          throw new ResponseStatusException(
-            HttpStatus.NOT_FOUND,
-            "PARENT CATEGORY NOT FOUND"
-          );
-        }
-        previousCategory.updateParentCategory(parentCategory);
-        isUpdated = true;
       }
-    } else {
-      if (previousCategory.getParentCategory() != null) {
-        previousCategory.updateParentCategory(null);
-        isUpdated = true;
-      }
+      previousCategory.updateParentCategory(parentCategory);
+      isUpdated = true;
+    } else if (parentCategoryCode == null && currentParentCategory != null) {
+      previousCategory.updateParentCategory(null);
+      isUpdated = true;
     }
 
     if (isUpdated) {

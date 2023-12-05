@@ -6,6 +6,7 @@ import com.madeg.logistics.entity.Store;
 import com.madeg.logistics.enums.StoreType;
 import com.madeg.logistics.repository.StoreRepository;
 import java.util.List;
+import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -56,72 +57,36 @@ public class StoreService {
 
     boolean isUpdated = false;
 
-    if (!patchInput.getName().equals(previousStore.getName())) {
+    if (!Objects.equals(patchInput.getName(), previousStore.getName())) {
       previousStore.updateName(patchInput.getName());
       isUpdated = true;
     }
 
-    if (patchInput.getAddress() != null) {
-      if (!patchInput.getAddress().equals(previousStore.getAddress())) {
-        previousStore.updateAddress(patchInput.getAddress());
-        isUpdated = true;
-      }
-    } else {
-      if (previousStore.getAddress() != null) {
-        previousStore.updateAddress(null);
-        isUpdated = true;
-      }
+    if (!Objects.equals(patchInput.getAddress(), previousStore.getAddress())) {
+      previousStore.updateAddress(patchInput.getAddress());
+      isUpdated = true;
     }
-
-    boolean isFixedCostUpdated = false;
-    boolean isCommissionRateUpdated = false;
 
     if (patchInput.getFixedCost() != previousStore.getFixedCost()) {
       previousStore.updateFixedCost(patchInput.getFixedCost());
       isUpdated = true;
-      isFixedCostUpdated = true;
     }
 
     if (patchInput.getCommissionRate() != previousStore.getCommissionRate()) {
-      previousStore.updateComissionRate(patchInput.getCommissionRate());
+      previousStore.updateCommissionRate(patchInput.getCommissionRate());
       isUpdated = true;
-      isCommissionRateUpdated = true;
     }
 
-    if (isFixedCostUpdated || isCommissionRateUpdated) {
-      if (
-        previousStore.getFixedCost() > 0 &&
-        previousStore.getCommissionRate() > 0
-      ) {
-        previousStore.updateType(StoreType.BOTH);
-      } else if (
-        previousStore.getFixedCost() == 0 &&
-        previousStore.getCommissionRate() > 0
-      ) {
-        previousStore.updateType(StoreType.RATE);
-      } else if (
-        previousStore.getFixedCost() > 0 &&
-        previousStore.getCommissionRate() == 0
-      ) {
-        previousStore.updateType(StoreType.FIX);
-      } else {
-        throw new ResponseStatusException(
-          HttpStatus.BAD_REQUEST,
-          "AT LEAST ONE OF COMISSION RATE AND FIXED COST MUST BE GREATER THAN ZERO"
-        );
-      }
-    }
+    updateStoreType(previousStore);
 
-    if (patchInput.getDescription() != null) {
-      if (!patchInput.getDescription().equals(previousStore.getDescription())) {
-        previousStore.updateDescription(patchInput.getDescription());
-        isUpdated = true;
-      }
-    } else {
-      if (previousStore.getDescription() != null) {
-        previousStore.updateDescription(null);
-        isUpdated = true;
-      }
+    if (
+      !Objects.equals(
+        patchInput.getDescription(),
+        previousStore.getDescription()
+      )
+    ) {
+      previousStore.updateDescription(patchInput.getDescription());
+      isUpdated = true;
     }
 
     if (isUpdated) {
@@ -130,6 +95,21 @@ public class StoreService {
       throw new ResponseStatusException(
         HttpStatus.NO_CONTENT,
         "STORE IS NOT UPDATED"
+      );
+    }
+  }
+
+  private void updateStoreType(Store store) {
+    if (store.getFixedCost() > 0 && store.getCommissionRate() > 0) {
+      store.updateType(StoreType.BOTH);
+    } else if (store.getFixedCost() == 0 && store.getCommissionRate() > 0) {
+      store.updateType(StoreType.RATE);
+    } else if (store.getFixedCost() > 0 && store.getCommissionRate() == 0) {
+      store.updateType(StoreType.FIX);
+    } else {
+      throw new ResponseStatusException(
+        HttpStatus.BAD_REQUEST,
+        "AT LEAST ONE OF COMMISSION RATE AND FIXED COST MUST BE GREATER THAN ZERO"
       );
     }
   }

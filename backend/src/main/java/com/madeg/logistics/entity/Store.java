@@ -69,7 +69,7 @@ public class Store {
     this.fixedCost = fixedCost;
   }
 
-  public void updateComissionRate(Double commissionRate) {
+  public void updateCommissionRate(Double commissionRate) {
     this.commissionRate = commissionRate;
   }
 

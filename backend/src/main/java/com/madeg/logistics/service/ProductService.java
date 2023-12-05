@@ -11,6 +11,7 @@ import com.madeg.logistics.repository.ProductRepository;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -117,7 +118,7 @@ public class ProductService {
 
     Boolean isUpdated = false;
 
-    if (!patchInput.getName().equals(previousProduct.getName())) {
+    if (!Objects.equals(patchInput.getName(), previousProduct.getName())) {
       previousProduct.updateName(patchInput.getName());
       isUpdated = true;
     }
