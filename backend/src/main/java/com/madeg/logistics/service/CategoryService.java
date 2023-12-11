@@ -69,36 +69,14 @@ public class CategoryService {
       );
     }
 
-    boolean isUpdated = false;
-
-    if (!Objects.equals(patchInput.getName(), previousCategory.getName())) {
-      previousCategory.updateName(patchInput.getName());
-      isUpdated = true;
-    }
-
-    if (
-      !Objects.equals(
-        patchInput.getDescription(),
-        previousCategory.getDescription()
-      )
-    ) {
-      previousCategory.updateDescription(patchInput.getDescription());
-      isUpdated = true;
-    }
+    Category updatedCategory = new Category();
+    updatedCategory.updateName(patchInput.getName());
+    updatedCategory.updateDescription(patchInput.getDescription());
 
     String parentCategoryCode = patchInput.getParentCategoryCode();
-    Category currentParentCategory = previousCategory.getParentCategory();
-
-    if (
-      !Objects.equals(
-        parentCategoryCode,
-        currentParentCategory != null
-          ? currentParentCategory.getCategoryCode()
-          : null
-      )
-    ) {
+    if (parentCategoryCode != null) {
       Category parentCategory = categoryRepository.findByCategoryCode(
-        patchInput.getParentCategoryCode()
+        parentCategoryCode
       );
       if (parentCategory == null) {
         throw new ResponseStatusException(
@@ -106,14 +84,28 @@ public class CategoryService {
           "PARENT CATEGORY NOT FOUND"
         );
       }
-      previousCategory.updateParentCategory(parentCategory);
-      isUpdated = true;
-    } else if (parentCategoryCode == null && currentParentCategory != null) {
-      previousCategory.updateParentCategory(null);
-      isUpdated = true;
+      updatedCategory.updateParentCategory(parentCategory);
+    } else {
+      updatedCategory.updateParentCategory(null);
     }
 
-    if (isUpdated) {
+    if (
+      !previousCategory.getName().equals(updatedCategory.getName()) ||
+      !Objects.equals(
+        previousCategory.getDescription(),
+        updatedCategory.getDescription()
+      ) ||
+      !Objects.equals(
+        previousCategory.getParentCategory(),
+        updatedCategory.getParentCategory()
+      )
+    ) {
+      previousCategory.updateName(updatedCategory.getName());
+      previousCategory.updateDescription(updatedCategory.getDescription());
+      previousCategory.updateParentCategory(
+        updatedCategory.getParentCategory()
+      );
+
       categoryRepository.save(previousCategory);
     } else {
       throw new ResponseStatusException(
