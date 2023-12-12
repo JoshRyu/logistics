@@ -89,17 +89,7 @@ public class CategoryService {
       updatedCategory.updateParentCategory(null);
     }
 
-    if (
-      !previousCategory.getName().equals(updatedCategory.getName()) ||
-      !Objects.equals(
-        previousCategory.getDescription(),
-        updatedCategory.getDescription()
-      ) ||
-      !Objects.equals(
-        previousCategory.getParentCategory(),
-        updatedCategory.getParentCategory()
-      )
-    ) {
+    if (previousCategory.isStateChanged(updatedCategory)) {
       previousCategory.updateName(updatedCategory.getName());
       previousCategory.updateDescription(updatedCategory.getDescription());
       previousCategory.updateParentCategory(

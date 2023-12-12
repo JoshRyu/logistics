@@ -55,41 +55,25 @@ public class StoreService {
       );
     }
 
-    boolean isUpdated = false;
+    if (previousStore.isStateChanged(patchInput)) {
+      if (patchInput.getName() != null) previousStore.updateName(
+        patchInput.getName()
+      );
+      if (patchInput.getAddress() != null) previousStore.updateAddress(
+        patchInput.getAddress()
+      );
+      if (patchInput.getFixedCost() != null) previousStore.updateFixedCost(
+        patchInput.getFixedCost()
+      );
+      if (
+        patchInput.getCommissionRate() != null
+      ) previousStore.updateCommissionRate(patchInput.getCommissionRate());
+      if (patchInput.getDescription() != null) previousStore.updateDescription(
+        patchInput.getDescription()
+      );
 
-    if (!Objects.equals(patchInput.getName(), previousStore.getName())) {
-      previousStore.updateName(patchInput.getName());
-      isUpdated = true;
-    }
+      updateStoreType(previousStore);
 
-    if (!Objects.equals(patchInput.getAddress(), previousStore.getAddress())) {
-      previousStore.updateAddress(patchInput.getAddress());
-      isUpdated = true;
-    }
-
-    if (patchInput.getFixedCost() != previousStore.getFixedCost()) {
-      previousStore.updateFixedCost(patchInput.getFixedCost());
-      isUpdated = true;
-    }
-
-    if (patchInput.getCommissionRate() != previousStore.getCommissionRate()) {
-      previousStore.updateCommissionRate(patchInput.getCommissionRate());
-      isUpdated = true;
-    }
-
-    updateStoreType(previousStore);
-
-    if (
-      !Objects.equals(
-        patchInput.getDescription(),
-        previousStore.getDescription()
-      )
-    ) {
-      previousStore.updateDescription(patchInput.getDescription());
-      isUpdated = true;
-    }
-
-    if (isUpdated) {
       storeRepository.save(previousStore);
     } else {
       throw new ResponseStatusException(

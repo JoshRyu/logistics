@@ -1,5 +1,6 @@
 package com.madeg.logistics.entity;
 
+import com.madeg.logistics.domain.ProductPatch;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -9,6 +10,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -52,7 +55,7 @@ public class Product {
   private BigDecimal price;
 
   @Column(name = "stock", nullable = false)
-  private int stock;
+  private Integer stock;
 
   @Column(name = "img")
   private byte[] img;
@@ -89,5 +92,25 @@ public class Product {
 
   public void updateDescription(String description) {
     this.description = description;
+  }
+
+  public boolean isStateChanged(ProductPatch patchInput, byte[] newImgBytes) {
+    return (
+      !Objects.equals(name, patchInput.getName()) ||
+      (
+        price != null &&
+        patchInput.getPrice() != null &&
+        price.compareTo(patchInput.getPrice()) != 0
+      ) ||
+      stock != patchInput.getStock() ||
+      (
+        category == null
+          ? patchInput.getCategoryCode() != null
+          : !category.getCategoryCode().equals(patchInput.getCategoryCode())
+      ) ||
+      !Objects.equals(description, patchInput.getDescription()) ||
+      !Arrays.equals(img, newImgBytes) ||
+      !Objects.equals(barcode, patchInput.getBarcode())
+    );
   }
 }
