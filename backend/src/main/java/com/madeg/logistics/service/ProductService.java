@@ -11,6 +11,7 @@ import com.madeg.logistics.repository.ProductRepository;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -115,89 +116,54 @@ public class ProductService {
       );
     }
 
-    Boolean isUpdated = false;
-
-    if (!patchInput.getName().equals(previousProduct.getName())) {
-      previousProduct.updateName(patchInput.getName());
-      isUpdated = true;
-    }
-
-    if (patchInput.getPrice().compareTo(previousProduct.getPrice()) != 0) {
-      previousProduct.updatePrice(patchInput.getPrice());
-      isUpdated = true;
-    }
-
-    if (patchInput.getStock() != previousProduct.getStock()) {
-      previousProduct.updateStock(patchInput.getStock());
-      isUpdated = true;
-    }
-
-    if (
-      previousProduct.getCategory() == null ||
-      !patchInput
-        .getCategoryCode()
-        .equals(previousProduct.getCategory().getCategoryCode())
-    ) {
-      Category category = categoryRepository.findByCategoryCode(
-        patchInput.getCategoryCode()
-      );
-      if (category == null) {
-        throw new ResponseStatusException(
-          HttpStatus.NOT_FOUND,
-          "CATEGORY NOT FOUND"
-        );
-      }
-      previousProduct.updateCategory(category);
-      isUpdated = true;
-    }
-
-    if (patchInput.getDescription() != null) {
-      if (
-        !patchInput.getDescription().equals(previousProduct.getDescription())
-      ) {
-        previousProduct.updateDescription(patchInput.getDescription());
-        isUpdated = true;
-      }
-    } else {
-      if (previousProduct.getDescription() != null) {
-        previousProduct.updateDescription(null);
-        isUpdated = true;
-      }
-    }
-
+    byte[] newImgBytes = null;
     if (patchInput.getImg() != null) {
       try {
-        byte[] newImg = patchInput.getImg().getBytes();
-        if (!Arrays.equals(newImg, previousProduct.getImg())) {
-          previousProduct.updateImg(newImg);
-          isUpdated = true;
-        }
+        newImgBytes = patchInput.getImg().getBytes();
       } catch (IOException e) {
         throw new ResponseStatusException(
           HttpStatus.BAD_REQUEST,
           "IMAGE INPUT IS INVALID"
         );
       }
-    } else {
-      if (previousProduct.getImg() != null) {
-        previousProduct.updateImg(null);
-        isUpdated = true;
-      }
     }
 
-    if (patchInput.getBarcode() != null) {
-      if (!patchInput.getBarcode().equals(previousProduct.getBarcode())) {
-        previousProduct.updateBarcode(patchInput.getBarcode());
-        isUpdated = true;
-      }
-    } else {
-      if (previousProduct.getBarcode() != null) {
-        previousProduct.updateBarcode(null);
-        isUpdated = true;
-      }
-    }
+    if (previousProduct.isStateChanged(patchInput, newImgBytes)) {
+      if (patchInput.getName() != null) previousProduct.updateName(
+        patchInput.getName()
+      );
+      if (patchInput.getPrice() != null) previousProduct.updatePrice(
+        patchInput.getPrice()
+      );
+      if (patchInput.getStock() != null) previousProduct.updateStock(
+        patchInput.getStock()
+      );
 
-    if (isUpdated) {
+      if (patchInput.getCategoryCode() != null) {
+        Category category = categoryRepository.findByCategoryCode(
+          patchInput.getCategoryCode()
+        );
+        if (category == null) {
+          throw new ResponseStatusException(
+            HttpStatus.NOT_FOUND,
+            "CATEGORY NOT FOUND"
+          );
+        }
+        previousProduct.updateCategory(category);
+      }
+
+      if (
+        patchInput.getDescription() != null
+      ) previousProduct.updateDescription(patchInput.getDescription());
+
+      if (newImgBytes != null) {
+        previousProduct.updateImg(newImgBytes);
+      }
+
+      if (patchInput.getBarcode() != null) previousProduct.updateBarcode(
+        patchInput.getBarcode()
+      );
+
       productRepository.save(previousProduct);
     } else {
       throw new ResponseStatusException(

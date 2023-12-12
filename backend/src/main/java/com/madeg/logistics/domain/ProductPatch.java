@@ -26,7 +26,7 @@ public class ProductPatch {
 
   @NotNull
   @Schema(example = "10")
-  private int stock;
+  private Integer stock;
 
   private MultipartFile img;
 

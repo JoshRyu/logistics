@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -59,5 +60,13 @@ public class Category {
 
   public void updateParentCategory(Category parentCategory) {
     this.parentCategory = parentCategory;
+  }
+
+  public boolean isStateChanged(Category other) {
+    return (
+      !Objects.equals(name, other.name) ||
+      !Objects.equals(description, other.description) ||
+      !Objects.equals(parentCategory, other.parentCategory)
+    );
   }
 }
