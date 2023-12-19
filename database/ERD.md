@@ -8,7 +8,6 @@
 - category_code(fk) : 카테고리 코드
 - name: 제품의 이름
 - price: 제품의 판매가 (할인 적용 X)
-- cost: 제품 원가
 - stock: 제품 재고 수 (상점에 등록된 재고 수 미포함)
 - img: 제품의 이미지
 - barcode: 제품의 바코드 정보
@@ -39,6 +38,7 @@
 - store_code(fk) : 매장 코드
 - product_code(fk): 제품 코드
 - store_price: 특정 매장에서의 제품 판매 가격
+- income_cnt: 입고 수
 - stock_cnt: 재고 수
 - description: 매장 제품 설명
 
