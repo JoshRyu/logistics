@@ -1,8 +1,5 @@
 # ERD
 
-> 상품 할인 주기, 통계 주기 모두 month로 설정
-> 월 별 할인가로 판매할 상품과 할인가 지정 필요
-
 ## table
 
 ### product
@@ -14,7 +11,7 @@
 - stock: 제품 재고 수 (상점에 등록된 재고 수 미포함)
 - img: 제품의 이미지
 - barcode: 제품의 바코드 정보
-- description: 제품
+- description: 제품 설명
 
 ### category
 
@@ -35,31 +32,42 @@
 
 ### store_product
 
+> 먼저 등록되어야 한다
+
 - store_product_id(pk): 매장 제품 아이디
 - store_code(fk) : 매장 코드
 - product_code(fk): 제품 코드
-- month: 월
-- incoming_cnt: 총 입고수
-- sale_cnt: 판매 수량
+- store_price: 특정 매장에서의 제품 판매 가격
+- income_cnt: 입고 수
+- stock_cnt: 재고 수
 - description: 매장 제품 설명
 
-※ stock_cnt: 재고 수 (incoming_cnt - sale_cnt)
+### sales_history
 
-### discount
-
-- discount_id(pk): 할인 아이디
+- sales_id(pk): 판매 아이디
 - store_product_id(fk): 매장 제품 아이디
-- discount_month: 월
-- discount_price: 할인 판매가. 월별 할인가 데이터가 존재하지 않을 경우 product.price(제품의 판매가)로 판매
+- sales_month: 판매 월
+- quantity: 판매 수량
+- sales_price: 판매 가격 (store_price - price_diff)
+- memo: 메모
 
 ### store_statistics
+
+> 매일 1회 배치로 업데이트
 
 - statistics_id(pk): 매장 통계 아이디
 - store_code(fk): 매장 코드
 - product_code(fk): 제품 코드
 - month: 월
-- month_revenue: 상품 월별 총 매출 (store_product.sale_cnt \* proudct.price | discount.discount_price)
-- month_profit: 상품 월별 총 순이익 (month_revenue \* (1-store.commision_rate) - fixed_cost)
+- month_revenue: 상품 월별 총 매출
+- month_profit: 상품 월별 총 순이익
+
+```
+# month_profit 계산
+- profit_per_product = (sale_price - cost) * quantity
+- total_profit_before_commission = Σ(profit_per_product)
+- month_profit = (total_profit_before_commission * (1 - store.commission_rate)) - store.fixed_cost
+```
 
 ### member
 
