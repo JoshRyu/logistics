@@ -40,6 +40,7 @@
 - store_price: 특정 매장에서의 제품 판매 가격
 - income_cnt: 입고 수
 - stock_cnt: 재고 수
+- defect_cnt: 불량/파손 수
 - description: 매장 제품 설명
 
 ### sales_history
