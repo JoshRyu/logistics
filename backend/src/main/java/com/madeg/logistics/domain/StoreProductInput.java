@@ -13,10 +13,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class StoreProductInput {
 
-  @NotBlank(message = "상점 명은 반드시 있어야 합니다")
-  @Schema(example = "store_1")
-  private String storeCode;
-
   @NotBlank(message = "제품 명은 반드시 있어야 합니다")
   @Schema(example = "product_1")
   private String productCode;
