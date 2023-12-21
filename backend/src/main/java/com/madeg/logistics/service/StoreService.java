@@ -6,7 +6,6 @@ import com.madeg.logistics.entity.Store;
 import com.madeg.logistics.enums.StoreType;
 import com.madeg.logistics.repository.StoreRepository;
 import java.util.List;
-import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -32,11 +31,12 @@ public class StoreService {
       .builder()
       .name(storeInput.getName())
       .address(storeInput.getAddress())
-      .type(storeInput.getType())
       .fixedCost(storeInput.getFixedCost())
       .commissionRate(storeInput.getCommissionRate())
       .description(storeInput.getDescription())
       .build();
+
+    updateStoreType(store);
 
     storeRepository.save(store);
   }
