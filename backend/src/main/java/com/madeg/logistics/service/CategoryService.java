@@ -59,8 +59,10 @@ public class CategoryService {
     return categoryRepository.findAll();
   }
 
-  public void patchCategory(String code, CategoryPatch patchInput) {
-    Category previousCategory = categoryRepository.findByCategoryCode(code);
+  public void patchCategory(String categoryCode, CategoryPatch patchInput) {
+    Category previousCategory = categoryRepository.findByCategoryCode(
+      categoryCode
+    );
 
     if (previousCategory == null) {
       throw new ResponseStatusException(
@@ -105,8 +107,10 @@ public class CategoryService {
     }
   }
 
-  public void deleteCategory(String code) {
-    Category previousCategory = categoryRepository.findByCategoryCode(code);
+  public void deleteCategory(String categoryCode) {
+    Category previousCategory = categoryRepository.findByCategoryCode(
+      categoryCode
+    );
     if (previousCategory == null) {
       throw new ResponseStatusException(
         HttpStatus.NOT_FOUND,

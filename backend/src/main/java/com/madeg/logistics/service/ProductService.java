@@ -3,15 +3,13 @@ package com.madeg.logistics.service;
 import com.madeg.logistics.domain.ProductInput;
 import com.madeg.logistics.domain.ProductPatch;
 import com.madeg.logistics.domain.ProductRes;
-import com.madeg.logistics.domain.ProductRes.SimplePageInfo;
+import com.madeg.logistics.domain.SimplePageInfo;
 import com.madeg.logistics.entity.Category;
 import com.madeg.logistics.entity.Product;
 import com.madeg.logistics.repository.CategoryRepository;
 import com.madeg.logistics.repository.ProductRepository;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -95,8 +93,8 @@ public class ProductService {
     );
   }
 
-  public Product getProductByCode(String code) {
-    Product product = productRepository.findByProductCode(code);
+  public Product getProductByCode(String productCode) {
+    Product product = productRepository.findByProductCode(productCode);
     if (product == null) {
       throw new ResponseStatusException(
         HttpStatus.NOT_FOUND,
@@ -106,8 +104,8 @@ public class ProductService {
     return product;
   }
 
-  public void patchProduct(String code, ProductPatch patchInput) {
-    Product previousProduct = productRepository.findByProductCode(code);
+  public void patchProduct(String productCode, ProductPatch patchInput) {
+    Product previousProduct = productRepository.findByProductCode(productCode);
 
     if (previousProduct == null) {
       throw new ResponseStatusException(
@@ -173,8 +171,8 @@ public class ProductService {
     }
   }
 
-  public void deleteProduct(String code) {
-    Product previousProduct = productRepository.findByProductCode(code);
+  public void deleteProduct(String productCode) {
+    Product previousProduct = productRepository.findByProductCode(productCode);
 
     if (previousProduct == null) {
       throw new ResponseStatusException(

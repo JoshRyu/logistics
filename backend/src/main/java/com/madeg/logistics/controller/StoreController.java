@@ -87,9 +87,9 @@ public class StoreController {
   @ApiResponse(
     content = @Content(schema = @Schema(implementation = CommonRes.class))
   )
-  @PatchMapping("/{code}")
+  @PatchMapping("/{store_code}")
   public ResponseEntity<Object> patch(
-    @PathVariable(name = "code", required = true) String code,
+    @PathVariable(name = "store_code", required = true) String storeCode,
     @RequestBody @Valid StorePatch patchInput,
     Errors errors
   ) {
@@ -105,7 +105,7 @@ public class StoreController {
     }
 
     try {
-      storeService.patchStore(code, patchInput);
+      storeService.patchStore(storeCode, patchInput);
       return ResponseEntity
         .status(HttpStatus.ACCEPTED)
         .body(new CommonRes(HttpStatus.ACCEPTED.value(), "STORE IS UPDATED"));
@@ -120,12 +120,12 @@ public class StoreController {
   @ApiResponse(
     content = @Content(schema = @Schema(implementation = CommonRes.class))
   )
-  @DeleteMapping("/{code}")
+  @DeleteMapping("/{store_code}")
   public ResponseEntity<Object> delete(
-    @PathVariable(name = "code", required = true) String code
+    @PathVariable(name = "store_code", required = true) String storeCode
   ) {
     try {
-      storeService.deleteStore(code);
+      storeService.deleteStore(storeCode);
       return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     } catch (ResponseStatusException ex) {
       return ResponseEntity

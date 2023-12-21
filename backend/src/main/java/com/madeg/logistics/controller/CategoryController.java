@@ -87,9 +87,9 @@ public class CategoryController {
   @ApiResponse(
     content = @Content(schema = @Schema(implementation = CommonRes.class))
   )
-  @PatchMapping("/{code}")
+  @PatchMapping("/{category_code}")
   public ResponseEntity<Object> patch(
-    @PathVariable(name = "code", required = true) String code,
+    @PathVariable(name = "category_code", required = true) String categoryCode,
     @RequestBody @Valid CategoryPatch patchInput,
     Errors errors
   ) {
@@ -104,7 +104,7 @@ public class CategoryController {
         );
     }
     try {
-      categoryService.patchCategory(code, patchInput);
+      categoryService.patchCategory(categoryCode, patchInput);
       return ResponseEntity
         .status(HttpStatus.ACCEPTED)
         .body(
@@ -121,12 +121,12 @@ public class CategoryController {
   @ApiResponse(
     content = @Content(schema = @Schema(implementation = CommonRes.class))
   )
-  @DeleteMapping("/{code}")
+  @DeleteMapping("/{category_code}")
   public ResponseEntity<Object> delete(
-    @PathVariable(name = "code", required = true) String code
+    @PathVariable(name = "category_code", required = true) String categoryCode
   ) {
     try {
-      categoryService.deleteCategory(code);
+      categoryService.deleteCategory(categoryCode);
       return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     } catch (ResponseStatusException ex) {
       return ResponseEntity

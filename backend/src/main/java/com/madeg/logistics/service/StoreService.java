@@ -45,8 +45,8 @@ public class StoreService {
     return storeRepository.findAll();
   }
 
-  public void patchStore(String code, StorePatch patchInput) {
-    Store previousStore = storeRepository.findByStoreCode(code);
+  public void patchStore(String storeCode, StorePatch patchInput) {
+    Store previousStore = storeRepository.findByStoreCode(storeCode);
 
     if (previousStore == null) {
       throw new ResponseStatusException(
@@ -98,8 +98,8 @@ public class StoreService {
     }
   }
 
-  public void deleteStore(String code) {
-    Store previousStore = storeRepository.findByStoreCode(code);
+  public void deleteStore(String storeCode) {
+    Store previousStore = storeRepository.findByStoreCode(storeCode);
 
     if (previousStore == null) {
       throw new ResponseStatusException(
