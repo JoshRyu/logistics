@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 public interface CategoryRepository extends CrudRepository<Category, String> {
   Category findByName(String name);
 
-  Category findByCategoryCode(String code);
+  Category findByCategoryCode(String categoryCode);
 
   List<Category> findAll();
 }

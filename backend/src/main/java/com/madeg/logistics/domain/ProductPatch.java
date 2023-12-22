@@ -1,6 +1,7 @@
 package com.madeg.logistics.domain;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
@@ -22,6 +23,7 @@ public class ProductPatch {
 
   @NotNull
   @Schema(example = "1300")
+  @DecimalMin(value = "0.0")
   private BigDecimal price;
 
   @NotNull

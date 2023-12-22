@@ -1,11 +1,9 @@
 package com.madeg.logistics.domain;
 
-import com.madeg.logistics.enums.StoreType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,10 +24,6 @@ public class StoreInput {
 
   @Schema(example = "경기도 용인시 수지구 88번지")
   private String address;
-
-  @NotNull(message = " 상점 유형은 반드시 있어야 합니다")
-  @Schema(example = "FIX")
-  private StoreType type;
 
   @DecimalMin(value = "0", message = "고정 비용은 0 미만이 될 수 없습니다.")
   @Schema(example = "30000")

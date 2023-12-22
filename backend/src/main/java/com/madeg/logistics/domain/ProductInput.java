@@ -1,6 +1,7 @@
 package com.madeg.logistics.domain;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -28,6 +29,7 @@ public class ProductInput {
   private String categoryCode;
 
   @NotNull(message = "가격은 반드시 있어야 합니다")
+  @DecimalMin(value = "0.0")
   @Schema(example = "1200")
   private BigDecimal price;
 

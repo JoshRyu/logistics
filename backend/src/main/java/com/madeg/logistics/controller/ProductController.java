@@ -96,12 +96,12 @@ public class ProductController {
   @ApiResponse(
     content = @Content(schema = @Schema(implementation = List.class))
   )
-  @GetMapping("/{code}")
+  @GetMapping("/{product_code}")
   public ResponseEntity<ProductRes> getProductByCode(
-    @PathVariable(name = "code", required = true) String code
+    @PathVariable(name = "product_code", required = true) String productCode
   ) {
     try {
-      Product product = productService.getProductByCode(code);
+      Product product = productService.getProductByCode(productCode);
 
       return ResponseEntity
         .status(HttpStatus.OK)
@@ -131,9 +131,9 @@ public class ProductController {
   @ApiResponse(
     content = @Content(schema = @Schema(implementation = CommonRes.class))
   )
-  @PatchMapping(value = "/{code}", consumes = { "multipart/form-data" })
+  @PatchMapping(value = "/{product_code}", consumes = { "multipart/form-data" })
   public ResponseEntity<Object> patch(
-    @PathVariable(name = "code", required = true) String code,
+    @PathVariable(name = "product_code", required = true) String productCode,
     @ModelAttribute @Valid ProductPatch patchInput,
     Errors errors
   ) {
@@ -148,7 +148,7 @@ public class ProductController {
         );
     }
     try {
-      productService.patchProduct(code, patchInput);
+      productService.patchProduct(productCode, patchInput);
       return ResponseEntity
         .status(HttpStatus.ACCEPTED)
         .body(new CommonRes(HttpStatus.ACCEPTED.value(), "PRODUCT IS UPDATED"));
@@ -163,12 +163,12 @@ public class ProductController {
   @ApiResponse(
     content = @Content(schema = @Schema(implementation = CommonRes.class))
   )
-  @DeleteMapping("/{code}")
+  @DeleteMapping("/{product_code}")
   public ResponseEntity<Object> delete(
-    @PathVariable(name = "code", required = true) String code
+    @PathVariable(name = "product_code", required = true) String productCode
   ) {
     try {
-      productService.deleteProduct(code);
+      productService.deleteProduct(productCode);
       return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     } catch (ResponseStatusException ex) {
       return ResponseEntity

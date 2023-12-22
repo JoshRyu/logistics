@@ -1,21 +1,20 @@
 package com.madeg.logistics.domain;
 
-import com.madeg.logistics.entity.Product;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class ProductRes extends CommonRes {
+public class StoreProductRes extends CommonRes {
 
-  private List<Product> content;
+  private List<StoreProductOutput> content;
   private SimplePageInfo pageable;
 
-  public ProductRes(
+  public StoreProductRes(
     int status,
     String message,
-    List<Product> content,
+    List<StoreProductOutput> content,
     SimplePageInfo pageable
   ) {
     super(status, message);

@@ -9,8 +9,17 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import java.math.BigDecimal;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
 @Table(name = "store_product")
 public class StoreProduct {
 
@@ -43,14 +52,17 @@ public class StoreProduct {
   )
   private Product product;
 
-  @Column(name = "month")
-  private Integer month;
+  @Column(name = "store_price")
+  private BigDecimal storePrice;
 
-  @Column(name = "incoming_cnt")
-  private Integer incomingCnt;
+  @Column(name = "income_cnt")
+  private Integer incomeCnt;
 
-  @Column(name = "sale_cnt")
-  private Integer saleCnt;
+  @Column(name = "stock_cnt")
+  private Integer stockCnt;
+
+  @Column(name = "defect_cnt")
+  private Integer defectCnt;
 
   @Column(name = "description")
   private String description;
