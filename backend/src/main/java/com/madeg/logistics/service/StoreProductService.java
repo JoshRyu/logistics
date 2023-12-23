@@ -32,29 +32,34 @@ public class StoreProductService {
   @Autowired
   private StoreProductRepository storeProductRepository;
 
-  public void registerStoreProduct(
-    String storeCode,
-    StoreProductInput storeProductInput
-  ) {
+  private Store findStoreByCode(String storeCode) {
     Store store = storeRepository.findByStoreCode(storeCode);
-
     if (store == null) {
       throw new ResponseStatusException(
         HttpStatus.NOT_FOUND,
         "STORE NOT FOUND"
       );
     }
+    return store;
+  }
 
-    Product product = productRepository.findByProductCode(
-      storeProductInput.getProductCode()
-    );
-
+  private Product findProductByCode(String productCode) {
+    Product product = productRepository.findByProductCode(productCode);
     if (product == null) {
       throw new ResponseStatusException(
         HttpStatus.NOT_FOUND,
         "PRODUCT NOT FOUND"
       );
     }
+    return product;
+  }
+
+  public void registerStoreProduct(
+    String storeCode,
+    StoreProductInput storeProductInput
+  ) {
+    Store store = findStoreByCode(storeCode);
+    Product product = findProductByCode(storeProductInput.getProductCode());
 
     StoreProduct existStoreProduct = storeProductRepository.findByStoreAndProduct(
       store,
@@ -95,14 +100,6 @@ public class StoreProductService {
   }
 
   public StoreProductRes getStoreProducts(String storeCode, Pageable pageable) {
-    Store store = storeRepository.findByStoreCode(storeCode);
-
-    if (store == null) {
-      throw new ResponseStatusException(
-        HttpStatus.NOT_FOUND,
-        "STORE NOT FOUND"
-      );
-    }
     Page<StoreProduct> page = storeProductRepository.findByStoreCode(
       storeCode,
       pageable
@@ -143,24 +140,9 @@ public class StoreProductService {
     String productCode,
     StoreProductPatch patchInput
   ) {
-    // TODO: refactor duplicate store and product find logic
-    Store store = storeRepository.findByStoreCode(storeCode);
+    Store store = findStoreByCode(storeCode);
+    Product product = findProductByCode(productCode);
 
-    if (store == null) {
-      throw new ResponseStatusException(
-        HttpStatus.NOT_FOUND,
-        "STORE NOT FOUND"
-      );
-    }
-
-    Product product = productRepository.findByProductCode(productCode);
-
-    if (product == null) {
-      throw new ResponseStatusException(
-        HttpStatus.NOT_FOUND,
-        "PRODUCT NOT FOUND"
-      );
-    }
     StoreProduct previousStoreProduct = storeProductRepository.findByStoreAndProduct(
       store,
       product
@@ -191,5 +173,24 @@ public class StoreProductService {
         "STORE PRODUCT IS NOT UPDATED"
       );
     }
+  }
+
+  public void deleteStoreProduct(String storeCode, String productCode) {
+    Store store = findStoreByCode(storeCode);
+    Product product = findProductByCode(productCode);
+
+    StoreProduct previousStoreProduct = storeProductRepository.findByStoreAndProduct(
+      store,
+      product
+    );
+
+    if (previousStoreProduct == null) {
+      throw new ResponseStatusException(
+        HttpStatus.NOT_FOUND,
+        "STORE PRODUCT NOT FOUND"
+      );
+    }
+
+    storeProductRepository.delete(previousStoreProduct);
   }
 }

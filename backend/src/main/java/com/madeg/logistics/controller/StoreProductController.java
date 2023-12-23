@@ -18,6 +18,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -118,6 +119,21 @@ public class StoreProductController {
         .body(
           new CommonRes(HttpStatus.ACCEPTED.value(), "STORE PRODUCT IS UPDATED")
         );
+    } catch (ResponseStatusException ex) {
+      return ResponseEntity
+        .status(ex.getStatusCode())
+        .body(new CommonRes(ex.getStatusCode().value(), ex.getReason()));
+    }
+  }
+
+  @DeleteMapping("/{store_code}/product/{product_code}")
+  public ResponseEntity<Object> delete(
+    @PathVariable(name = "store_code", required = true) String storeCode,
+    @PathVariable(name = "product_code", required = true) String productCode
+  ) {
+    try {
+      storeProductService.deleteStoreProduct(storeCode, productCode);
+      return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     } catch (ResponseStatusException ex) {
       return ResponseEntity
         .status(ex.getStatusCode())
