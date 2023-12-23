@@ -5,7 +5,6 @@ import com.madeg.logistics.domain.CategoryPatch;
 import com.madeg.logistics.entity.Category;
 import com.madeg.logistics.repository.CategoryRepository;
 import java.util.List;
-import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;

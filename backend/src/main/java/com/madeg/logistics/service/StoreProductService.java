@@ -3,6 +3,7 @@ package com.madeg.logistics.service;
 import com.madeg.logistics.domain.SimplePageInfo;
 import com.madeg.logistics.domain.StoreProductInput;
 import com.madeg.logistics.domain.StoreProductOutput;
+import com.madeg.logistics.domain.StoreProductPatch;
 import com.madeg.logistics.domain.StoreProductRes;
 import com.madeg.logistics.entity.Product;
 import com.madeg.logistics.entity.Store;
@@ -135,5 +136,60 @@ public class StoreProductService {
       content,
       simplePageInfo
     );
+  }
+
+  public void patchStoreProduct(
+    String storeCode,
+    String productCode,
+    StoreProductPatch patchInput
+  ) {
+    // TODO: refactor duplicate store and product find logic
+    Store store = storeRepository.findByStoreCode(storeCode);
+
+    if (store == null) {
+      throw new ResponseStatusException(
+        HttpStatus.NOT_FOUND,
+        "STORE NOT FOUND"
+      );
+    }
+
+    Product product = productRepository.findByProductCode(productCode);
+
+    if (product == null) {
+      throw new ResponseStatusException(
+        HttpStatus.NOT_FOUND,
+        "PRODUCT NOT FOUND"
+      );
+    }
+    StoreProduct previousStoreProduct = storeProductRepository.findByStoreAndProduct(
+      store,
+      product
+    );
+
+    if (previousStoreProduct == null) {
+      throw new ResponseStatusException(
+        HttpStatus.NOT_FOUND,
+        "STORE NOT FOUND"
+      );
+    }
+
+    if (previousStoreProduct.isStateChanged((patchInput))) {
+      if (patchInput.getStorePrice() != null) {
+        previousStoreProduct.updateStorePrice(patchInput.getStorePrice());
+      } else {
+        previousStoreProduct.updateStorePrice(product.getPrice());
+      }
+
+      if (patchInput.getDescription() != null) {
+        previousStoreProduct.updateDescription(patchInput.getDescription());
+      }
+
+      storeProductRepository.save(previousStoreProduct);
+    } else {
+      throw new ResponseStatusException(
+        HttpStatus.NO_CONTENT,
+        "STORE PRODUCT IS NOT UPDATED"
+      );
+    }
   }
 }
