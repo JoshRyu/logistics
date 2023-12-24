@@ -79,6 +79,14 @@ public class StoreProduct {
     this.description = description;
   }
 
+  public void updateIncomeCnt(Integer incomeCnt) {
+    this.incomeCnt = incomeCnt;
+  }
+
+  public void updateStockCnt(Integer stockCnt) {
+    this.stockCnt = stockCnt;
+  }
+
   public boolean isStateChanged(StoreProductPatch patchInput) {
     return (
       (

@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -134,6 +135,33 @@ public class StoreProductController {
     try {
       storeProductService.deleteStoreProduct(storeCode, productCode);
       return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    } catch (ResponseStatusException ex) {
+      return ResponseEntity
+        .status(ex.getStatusCode())
+        .body(new CommonRes(ex.getStatusCode().value(), ex.getReason()));
+    }
+  }
+
+  @PatchMapping("/{store_code}/product/{product_code}/restock")
+  public ResponseEntity<Object> restock(
+    @PathVariable(name = "store_code", required = true) String storeCode,
+    @PathVariable(name = "product_code", required = true) String productCode,
+    @RequestParam @Valid Integer restockCnt
+  ) {
+    try {
+      storeProductService.restockStoreProduct(
+        storeCode,
+        productCode,
+        restockCnt
+      );
+      return ResponseEntity
+        .status(HttpStatus.ACCEPTED)
+        .body(
+          new CommonRes(
+            HttpStatus.ACCEPTED.value(),
+            "STORE PRODUCT IS RESTOCKED"
+          )
+        );
     } catch (ResponseStatusException ex) {
       return ResponseEntity
         .status(ex.getStatusCode())

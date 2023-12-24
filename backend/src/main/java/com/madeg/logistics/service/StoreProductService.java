@@ -54,6 +54,21 @@ public class StoreProductService {
     return product;
   }
 
+  private StoreProduct findStoreProduct(Store store, Product product) {
+    StoreProduct previousStoreProduct = storeProductRepository.findByStoreAndProduct(
+      store,
+      product
+    );
+
+    if (previousStoreProduct == null) {
+      throw new ResponseStatusException(
+        HttpStatus.NOT_FOUND,
+        "STORE PRODUCT NOT FOUND"
+      );
+    }
+    return previousStoreProduct;
+  }
+
   public void registerStoreProduct(
     String storeCode,
     StoreProductInput storeProductInput
@@ -142,18 +157,7 @@ public class StoreProductService {
   ) {
     Store store = findStoreByCode(storeCode);
     Product product = findProductByCode(productCode);
-
-    StoreProduct previousStoreProduct = storeProductRepository.findByStoreAndProduct(
-      store,
-      product
-    );
-
-    if (previousStoreProduct == null) {
-      throw new ResponseStatusException(
-        HttpStatus.NOT_FOUND,
-        "STORE NOT FOUND"
-      );
-    }
+    StoreProduct previousStoreProduct = findStoreProduct(store, product);
 
     if (previousStoreProduct.isStateChanged((patchInput))) {
       if (patchInput.getStorePrice() != null) {
@@ -178,19 +182,34 @@ public class StoreProductService {
   public void deleteStoreProduct(String storeCode, String productCode) {
     Store store = findStoreByCode(storeCode);
     Product product = findProductByCode(productCode);
-
-    StoreProduct previousStoreProduct = storeProductRepository.findByStoreAndProduct(
-      store,
-      product
-    );
-
-    if (previousStoreProduct == null) {
-      throw new ResponseStatusException(
-        HttpStatus.NOT_FOUND,
-        "STORE PRODUCT NOT FOUND"
-      );
-    }
+    StoreProduct previousStoreProduct = findStoreProduct(store, product);
 
     storeProductRepository.delete(previousStoreProduct);
+  }
+
+  public void restockStoreProduct(
+    String storeCode,
+    String productCode,
+    Integer restockCnt
+  ) {
+    Store store = findStoreByCode(storeCode);
+    Product product = findProductByCode(productCode);
+    StoreProduct previousStoreProduct = findStoreProduct(store, product);
+
+    product.updateStock(product.getStock() - restockCnt);
+
+    productRepository.save(product);
+
+    Integer currentIncomeCnt = previousStoreProduct.getIncomeCnt() == null
+      ? 0
+      : previousStoreProduct.getIncomeCnt();
+    Integer currentStockCnt = previousStoreProduct.getStockCnt() == null
+      ? 0
+      : previousStoreProduct.getStockCnt();
+
+    previousStoreProduct.updateIncomeCnt(currentIncomeCnt + restockCnt);
+    previousStoreProduct.updateStockCnt(currentStockCnt + restockCnt);
+
+    storeProductRepository.save(previousStoreProduct);
   }
 }
