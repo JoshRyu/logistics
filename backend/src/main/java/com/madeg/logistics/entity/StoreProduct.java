@@ -87,6 +87,10 @@ public class StoreProduct {
     this.stockCnt = stockCnt;
   }
 
+  public void updateDefectCnt(Integer defectCnt) {
+    this.defectCnt = defectCnt;
+  }
+
   public boolean isStateChanged(StoreProductPatch patchInput) {
     return (
       (

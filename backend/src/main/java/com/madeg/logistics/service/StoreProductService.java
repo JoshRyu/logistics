@@ -212,4 +212,26 @@ public class StoreProductService {
 
     storeProductRepository.save(previousStoreProduct);
   }
+
+  public void updateDefectedStoreProduct(
+    String storeCode,
+    String productCode,
+    Integer defectCnt
+  ) {
+    Store store = findStoreByCode(storeCode);
+    Product product = findProductByCode(productCode);
+    StoreProduct previousStoreProduct = findStoreProduct(store, product);
+
+    Integer currentStockCnt = previousStoreProduct.getStockCnt() == null
+      ? 0
+      : previousStoreProduct.getStockCnt();
+    Integer currentDefectCnt = previousStoreProduct.getDefectCnt() == null
+      ? 0
+      : previousStoreProduct.getDefectCnt();
+
+    previousStoreProduct.updateStockCnt(currentStockCnt - defectCnt);
+    previousStoreProduct.updateDefectCnt(currentDefectCnt + defectCnt);
+
+    storeProductRepository.save(previousStoreProduct);
+  }
 }

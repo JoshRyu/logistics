@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -127,6 +128,10 @@ public class StoreProductController {
     }
   }
 
+  @Operation(summary = "Delete a Specific Store Product")
+  @ApiResponse(
+    content = @Content(schema = @Schema(implementation = CommonRes.class))
+  )
   @DeleteMapping("/{store_code}/product/{product_code}")
   public ResponseEntity<Object> delete(
     @PathVariable(name = "store_code", required = true) String storeCode,
@@ -142,6 +147,10 @@ public class StoreProductController {
     }
   }
 
+  @Operation(summary = "Restock Store Product")
+  @ApiResponse(
+    content = @Content(schema = @Schema(implementation = CommonRes.class))
+  )
   @PatchMapping("/{store_code}/product/{product_code}/restock")
   public ResponseEntity<Object> restock(
     @PathVariable(name = "store_code", required = true) String storeCode,
@@ -160,6 +169,37 @@ public class StoreProductController {
           new CommonRes(
             HttpStatus.ACCEPTED.value(),
             "STORE PRODUCT IS RESTOCKED"
+          )
+        );
+    } catch (ResponseStatusException ex) {
+      return ResponseEntity
+        .status(ex.getStatusCode())
+        .body(new CommonRes(ex.getStatusCode().value(), ex.getReason()));
+    }
+  }
+
+  @Operation(summary = "Update Defected Store Product Info")
+  @ApiResponse(
+    content = @Content(schema = @Schema(implementation = CommonRes.class))
+  )
+  @PatchMapping("/{store_code}/product/{product_code}/defect")
+  public ResponseEntity<Object> defect(
+    @PathVariable(name = "store_code", required = true) String storeCode,
+    @PathVariable(name = "product_code", required = true) String productCode,
+    @RequestParam @Valid @Min(0) Integer defectCnt
+  ) {
+    try {
+      storeProductService.updateDefectedStoreProduct(
+        storeCode,
+        productCode,
+        defectCnt
+      );
+      return ResponseEntity
+        .status(HttpStatus.ACCEPTED)
+        .body(
+          new CommonRes(
+            HttpStatus.ACCEPTED.value(),
+            "STORE PRODUCT DEFECT INFO IS UPDATED"
           )
         );
     } catch (ResponseStatusException ex) {
