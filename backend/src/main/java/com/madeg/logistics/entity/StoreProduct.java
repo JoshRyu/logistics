@@ -1,5 +1,6 @@
 package com.madeg.logistics.entity;
 
+import com.madeg.logistics.domain.StoreProductPatch;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -9,7 +10,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -52,6 +55,7 @@ public class StoreProduct {
   )
   private Product product;
 
+  @NotNull
   @Column(name = "store_price")
   private BigDecimal storePrice;
 
@@ -66,4 +70,38 @@ public class StoreProduct {
 
   @Column(name = "description")
   private String description;
+
+  public void updateStorePrice(BigDecimal storePrice) {
+    this.storePrice = storePrice;
+  }
+
+  public void updateDescription(String description) {
+    this.description = description;
+  }
+
+  public void updateIncomeCnt(Integer incomeCnt) {
+    this.incomeCnt = incomeCnt;
+  }
+
+  public void updateStockCnt(Integer stockCnt) {
+    this.stockCnt = stockCnt;
+  }
+
+  public void updateDefectCnt(Integer defectCnt) {
+    this.defectCnt = defectCnt;
+  }
+
+  public boolean isStateChanged(StoreProductPatch patchInput) {
+    return (
+      (
+        patchInput.getStorePrice() == null ||
+        (
+          storePrice != null &&
+          patchInput.getStorePrice() != null &&
+          storePrice.compareTo(patchInput.getStorePrice()) != 0
+        )
+      ) ||
+      !Objects.equals(description, patchInput.getDescription())
+    );
+  }
 }

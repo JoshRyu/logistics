@@ -3,6 +3,7 @@ package com.madeg.logistics.service;
 import com.madeg.logistics.domain.SimplePageInfo;
 import com.madeg.logistics.domain.StoreProductInput;
 import com.madeg.logistics.domain.StoreProductOutput;
+import com.madeg.logistics.domain.StoreProductPatch;
 import com.madeg.logistics.domain.StoreProductRes;
 import com.madeg.logistics.entity.Product;
 import com.madeg.logistics.entity.Store;
@@ -31,29 +32,49 @@ public class StoreProductService {
   @Autowired
   private StoreProductRepository storeProductRepository;
 
-  public void registerStoreProduct(
-    String storeCode,
-    StoreProductInput storeProductInput
-  ) {
+  private Store findStoreByCode(String storeCode) {
     Store store = storeRepository.findByStoreCode(storeCode);
-
     if (store == null) {
       throw new ResponseStatusException(
         HttpStatus.NOT_FOUND,
         "STORE NOT FOUND"
       );
     }
+    return store;
+  }
 
-    Product product = productRepository.findByProductCode(
-      storeProductInput.getProductCode()
-    );
-
+  private Product findProductByCode(String productCode) {
+    Product product = productRepository.findByProductCode(productCode);
     if (product == null) {
       throw new ResponseStatusException(
         HttpStatus.NOT_FOUND,
         "PRODUCT NOT FOUND"
       );
     }
+    return product;
+  }
+
+  private StoreProduct findStoreProduct(Store store, Product product) {
+    StoreProduct previousStoreProduct = storeProductRepository.findByStoreAndProduct(
+      store,
+      product
+    );
+
+    if (previousStoreProduct == null) {
+      throw new ResponseStatusException(
+        HttpStatus.NOT_FOUND,
+        "STORE PRODUCT NOT FOUND"
+      );
+    }
+    return previousStoreProduct;
+  }
+
+  public void registerStoreProduct(
+    String storeCode,
+    StoreProductInput storeProductInput
+  ) {
+    Store store = findStoreByCode(storeCode);
+    Product product = findProductByCode(storeProductInput.getProductCode());
 
     StoreProduct existStoreProduct = storeProductRepository.findByStoreAndProduct(
       store,
@@ -94,14 +115,6 @@ public class StoreProductService {
   }
 
   public StoreProductRes getStoreProducts(String storeCode, Pageable pageable) {
-    Store store = storeRepository.findByStoreCode(storeCode);
-
-    if (store == null) {
-      throw new ResponseStatusException(
-        HttpStatus.NOT_FOUND,
-        "STORE NOT FOUND"
-      );
-    }
     Page<StoreProduct> page = storeProductRepository.findByStoreCode(
       storeCode,
       pageable
@@ -135,5 +148,90 @@ public class StoreProductService {
       content,
       simplePageInfo
     );
+  }
+
+  public void patchStoreProduct(
+    String storeCode,
+    String productCode,
+    StoreProductPatch patchInput
+  ) {
+    Store store = findStoreByCode(storeCode);
+    Product product = findProductByCode(productCode);
+    StoreProduct previousStoreProduct = findStoreProduct(store, product);
+
+    if (previousStoreProduct.isStateChanged((patchInput))) {
+      if (patchInput.getStorePrice() != null) {
+        previousStoreProduct.updateStorePrice(patchInput.getStorePrice());
+      } else {
+        previousStoreProduct.updateStorePrice(product.getPrice());
+      }
+
+      if (patchInput.getDescription() != null) {
+        previousStoreProduct.updateDescription(patchInput.getDescription());
+      }
+
+      storeProductRepository.save(previousStoreProduct);
+    } else {
+      throw new ResponseStatusException(
+        HttpStatus.NO_CONTENT,
+        "STORE PRODUCT IS NOT UPDATED"
+      );
+    }
+  }
+
+  public void deleteStoreProduct(String storeCode, String productCode) {
+    Store store = findStoreByCode(storeCode);
+    Product product = findProductByCode(productCode);
+    StoreProduct previousStoreProduct = findStoreProduct(store, product);
+
+    storeProductRepository.delete(previousStoreProduct);
+  }
+
+  public void restockStoreProduct(
+    String storeCode,
+    String productCode,
+    Integer restockCnt
+  ) {
+    Store store = findStoreByCode(storeCode);
+    Product product = findProductByCode(productCode);
+    StoreProduct previousStoreProduct = findStoreProduct(store, product);
+
+    product.updateStock(product.getStock() - restockCnt);
+
+    productRepository.save(product);
+
+    Integer currentIncomeCnt = previousStoreProduct.getIncomeCnt() == null
+      ? 0
+      : previousStoreProduct.getIncomeCnt();
+    Integer currentStockCnt = previousStoreProduct.getStockCnt() == null
+      ? 0
+      : previousStoreProduct.getStockCnt();
+
+    previousStoreProduct.updateIncomeCnt(currentIncomeCnt + restockCnt);
+    previousStoreProduct.updateStockCnt(currentStockCnt + restockCnt);
+
+    storeProductRepository.save(previousStoreProduct);
+  }
+
+  public void updateDefectedStoreProduct(
+    String storeCode,
+    String productCode,
+    Integer defectCnt
+  ) {
+    Store store = findStoreByCode(storeCode);
+    Product product = findProductByCode(productCode);
+    StoreProduct previousStoreProduct = findStoreProduct(store, product);
+
+    Integer currentStockCnt = previousStoreProduct.getStockCnt() == null
+      ? 0
+      : previousStoreProduct.getStockCnt();
+    Integer currentDefectCnt = previousStoreProduct.getDefectCnt() == null
+      ? 0
+      : previousStoreProduct.getDefectCnt();
+
+    previousStoreProduct.updateStockCnt(currentStockCnt - defectCnt);
+    previousStoreProduct.updateDefectCnt(currentDefectCnt + defectCnt);
+
+    storeProductRepository.save(previousStoreProduct);
   }
 }
