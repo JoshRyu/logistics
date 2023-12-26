@@ -10,7 +10,6 @@ import com.madeg.logistics.entity.Store;
 import com.madeg.logistics.entity.StoreProduct;
 import com.madeg.logistics.repository.ProductRepository;
 import com.madeg.logistics.repository.StoreProductRepository;
-import com.madeg.logistics.repository.StoreRepository;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,53 +20,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
-public class StoreProductService {
-
-  @Autowired
-  private StoreRepository storeRepository;
+public class StoreProductService extends CommonService {
 
   @Autowired
   private ProductRepository productRepository;
 
   @Autowired
   private StoreProductRepository storeProductRepository;
-
-  private Store findStoreByCode(String storeCode) {
-    Store store = storeRepository.findByStoreCode(storeCode);
-    if (store == null) {
-      throw new ResponseStatusException(
-        HttpStatus.NOT_FOUND,
-        "STORE NOT FOUND"
-      );
-    }
-    return store;
-  }
-
-  private Product findProductByCode(String productCode) {
-    Product product = productRepository.findByProductCode(productCode);
-    if (product == null) {
-      throw new ResponseStatusException(
-        HttpStatus.NOT_FOUND,
-        "PRODUCT NOT FOUND"
-      );
-    }
-    return product;
-  }
-
-  private StoreProduct findStoreProduct(Store store, Product product) {
-    StoreProduct previousStoreProduct = storeProductRepository.findByStoreAndProduct(
-      store,
-      product
-    );
-
-    if (previousStoreProduct == null) {
-      throw new ResponseStatusException(
-        HttpStatus.NOT_FOUND,
-        "STORE PRODUCT NOT FOUND"
-      );
-    }
-    return previousStoreProduct;
-  }
 
   public void registerStoreProduct(
     String storeCode,
