@@ -95,12 +95,7 @@ public class StoreProductService extends CommonService {
       content.add(output);
     }
 
-    SimplePageInfo simplePageInfo = new SimplePageInfo();
-    simplePageInfo.setLast(page.isLast());
-    simplePageInfo.setPage(page.getNumber());
-    simplePageInfo.setSize(page.getSize());
-    simplePageInfo.setTotalPages(page.getTotalPages());
-    simplePageInfo.setTotalElements(page.getTotalElements());
+    SimplePageInfo simplePageInfo = createSimplePageInfo(page);
 
     return new StoreProductRes(
       HttpStatus.OK.value(),

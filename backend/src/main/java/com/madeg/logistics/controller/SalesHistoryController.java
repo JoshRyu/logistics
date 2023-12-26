@@ -3,6 +3,7 @@ package com.madeg.logistics.controller;
 import com.madeg.logistics.domain.CommonRes;
 import com.madeg.logistics.domain.SalesHistoryInput;
 import com.madeg.logistics.domain.SalesHistoryPatch;
+import com.madeg.logistics.domain.SalesHistoryRes;
 import com.madeg.logistics.service.SalesHistoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -14,10 +15,14 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -76,6 +81,52 @@ public class SalesHistoryController {
         .status(ex.getStatusCode())
         .body(new CommonRes(ex.getStatusCode().value(), ex.getReason()));
     }
+  }
+
+  @Operation(summary = "Get the list of all Sales History By Store and Product")
+  @ApiResponse(
+    content = @Content(schema = @Schema(implementation = Page.class))
+  )
+  @GetMapping("/store/{store_code}/product/{product_code}")
+  public ResponseEntity<SalesHistoryRes> getSalesHistoryByStoreAndProduct(
+    @PathVariable(name = "store_code", required = true) String storeCode,
+    @PathVariable(name = "product_code", required = true) String productCode,
+    @PageableDefault(size = 10, page = 0) Pageable pageable
+  ) {
+    return ResponseEntity
+      .status(HttpStatus.OK)
+      .body(
+        salesHistoryService.getSalesHistoryByStoreAndProduct(
+          storeCode,
+          productCode,
+          pageable
+        )
+      );
+  }
+
+  @Operation(
+    summary = "Get the list of all Sales History in the Store in specific month"
+  )
+  @ApiResponse(
+    content = @Content(schema = @Schema(implementation = Page.class))
+  )
+  @GetMapping("/store/{store_code}")
+  public ResponseEntity<SalesHistoryRes> getSalesHistoryByStoreAndSalesMonth(
+    @PathVariable(name = "store_code", required = true) String storeCode,
+    @RequestParam @NotNull @Min(1900) Integer salesYear,
+    @RequestParam @NotNull @Min(1) @Max(12) Integer salesMonth,
+    @PageableDefault(size = 10, page = 0) Pageable pageable
+  ) {
+    return ResponseEntity
+      .status(HttpStatus.OK)
+      .body(
+        salesHistoryService.getSalesHistoryByStoreAndSalesMonth(
+          storeCode,
+          salesYear,
+          salesMonth,
+          pageable
+        )
+      );
   }
 
   @Operation(summary = "Update Sales History Of Store Product")

@@ -2,13 +2,18 @@ package com.madeg.logistics.service;
 
 import com.madeg.logistics.domain.SalesHistoryInput;
 import com.madeg.logistics.domain.SalesHistoryPatch;
+import com.madeg.logistics.domain.SalesHistoryRes;
+import com.madeg.logistics.domain.SimplePageInfo;
 import com.madeg.logistics.entity.Product;
 import com.madeg.logistics.entity.SalesHistory;
 import com.madeg.logistics.entity.Store;
 import com.madeg.logistics.entity.StoreProduct;
 import com.madeg.logistics.repository.SalesHistoryRepository;
 import com.madeg.logistics.repository.StoreProductRepository;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -64,6 +69,64 @@ public class SalesHistoryService extends CommonService {
       .build();
 
     salesHistoryRepository.save(salesHistory);
+  }
+
+  public SalesHistoryRes getSalesHistoryByStoreAndProduct(
+    String storeCode,
+    String productCode,
+    Pageable pageable
+  ) {
+    Store store = findStoreByCode(storeCode);
+    Product product = findProductByCode(productCode);
+    StoreProduct storeProduct = findStoreProduct(store, product);
+
+    Page<SalesHistory> page = salesHistoryRepository.findByStoreProductOrderBySalesMonth(
+      storeProduct,
+      pageable
+    );
+
+    List<SalesHistory> content = page.getContent();
+    SimplePageInfo simplePageInfo = createSimplePageInfo(page);
+
+    return new SalesHistoryRes(
+      HttpStatus.OK.value(),
+      "STORE PRODUCT SALES HISTORY IS RETRIEVED",
+      content,
+      simplePageInfo
+    );
+  }
+
+  public SalesHistoryRes getSalesHistoryByStoreAndSalesMonth(
+    String storeCode,
+    Integer salesYear,
+    Integer salesMonth,
+    Pageable pageable
+  ) {
+    Store store = findStoreByCode(storeCode);
+    StoreProduct storeProduct = storeProductRepository.findByStore(store);
+
+    if (storeProduct == null) {
+      throw new ResponseStatusException(
+        HttpStatus.NOT_FOUND,
+        "STORE PRODUCT NOT FOUND"
+      );
+    }
+
+    Page<SalesHistory> page = salesHistoryRepository.findByStoreProductAndSalesMonth(
+      storeProduct,
+      generateMonthFormat(salesYear, salesMonth),
+      pageable
+    );
+
+    List<SalesHistory> content = page.getContent();
+    SimplePageInfo simplePageInfo = createSimplePageInfo(page);
+
+    return new SalesHistoryRes(
+      HttpStatus.OK.value(),
+      "STORE SALES HISTORY IN SPECIFIC MONTH IS RETRIEVED",
+      content,
+      simplePageInfo
+    );
   }
 
   public void patchSalesHistory(

@@ -1,5 +1,6 @@
 package com.madeg.logistics.service;
 
+import com.madeg.logistics.domain.SimplePageInfo;
 import com.madeg.logistics.entity.Category;
 import com.madeg.logistics.entity.Product;
 import com.madeg.logistics.entity.SalesHistory;
@@ -11,6 +12,7 @@ import com.madeg.logistics.repository.SalesHistoryRepository;
 import com.madeg.logistics.repository.StoreProductRepository;
 import com.madeg.logistics.repository.StoreRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -104,5 +106,15 @@ public class CommonService {
 
   protected String generateMonthFormat(Integer year, Integer month) {
     return String.format("%d-%02d", year, month);
+  }
+
+  protected <T> SimplePageInfo createSimplePageInfo(Page<T> page) {
+    SimplePageInfo simplePageInfo = new SimplePageInfo();
+    simplePageInfo.setLast(page.isLast());
+    simplePageInfo.setPage(page.getNumber());
+    simplePageInfo.setSize(page.getSize());
+    simplePageInfo.setTotalPages(page.getTotalPages());
+    simplePageInfo.setTotalElements(page.getTotalElements());
+    return simplePageInfo;
   }
 }
