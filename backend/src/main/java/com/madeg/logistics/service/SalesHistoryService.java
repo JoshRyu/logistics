@@ -31,13 +31,14 @@ public class SalesHistoryService extends CommonService {
     Product product = findProductByCode(productCode);
     StoreProduct previousStoreProduct = findStoreProduct(store, product);
 
-    String month =
-      salesHistoryInput.getSalesYear() +
-      "-" +
-      salesHistoryInput.getSalesMonth();
+    String month = generateMonthFormat(
+      salesHistoryInput.getSalesYear(),
+      salesHistoryInput.getSalesMonth()
+    );
 
-    SalesHistory existSalesHistory = salesHistoryRepository.findByStoreProduct(
-      previousStoreProduct
+    SalesHistory existSalesHistory = salesHistoryRepository.findByStoreProductAndSalesMonth(
+      previousStoreProduct,
+      month
     );
 
     if (existSalesHistory != null) {
@@ -73,7 +74,10 @@ public class SalesHistoryService extends CommonService {
     Store store = findStoreByCode(storeCode);
     Product product = findProductByCode(productCode);
     StoreProduct storeProduct = findStoreProduct(store, product);
-    SalesHistory previousSalesHistory = findSalesHistory(storeProduct);
+    SalesHistory previousSalesHistory = findSalesHistory(
+      storeProduct,
+      generateMonthFormat(patchInput.getSalesYear(), patchInput.getSalesMonth())
+    );
 
     if (previousSalesHistory.isStateChanged(patchInput)) {
       if (patchInput.getQuantity() != null) {
@@ -94,5 +98,22 @@ public class SalesHistoryService extends CommonService {
         "SALES HISTORY IS NOT UPDATED"
       );
     }
+  }
+
+  public void deleteSalesHistory(
+    String storeCode,
+    String productCode,
+    Integer salesYear,
+    Integer salesMonth
+  ) {
+    Store store = findStoreByCode(storeCode);
+    Product product = findProductByCode(productCode);
+    StoreProduct storeProduct = findStoreProduct(store, product);
+    SalesHistory previousSalesHistory = findSalesHistory(
+      storeProduct,
+      generateMonthFormat(salesYear, salesMonth)
+    );
+
+    salesHistoryRepository.delete(previousSalesHistory);
   }
 }

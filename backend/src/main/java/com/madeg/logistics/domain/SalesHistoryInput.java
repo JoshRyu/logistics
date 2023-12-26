@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,10 +14,12 @@ import lombok.Setter;
 @AllArgsConstructor
 public class SalesHistoryInput {
 
+  @NotNull
   @Schema(example = "2023")
   @Min(1900)
   private Integer salesYear;
 
+  @NotNull
   @Schema(example = "12")
   @Min(1)
   @Max(12)

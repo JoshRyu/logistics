@@ -8,5 +8,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface SalesHistoryRepository
   extends CrudRepository<SalesHistory, Long> {
-  SalesHistory findByStoreProduct(StoreProduct storeProduct);
+  SalesHistory findByStoreProductAndSalesMonth(
+    StoreProduct storeProduct,
+    String salesMonth
+  );
 }

@@ -83,9 +83,13 @@ public class CommonService {
     return storeProduct;
   }
 
-  protected SalesHistory findSalesHistory(StoreProduct storeProduct) {
-    SalesHistory salesHistory = salesHistoryRepository.findByStoreProduct(
-      storeProduct
+  protected SalesHistory findSalesHistory(
+    StoreProduct storeProduct,
+    String salesMonth
+  ) {
+    SalesHistory salesHistory = salesHistoryRepository.findByStoreProductAndSalesMonth(
+      storeProduct,
+      salesMonth
     );
 
     if (salesHistory == null) {
@@ -96,5 +100,9 @@ public class CommonService {
     }
 
     return salesHistory;
+  }
+
+  protected String generateMonthFormat(Integer year, Integer month) {
+    return String.format("%d-%02d", year, month);
   }
 }
