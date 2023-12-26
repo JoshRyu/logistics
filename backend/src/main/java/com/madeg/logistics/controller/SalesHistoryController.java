@@ -1,0 +1,73 @@
+package com.madeg.logistics.controller;
+
+import com.madeg.logistics.domain.CommonRes;
+import com.madeg.logistics.domain.SalesHistoryInput;
+import com.madeg.logistics.service.SalesHistoryService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
+
+@Tag(name = "Sales History")
+@RestController
+@RequestMapping("/api/v1/sales-history")
+public class SalesHistoryController {
+
+  @Autowired
+  private SalesHistoryService salesHistoryService;
+
+  @Operation(summary = "Register sales history")
+  @ApiResponse(
+    content = @Content(schema = @Schema(implementation = CommonRes.class))
+  )
+  @PostMapping("/store/{store_code}/product/{product_code}")
+  public ResponseEntity<Object> register(
+    @PathVariable(name = "store_code", required = true) String storeCode,
+    @PathVariable(name = "product_code", required = true) String productCode,
+    @RequestBody @Valid SalesHistoryInput salesHistoryInput,
+    Errors errors
+  ) {
+    if (errors.hasErrors()) {
+      return ResponseEntity
+        .status(HttpStatus.BAD_REQUEST)
+        .body(
+          new CommonRes(
+            HttpStatus.BAD_REQUEST.value(),
+            errors.getFieldError().getDefaultMessage()
+          )
+        );
+    }
+
+    try {
+      salesHistoryService.registerSalesHistory(
+        storeCode,
+        productCode,
+        salesHistoryInput
+      );
+      return ResponseEntity
+        .status(HttpStatus.CREATED)
+        .body(
+          new CommonRes(
+            HttpStatus.CREATED.value(),
+            "SALES HISTORY IS REGISTERED IN SPECIFIC STORE"
+          )
+        );
+    } catch (ResponseStatusException ex) {
+      return ResponseEntity
+        .status(ex.getStatusCode())
+        .body(new CommonRes(ex.getStatusCode().value(), ex.getReason()));
+    }
+  }
+}

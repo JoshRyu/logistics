@@ -3,8 +3,16 @@ package com.madeg.logistics.entity;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.YearMonth;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
 @Table(name = "sales_history")
 public class SalesHistory {
 

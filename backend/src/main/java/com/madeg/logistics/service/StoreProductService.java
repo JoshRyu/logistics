@@ -71,10 +71,11 @@ public class StoreProductService {
 
   public void registerStoreProduct(
     String storeCode,
+    String productCode,
     StoreProductInput storeProductInput
   ) {
     Store store = findStoreByCode(storeCode);
-    Product product = findProductByCode(storeProductInput.getProductCode());
+    Product product = findProductByCode(productCode);
 
     StoreProduct existStoreProduct = storeProductRepository.findByStoreAndProduct(
       store,

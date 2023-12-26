@@ -42,9 +42,10 @@ public class StoreProductController {
   @ApiResponse(
     content = @Content(schema = @Schema(implementation = CommonRes.class))
   )
-  @PostMapping("/{store_code}/product")
+  @PostMapping("/{store_code}/product/{product_code}")
   public ResponseEntity<Object> register(
     @PathVariable(name = "store_code", required = true) String storeCode,
+    @PathVariable(name = "product_code", required = true) String productCode,
     @RequestBody @Valid StoreProductInput storeProductInput,
     Errors errors
   ) {
@@ -60,7 +61,11 @@ public class StoreProductController {
     }
 
     try {
-      storeProductService.registerStoreProduct(storeCode, storeProductInput);
+      storeProductService.registerStoreProduct(
+        storeCode,
+        productCode,
+        storeProductInput
+      );
       return ResponseEntity
         .status(HttpStatus.CREATED)
         .body(
