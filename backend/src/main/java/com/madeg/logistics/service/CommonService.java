@@ -2,10 +2,12 @@ package com.madeg.logistics.service;
 
 import com.madeg.logistics.entity.Category;
 import com.madeg.logistics.entity.Product;
+import com.madeg.logistics.entity.SalesHistory;
 import com.madeg.logistics.entity.Store;
 import com.madeg.logistics.entity.StoreProduct;
 import com.madeg.logistics.repository.CategoryRepository;
 import com.madeg.logistics.repository.ProductRepository;
+import com.madeg.logistics.repository.SalesHistoryRepository;
 import com.madeg.logistics.repository.StoreProductRepository;
 import com.madeg.logistics.repository.StoreRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,9 @@ public class CommonService {
 
   @Autowired
   private StoreProductRepository storeProductRepository;
+
+  @Autowired
+  private SalesHistoryRepository salesHistoryRepository;
 
   protected Category findCategoryByCode(String categoryCode) {
     Category category = categoryRepository.findByCategoryCode(categoryCode);
@@ -64,17 +69,32 @@ public class CommonService {
   }
 
   protected StoreProduct findStoreProduct(Store store, Product product) {
-    StoreProduct previousStoreProduct = storeProductRepository.findByStoreAndProduct(
+    StoreProduct storeProduct = storeProductRepository.findByStoreAndProduct(
       store,
       product
     );
 
-    if (previousStoreProduct == null) {
+    if (storeProduct == null) {
       throw new ResponseStatusException(
         HttpStatus.NOT_FOUND,
         "STORE PRODUCT NOT FOUND"
       );
     }
-    return previousStoreProduct;
+    return storeProduct;
+  }
+
+  protected SalesHistory findSalesHistory(StoreProduct storeProduct) {
+    SalesHistory salesHistory = salesHistoryRepository.findByStoreProduct(
+      storeProduct
+    );
+
+    if (salesHistory == null) {
+      throw new ResponseStatusException(
+        HttpStatus.NOT_FOUND,
+        "SALES HISTORY NOT FOUND"
+      );
+    }
+
+    return salesHistory;
   }
 }

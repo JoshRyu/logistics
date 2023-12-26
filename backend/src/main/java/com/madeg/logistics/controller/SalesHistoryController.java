@@ -2,6 +2,7 @@ package com.madeg.logistics.controller;
 
 import com.madeg.logistics.domain.CommonRes;
 import com.madeg.logistics.domain.SalesHistoryInput;
+import com.madeg.logistics.domain.SalesHistoryPatch;
 import com.madeg.logistics.service.SalesHistoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -63,6 +65,42 @@ public class SalesHistoryController {
             HttpStatus.CREATED.value(),
             "SALES HISTORY IS REGISTERED IN SPECIFIC STORE"
           )
+        );
+    } catch (ResponseStatusException ex) {
+      return ResponseEntity
+        .status(ex.getStatusCode())
+        .body(new CommonRes(ex.getStatusCode().value(), ex.getReason()));
+    }
+  }
+
+  @Operation(summary = "Update Sales History Of Store Product")
+  @ApiResponse(
+    content = @Content(schema = @Schema(implementation = CommonRes.class))
+  )
+  @PatchMapping("/store/{store_code}/product/{product_code}")
+  public ResponseEntity<Object> patch(
+    @PathVariable(name = "store_code", required = true) String storeCode,
+    @PathVariable(name = "product_code", required = true) String productCode,
+    @RequestBody @Valid SalesHistoryPatch patchInput,
+    Errors errors
+  ) {
+    if (errors.hasErrors()) {
+      return ResponseEntity
+        .status(HttpStatus.BAD_REQUEST)
+        .body(
+          new CommonRes(
+            HttpStatus.BAD_REQUEST.value(),
+            errors.getFieldError().getDefaultMessage()
+          )
+        );
+    }
+
+    try {
+      salesHistoryService.patchSalesHistory(storeCode, productCode, patchInput);
+      return ResponseEntity
+        .status(HttpStatus.ACCEPTED)
+        .body(
+          new CommonRes(HttpStatus.ACCEPTED.value(), "SALES HISTORY IS UPDATED")
         );
     } catch (ResponseStatusException ex) {
       return ResponseEntity

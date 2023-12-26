@@ -125,11 +125,7 @@ public class StoreProductService extends CommonService {
       } else {
         previousStoreProduct.updateStorePrice(product.getPrice());
       }
-
-      if (patchInput.getDescription() != null) {
-        previousStoreProduct.updateDescription(patchInput.getDescription());
-      }
-
+      previousStoreProduct.updateDescription(patchInput.getDescription());
       storeProductRepository.save(previousStoreProduct);
     } else {
       throw new ResponseStatusException(

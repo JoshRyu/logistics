@@ -1,6 +1,7 @@
 package com.madeg.logistics.service;
 
 import com.madeg.logistics.domain.SalesHistoryInput;
+import com.madeg.logistics.domain.SalesHistoryPatch;
 import com.madeg.logistics.entity.Product;
 import com.madeg.logistics.entity.SalesHistory;
 import com.madeg.logistics.entity.Store;
@@ -62,5 +63,36 @@ public class SalesHistoryService extends CommonService {
       .build();
 
     salesHistoryRepository.save(salesHistory);
+  }
+
+  public void patchSalesHistory(
+    String storeCode,
+    String productCode,
+    SalesHistoryPatch patchInput
+  ) {
+    Store store = findStoreByCode(storeCode);
+    Product product = findProductByCode(productCode);
+    StoreProduct storeProduct = findStoreProduct(store, product);
+    SalesHistory previousSalesHistory = findSalesHistory(storeProduct);
+
+    if (previousSalesHistory.isStateChanged(patchInput)) {
+      if (patchInput.getQuantity() != null) {
+        storeProduct.updateStockCnt(
+          storeProduct.getStockCnt() -
+          (patchInput.getQuantity() - previousSalesHistory.getQuantity())
+        );
+        previousSalesHistory.updateQuantity(patchInput.getQuantity());
+      }
+
+      previousSalesHistory.updateMemo(patchInput.getMemo());
+
+      storeProductRepository.save(storeProduct);
+      salesHistoryRepository.save(previousSalesHistory);
+    } else {
+      throw new ResponseStatusException(
+        HttpStatus.NO_CONTENT,
+        "SALES HISTORY IS NOT UPDATED"
+      );
+    }
   }
 }
