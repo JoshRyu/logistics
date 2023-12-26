@@ -2,7 +2,6 @@ package com.madeg.logistics.entity;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
-import java.time.YearMonth;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -38,7 +37,7 @@ public class SalesHistory {
   private StoreProduct storeProduct;
 
   @Column(name = "sales_month")
-  private YearMonth salesMonth;
+  private String salesMonth;
 
   @Column(name = "quantity", nullable = false)
   private Integer quantity;

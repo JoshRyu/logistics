@@ -9,7 +9,6 @@ import com.madeg.logistics.repository.ProductRepository;
 import com.madeg.logistics.repository.SalesHistoryRepository;
 import com.madeg.logistics.repository.StoreProductRepository;
 import com.madeg.logistics.repository.StoreRepository;
-import java.time.YearMonth;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -76,19 +75,27 @@ public class SalesHistoryService {
     Product product = findProductByCode(productCode);
     StoreProduct previousStoreProduct = findStoreProduct(store, product);
 
+    String month =
+      salesHistoryInput.getSalesYear() +
+      "-" +
+      salesHistoryInput.getSalesMonth();
+
+    SalesHistory existSalesHistory = salesHistoryRepository.findByStoreProduct(
+      previousStoreProduct
+    );
+
+    if (existSalesHistory != null) {
+      throw new ResponseStatusException(
+        HttpStatus.CONFLICT,
+        "SALES HISTORY IS ALREADY REGISTERED"
+      );
+    }
+
     previousStoreProduct.updateStockCnt(
       previousStoreProduct.getStockCnt() - salesHistoryInput.getQuantity()
     );
 
     storeProductRepository.save(previousStoreProduct);
-
-    YearMonth month = YearMonth.of(
-      salesHistoryInput.getSalesYear(),
-      salesHistoryInput.getSalesMonth()
-    );
-
-    // TODO: product code, storeCode, year, month로 존재하는지 확인하는 로직 추가 필요
-    // SalesHistory existSalesHistory
 
     SalesHistory salesHistory = SalesHistory
       .builder()
