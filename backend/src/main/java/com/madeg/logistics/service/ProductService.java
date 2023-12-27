@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
-public class ProductService {
+public class ProductService extends CommonService {
 
   @Autowired
   private ProductRepository productRepository;
@@ -78,12 +78,7 @@ public class ProductService {
     Page<Product> page = productRepository.findAll(pageable);
     List<Product> content = page.getContent();
 
-    SimplePageInfo simplePageInfo = new SimplePageInfo();
-    simplePageInfo.setLast(page.isLast());
-    simplePageInfo.setPage(page.getNumber());
-    simplePageInfo.setSize(page.getSize());
-    simplePageInfo.setTotalPages(page.getTotalPages());
-    simplePageInfo.setTotalElements(page.getTotalElements());
+    SimplePageInfo simplePageInfo = createSimplePageInfo(page);
 
     return new ProductRes(
       HttpStatus.OK.value(),
@@ -94,25 +89,11 @@ public class ProductService {
   }
 
   public Product getProductByCode(String productCode) {
-    Product product = productRepository.findByProductCode(productCode);
-    if (product == null) {
-      throw new ResponseStatusException(
-        HttpStatus.NOT_FOUND,
-        "PRODUCT NOT FOUND"
-      );
-    }
-    return product;
+    return findProductByCode(productCode);
   }
 
   public void patchProduct(String productCode, ProductPatch patchInput) {
-    Product previousProduct = productRepository.findByProductCode(productCode);
-
-    if (previousProduct == null) {
-      throw new ResponseStatusException(
-        HttpStatus.NOT_FOUND,
-        "PRODUCT NOT FOUND"
-      );
-    }
+    Product previousProduct = findProductByCode(productCode);
 
     byte[] newImgBytes = null;
     if (patchInput.getImg() != null) {
@@ -172,14 +153,7 @@ public class ProductService {
   }
 
   public void deleteProduct(String productCode) {
-    Product previousProduct = productRepository.findByProductCode(productCode);
-
-    if (previousProduct == null) {
-      throw new ResponseStatusException(
-        HttpStatus.NOT_FOUND,
-        "PRODUCT NOT FOUND"
-      );
-    }
+    Product previousProduct = findProductByCode(productCode);
     productRepository.delete(previousProduct);
   }
 }

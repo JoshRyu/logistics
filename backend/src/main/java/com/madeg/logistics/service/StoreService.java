@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
-public class StoreService {
+public class StoreService extends CommonService {
 
   @Autowired
   private StoreRepository storeRepository;
@@ -46,14 +46,7 @@ public class StoreService {
   }
 
   public void patchStore(String storeCode, StorePatch patchInput) {
-    Store previousStore = storeRepository.findByStoreCode(storeCode);
-
-    if (previousStore == null) {
-      throw new ResponseStatusException(
-        HttpStatus.NOT_FOUND,
-        "STORE NOT FOUND"
-      );
-    }
+    Store previousStore = findStoreByCode(storeCode);
 
     if (previousStore.isStateChanged(patchInput)) {
       if (patchInput.getName() != null) previousStore.updateName(
@@ -99,14 +92,7 @@ public class StoreService {
   }
 
   public void deleteStore(String storeCode) {
-    Store previousStore = storeRepository.findByStoreCode(storeCode);
-
-    if (previousStore == null) {
-      throw new ResponseStatusException(
-        HttpStatus.NOT_FOUND,
-        "STORE NOT FOUND"
-      );
-    }
+    Store previousStore = findStoreByCode(storeCode);
     storeRepository.delete(previousStore);
   }
 }

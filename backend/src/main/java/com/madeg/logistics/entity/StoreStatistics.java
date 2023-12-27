@@ -10,7 +10,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
-import java.time.YearMonth;
 
 @Entity
 @Table(name = "store_statistics")
@@ -46,7 +45,7 @@ public class StoreStatistics {
   private Product product;
 
   @Column(name = "month")
-  private YearMonth month;
+  private String month;
 
   @Column(name = "month_revenue")
   private BigDecimal monthRevenue;

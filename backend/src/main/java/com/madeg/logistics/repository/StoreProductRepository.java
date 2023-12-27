@@ -12,6 +12,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface StoreProductRepository
   extends CrudRepository<StoreProduct, Long> {
+  StoreProduct findByStore(Store store);
+
   StoreProduct findByStoreAndProduct(Store store, Product product);
 
   @Query(
