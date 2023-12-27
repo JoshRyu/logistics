@@ -68,6 +68,7 @@ public class StoreProductService extends CommonService {
       .incomeCnt(income)
       .stockCnt(income)
       .defectCnt(0)
+      .showFlag(true)
       .description(storeProductInput.getDescription())
       .build();
 
@@ -130,12 +131,14 @@ public class StoreProductService extends CommonService {
     }
   }
 
-  public void deleteStoreProduct(String storeCode, String productCode) {
+  public void disableStoreProduct(String storeCode, String productCode) {
     Store store = findStoreByCode(storeCode);
     Product product = findProductByCode(productCode);
     StoreProduct previousStoreProduct = findStoreProduct(store, product);
 
-    storeProductRepository.delete(previousStoreProduct);
+    previousStoreProduct.updateShowFlag(false);
+
+    storeProductRepository.save(previousStoreProduct);
   }
 
   public void restockStoreProduct(

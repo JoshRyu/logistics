@@ -162,21 +162,4 @@ public class SalesHistoryService extends CommonService {
       );
     }
   }
-
-  public void deleteSalesHistory(
-    String storeCode,
-    String productCode,
-    Integer salesYear,
-    Integer salesMonth
-  ) {
-    Store store = findStoreByCode(storeCode);
-    Product product = findProductByCode(productCode);
-    StoreProduct storeProduct = findStoreProduct(store, product);
-    SalesHistory previousSalesHistory = findSalesHistory(
-      storeProduct,
-      generateMonthFormat(salesYear, salesMonth)
-    );
-
-    salesHistoryRepository.delete(previousSalesHistory);
-  }
 }

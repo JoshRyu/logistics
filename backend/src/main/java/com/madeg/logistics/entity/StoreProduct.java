@@ -68,6 +68,10 @@ public class StoreProduct {
   @Column(name = "defect_cnt")
   private Integer defectCnt;
 
+  @Builder.Default
+  @Column(name = "show_flag")
+  private Boolean showFlag = true;
+
   @Column(name = "description")
   private String description;
 
@@ -89,6 +93,10 @@ public class StoreProduct {
 
   public void updateDefectCnt(Integer defectCnt) {
     this.defectCnt = defectCnt;
+  }
+
+  public void updateShowFlag(Boolean showFlag) {
+    this.showFlag = showFlag;
   }
 
   public boolean isStateChanged(StoreProductPatch patchInput) {

@@ -137,14 +137,21 @@ public class StoreProductController {
   @ApiResponse(
     content = @Content(schema = @Schema(implementation = CommonRes.class))
   )
-  @DeleteMapping("/{store_code}/product/{product_code}")
+  @PatchMapping("/{store_code}/product/{product_code}/disable")
   public ResponseEntity<Object> delete(
     @PathVariable(name = "store_code", required = true) String storeCode,
     @PathVariable(name = "product_code", required = true) String productCode
   ) {
     try {
-      storeProductService.deleteStoreProduct(storeCode, productCode);
-      return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+      storeProductService.disableStoreProduct(storeCode, productCode);
+      return ResponseEntity
+        .status(HttpStatus.ACCEPTED)
+        .body(
+          new CommonRes(
+            HttpStatus.ACCEPTED.value(),
+            "STORE PRODUCT IS DISABLED"
+          )
+        );
     } catch (ResponseStatusException ex) {
       return ResponseEntity
         .status(ex.getStatusCode())
