@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
-public class CategoryService {
+public class CategoryService extends CommonService {
 
   @Autowired
   private CategoryRepository categoryRepository;
@@ -59,16 +59,7 @@ public class CategoryService {
   }
 
   public void patchCategory(String categoryCode, CategoryPatch patchInput) {
-    Category previousCategory = categoryRepository.findByCategoryCode(
-      categoryCode
-    );
-
-    if (previousCategory == null) {
-      throw new ResponseStatusException(
-        HttpStatus.NOT_FOUND,
-        "CATEGORY NOT FOUND"
-      );
-    }
+    Category previousCategory = findCategoryByCode(categoryCode);
 
     Category updatedCategory = new Category();
     updatedCategory.updateName(patchInput.getName());
@@ -107,15 +98,7 @@ public class CategoryService {
   }
 
   public void deleteCategory(String categoryCode) {
-    Category previousCategory = categoryRepository.findByCategoryCode(
-      categoryCode
-    );
-    if (previousCategory == null) {
-      throw new ResponseStatusException(
-        HttpStatus.NOT_FOUND,
-        "CATEGORY NOT FOUND"
-      );
-    }
+    Category previousCategory = findCategoryByCode(categoryCode);
     categoryRepository.delete(previousCategory);
   }
 }

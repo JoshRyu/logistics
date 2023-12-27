@@ -1,10 +1,19 @@
 package com.madeg.logistics.entity;
 
+import com.madeg.logistics.domain.SalesHistoryPatch;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
-import java.time.YearMonth;
+import java.util.Objects;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
 @Table(name = "sales_history")
 public class SalesHistory {
 
@@ -30,7 +39,7 @@ public class SalesHistory {
   private StoreProduct storeProduct;
 
   @Column(name = "sales_month")
-  private YearMonth salesMonth;
+  private String salesMonth;
 
   @Column(name = "quantity", nullable = false)
   private Integer quantity;
@@ -40,4 +49,19 @@ public class SalesHistory {
 
   @Column(name = "memo")
   private String memo;
+
+  public void updateQuantity(Integer quantity) {
+    this.quantity = quantity;
+  }
+
+  public void updateMemo(String memo) {
+    this.memo = memo;
+  }
+
+  public boolean isStateChanged(SalesHistoryPatch patchInput) {
+    return (
+      !Objects.equals(quantity, patchInput.getQuantity()) ||
+      !Objects.equals(memo, patchInput.getMemo())
+    );
+  }
 }
