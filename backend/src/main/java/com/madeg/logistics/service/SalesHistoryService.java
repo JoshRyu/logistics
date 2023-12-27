@@ -142,6 +142,15 @@ public class SalesHistoryService extends CommonService {
       generateMonthFormat(patchInput.getSalesYear(), patchInput.getSalesMonth())
     );
 
+    if (
+      storeProduct.getStockCnt() <
+      (patchInput.getQuantity() - previousSalesHistory.getQuantity())
+    ) {
+      throw new ResponseStatusException(
+        HttpStatus.BAD_REQUEST,
+        "ADDITIONAL QUANTITY SHOULD BE SMALLER OR EQUALS TO STROE PRODUCT STOCK CNT"
+      );
+    }
     if (previousSalesHistory.isStateChanged(patchInput)) {
       if (patchInput.getQuantity() != null) {
         storeProduct.updateStockCnt(
