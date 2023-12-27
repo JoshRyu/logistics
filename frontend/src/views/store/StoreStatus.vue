@@ -2,10 +2,38 @@
   <v-container style="max-width: 85%" class="mt-5">
     <v-row>
       <v-card-title class="text-h4">
-        <span>제품 검색</span>
+        <span>매장: {{ data.currentStore }}</span>
       </v-card-title>
-
-      <v-toolbar color="white" class="mb-5">
+    </v-row>
+    <v-row class="ml-1 mb-1">
+      <v-chip-group
+        filter
+        v-model="data.currentStore"
+        selected-class="text-amber-darken-4"
+      >
+        <v-chip v-for="store in data.storeList" :value="store" mandatory>
+          {{ store }}</v-chip
+        >
+      </v-chip-group>
+    </v-row>
+    <v-row>
+      <v-col cols="2">
+        <v-card-title class="text-h4">
+          <span>제품 검색</span>
+        </v-card-title>
+      </v-col>
+      <v-col cols="2">
+        <v-switch
+          v-model="data.enableDense"
+          hide-details
+          inset
+          :label="data.enableDense ? '작게보기' : '크게보기'"
+        ></v-switch>
+      </v-col>
+      <v-spacer></v-spacer>
+    </v-row>
+    <v-row class="mt-4 mb-4">
+      <v-toolbar color="white">
         <v-row>
           <v-col cols="2" class="mt-2">
             <v-autocomplete
@@ -31,6 +59,7 @@
               type="text"
             ></v-text-field>
           </v-col>
+
           <v-col cols="2" class="mt-2">
             <v-btn size="x-large" variant="outlined">검색</v-btn>
           </v-col>
@@ -38,51 +67,65 @@
         </v-row>
       </v-toolbar>
     </v-row>
+
     <v-row dense>
       <v-col
         v-for="card in data.cards"
         :key="card.title"
-        :cols="data.cards.length >= 4 ? card.flex : 12"
+        :cols="getColSize(card)"
       >
-        <v-card class="borderSolid">
-          <v-card-title class="text-h5">
-            <span v-text="card.title"></span>
-          </v-card-title>
-          <v-card-subtitle class="text-h6 mb-1">
+        <v-card :class="getCardClass">
+          <v-card-title>
             <span
               v-if="card.category"
-              class="float-right text-red"
+              :class="getSubtitleSize"
               v-text="'#' + card.category"
             ></span>
-          </v-card-subtitle>
-          <v-img v-if="data.enableImg" :src="card.src" class="align-end" cover>
+            <span v-text="card.title" :class="getTitleSize"></span>
+          </v-card-title>
+          <v-img
+            :src="card.src"
+            v-if="data.enableDense"
+            class="align-end"
+            cover
+            height="250px"
+          >
           </v-img>
 
-          <v-card-text class="text-body-1 text-grey" v-if="card.memo">
+          <v-card-text
+            :class="
+              data.enableDense ? 'bg-card-text-content' : 'sm-card-text-content'
+            "
+            v-if="card.memo"
+          >
             <span v-text="card.memo"></span>
           </v-card-text>
 
-          <v-card-text class="text-right text-h6" v-if="card.price">
-            <span v-text="'판매가: ' + card.price"></span>
-            <v-spacer></v-spacer>
-            <span v-text="'재고: ' + card.stock + '개'"></span>
-          </v-card-text>
-
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn
-              size="large"
-              color="surface-variant"
-              variant="text"
-              icon="mdi-pencil-circle"
-            ></v-btn>
-            <v-btn
-              size="large"
-              color="surface-variant"
-              variant="text"
-              icon="mdi-delete-circle"
-            ></v-btn>
-          </v-card-actions>
+          <v-container>
+            <div class="d-flex flex-column">
+              <span :class="boldClass" v-text="'판매가: ' + card.price"></span>
+              <span
+                :class="boldClass"
+                v-text="'재고: ' + card.stock + '개'"
+              ></span>
+            </div>
+            <div class="d-flex justify-end">
+              <v-btn
+                :class="btnWidthClass"
+                size="large"
+                color="surface-variant"
+                variant="text"
+                icon="mdi-pencil-circle"
+              ></v-btn>
+              <v-btn
+                :class="btnWidthClass"
+                size="large"
+                color="surface-variant"
+                variant="text"
+                icon="mdi-delete-circle"
+              ></v-btn>
+            </div>
+          </v-container>
         </v-card>
       </v-col>
     </v-row>
@@ -90,10 +133,32 @@
 </template>
 
 <script setup>
-import { reactive } from "vue";
+import { reactive, computed } from "vue";
+
+const getColSize = (card) => (data.enableDense ? card.flex : 2);
+const getCardClass = computed(() =>
+  data.enableDense
+    ? "border-solid bg-card-height"
+    : "border-solid sm-card-height"
+);
+const getTitleSize = computed(() =>
+  data.enableDense ? "bg-title" : "sm-title"
+);
+const getSubtitleSize = computed(() =>
+  data.enableDense ? "bg-subtitle float-right" : "sm-subtitle float-right"
+);
+
+const boldClass = computed(() =>
+  data.enableDense ? "bg-bold align-self-end" : "sm-bold align-self-end"
+);
+const btnWidthClass = computed(() =>
+  data.enableDense ? "bg-btn-width" : "sm-btn-width"
+);
 
 const data = reactive({
-  enableImg: true,
+  storeList: ["store1", "store2", "store3"],
+  currentStore: "",
+  enableDense: true,
   selectedCategory: "",
   searchValue: "",
   categoryList: ["뜨게 가방", "뜨게 케이스", "뜨게 지갑"],
@@ -147,7 +212,7 @@ const data = reactive({
       title: "파스텔파우치",
       category: "뜨게 가방",
       src: "/src/assets/images/파스텔파우치.jpg",
-      memo: "파스텔파우치에 대한 내용입니다.",
+      memo: "파스텔파우치에 대한 내용입니다.asdasdaskdalskdskaldfhauilsdhfiashdfiulashdiufhasoidfhoipsadhfiashdfiasbgiuvdbgasidlvchbzxlkjcvhioasdhvuiahsidfhasidfhisalodhgfiasdugf",
       price: "18,000원",
       stock: 10,
       flex: 3,
@@ -156,8 +221,70 @@ const data = reactive({
 });
 </script>
 <style scoped>
-.borderSolid {
+.border-solid {
   border: 1px solid rgb(118, 118, 118);
   /* box-shadow: 1px 1px 2px 2px rgb(118, 118, 118); */
+}
+
+.bg-title {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.sm-title {
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.bg-subtitle {
+  font-size: 15px;
+  color: red;
+  font-weight: bold;
+}
+
+.sm-subtitle {
+  font-size: 12px;
+  color: red;
+  font-weight: bold;
+}
+
+.bg-card-height {
+  height: 550px; /* Example height, adjust as needed */
+}
+
+.bg-card-text-content {
+  height: 100px;
+  font-size: 16px;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.bg-bold {
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.bg-btn-width {
+  width: 35px;
+}
+
+.sm-card-height {
+  height: 260px; /* Example height, adjust as needed */
+}
+
+.sm-card-text-content {
+  font-size: 13px;
+  max-height: 100px;
+  height: 100px;
+  overflow-y: auto;
+}
+
+.sm-bold {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.sm-btn-width {
+  width: auto;
 }
 </style>
