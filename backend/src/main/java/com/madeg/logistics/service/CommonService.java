@@ -108,6 +108,16 @@ public class CommonService {
     return String.format("%d-%02d", year, month);
   }
 
+  protected void validateStock(
+    Integer stock1,
+    Integer stock2,
+    String errorMsg
+  ) {
+    if (stock1 < stock2) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMsg);
+    }
+  }
+
   protected <T> SimplePageInfo createSimplePageInfo(Page<T> page) {
     SimplePageInfo simplePageInfo = new SimplePageInfo();
     simplePageInfo.setLast(page.isLast());

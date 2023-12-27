@@ -56,12 +56,11 @@ public class StoreProductService extends CommonService {
       ? 0
       : storeProductInput.getIncomeCnt();
 
-    if (product.getStock() < income) {
-      throw new ResponseStatusException(
-        HttpStatus.BAD_REQUEST,
-        "STOCK CNT SHOULD BE SMALLER OR EQUALS TO NOT REGISTERED PRODUCT STOCK"
-      );
-    }
+    validateStock(
+      product.getStock(),
+      income,
+      "STOCK CNT SHOULD BE SMALLER OR EQUALS TO NOT REGISTERED PRODUCT STOCK"
+    );
 
     product.updateStock(product.getStock() - income);
     productRepository.save(product);
@@ -160,12 +159,11 @@ public class StoreProductService extends CommonService {
     Product product = findProductByCode(productCode);
     StoreProduct previousStoreProduct = findStoreProduct(store, product);
 
-    if (product.getStock() < restockCnt) {
-      throw new ResponseStatusException(
-        HttpStatus.BAD_REQUEST,
-        "RESTOCK CNT SHOULD BE SMALLER OR EQUALS TO NOT REGISTERED PRODUCT STOCK"
-      );
-    }
+    validateStock(
+      product.getStock(),
+      restockCnt,
+      "RESTOCK CNT SHOULD BE SMALLER OR EQUALS TO NOT REGISTERED PRODUCT STOCK"
+    );
 
     product.updateStock(product.getStock() - restockCnt);
 
