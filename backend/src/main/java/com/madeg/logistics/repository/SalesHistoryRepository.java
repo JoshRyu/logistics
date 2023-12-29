@@ -15,6 +15,11 @@ public interface SalesHistoryRepository
     String salesMonth
   );
 
+  SalesHistory findByStoreProduct_StoreProductIdAndSalesMonth(
+    Long storeProductId,
+    String salesMonth
+  );
+
   Page<SalesHistory> findByStoreProductOrderBySalesMonth(
     StoreProduct storeProduct,
     Pageable pageable
