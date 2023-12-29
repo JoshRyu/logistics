@@ -27,10 +27,10 @@ public class Category {
   @Id
   @GeneratedValue(
     strategy = GenerationType.SEQUENCE,
-    generator = "category_code_sequence"
+    generator = "category_code_seq"
   )
   @GenericGenerator(
-    name = "category_code_sequence",
+    name = "category_code_seq",
     strategy = "com.madeg.logistics.entity.CustomSequenceGenerator",
     parameters = { @Parameter(name = "prefix", value = "category_code_") }
   )
