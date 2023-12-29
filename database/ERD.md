@@ -58,16 +58,13 @@
 
 - statistics_id(pk): 매장 통계 아이디
 - store_code(fk): 매장 코드
-- product_code(fk): 제품 코드
 - month: 월
 - month_revenue: 상품 월별 총 매출
 - month_profit: 상품 월별 총 순이익
 
 ```
-# month_profit 계산
-- profit_per_product = (sale_price - cost) * quantity
-- total_profit_before_commission = Σ(profit_per_product)
-- month_profit = (total_profit_before_commission * (1 - store.commission_rate)) - store.fixed_cost
+# month_revenue =  Σ(sale_price * quantity) (store_code, sales_month로 조회)
+# month_profit = (month_revenue * (1 - store.commission_rate/100)) - store.fixed_cost
 ```
 
 ### member

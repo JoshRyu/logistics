@@ -10,8 +10,16 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
 @Table(name = "store_statistics")
 public class StoreStatistics {
 
@@ -36,14 +44,6 @@ public class StoreStatistics {
   )
   private Store store;
 
-  @ManyToOne
-  @JoinColumn(
-    name = "product_code",
-    referencedColumnName = "product_code",
-    nullable = false
-  )
-  private Product product;
-
   @Column(name = "month")
   private String month;
 
@@ -52,4 +52,12 @@ public class StoreStatistics {
 
   @Column(name = "month_profit")
   private BigDecimal monthProfit;
+
+  public void updateMonthRevenue(BigDecimal monthRevenue) {
+    this.monthRevenue = monthRevenue;
+  }
+
+  public void updateMonthProfit(BigDecimal monthProfit) {
+    this.monthProfit = monthProfit;
+  }
 }
