@@ -10,6 +10,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -53,11 +54,18 @@ public class StoreStatistics {
   @Column(name = "month_profit")
   private BigDecimal monthProfit;
 
+  @Column(name = "last_updated_time")
+  private LocalDateTime lastUpdatedTime;
+
   public void updateMonthRevenue(BigDecimal monthRevenue) {
     this.monthRevenue = monthRevenue;
   }
 
   public void updateMonthProfit(BigDecimal monthProfit) {
     this.monthProfit = monthProfit;
+  }
+
+  public void updateLastUpdatedTime(LocalDateTime lastUpdatedTime) {
+    this.lastUpdatedTime = lastUpdatedTime;
   }
 }

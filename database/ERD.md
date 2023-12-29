@@ -61,6 +61,7 @@
 - month: 월
 - month_revenue: 상품 월별 총 매출
 - month_profit: 상품 월별 총 순이익
+- last_updated_time: 마지막 업데이트 일시
 
 ```
 # month_revenue =  Σ(sale_price * quantity) (store_code, sales_month로 조회)

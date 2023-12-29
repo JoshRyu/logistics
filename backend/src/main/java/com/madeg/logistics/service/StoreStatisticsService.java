@@ -7,6 +7,7 @@ import com.madeg.logistics.repository.SalesHistoryRepository;
 import com.madeg.logistics.repository.StoreProductRepository;
 import com.madeg.logistics.repository.StoreStatisticsRepository;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -65,12 +66,14 @@ public class StoreStatisticsService extends CommonService {
     if (existStoreStatistics != null) {
       existStoreStatistics.updateMonthRevenue(monthRevenue);
       existStoreStatistics.updateMonthProfit(monthProfit);
+      existStoreStatistics.updateLastUpdatedTime(LocalDateTime.now());
       storeStatisticsRepository.save(existStoreStatistics);
     } else {
       StoreStatistics storeStatistics = StoreStatistics
         .builder()
         .month(targetMonth)
         .store(store)
+        .lastUpdatedTime(LocalDateTime.now())
         .monthRevenue(monthRevenue)
         .monthProfit(monthProfit)
         .build();
