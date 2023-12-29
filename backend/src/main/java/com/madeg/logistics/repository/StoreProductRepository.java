@@ -3,6 +3,7 @@ package com.madeg.logistics.repository;
 import com.madeg.logistics.entity.Product;
 import com.madeg.logistics.entity.Store;
 import com.madeg.logistics.entity.StoreProduct;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -15,6 +16,11 @@ public interface StoreProductRepository
   StoreProduct findByStore(Store store);
 
   StoreProduct findByStoreAndProduct(Store store, Product product);
+
+  @Query(
+    "SELECT sp.storeProductId FROM StoreProduct sp WHERE sp.store.storeCode = :storeCode"
+  )
+  List<Long> findStoreProductIdsByStore(String storeCode);
 
   @Query(
     "SELECT sp FROM StoreProduct sp WHERE sp.store.storeCode = :storeCode ORDER BY sp.product.productCode ASC"
