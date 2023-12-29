@@ -27,10 +27,10 @@ public class Store {
   @Id
   @GeneratedValue(
     strategy = GenerationType.SEQUENCE,
-    generator = "custom_sequence"
+    generator = "store_code_sequence"
   )
   @GenericGenerator(
-    name = "custom_sequence",
+    name = "store_code_sequence",
     strategy = "com.madeg.logistics.entity.CustomSequenceGenerator",
     parameters = { @Parameter(name = "prefix", value = "store_code_") }
   )

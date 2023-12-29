@@ -30,10 +30,10 @@ public class Product {
   @Id
   @GeneratedValue(
     strategy = GenerationType.SEQUENCE,
-    generator = "custom_sequence"
+    generator = "product_code_sequence"
   )
   @GenericGenerator(
-    name = "custom_sequence",
+    name = "product_code_sequence",
     strategy = "com.madeg.logistics.entity.CustomSequenceGenerator",
     parameters = { @Parameter(name = "prefix", value = "product_code_") }
   )
