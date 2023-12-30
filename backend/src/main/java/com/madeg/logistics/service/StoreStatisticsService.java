@@ -1,5 +1,7 @@
 package com.madeg.logistics.service;
 
+import com.madeg.logistics.domain.SimplePageInfo;
+import com.madeg.logistics.domain.StoreStatisticsRes;
 import com.madeg.logistics.entity.SalesHistory;
 import com.madeg.logistics.entity.Store;
 import com.madeg.logistics.entity.StoreStatistics;
@@ -10,6 +12,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -80,5 +85,27 @@ public class StoreStatisticsService extends CommonService {
 
       storeStatisticsRepository.save(storeStatistics);
     }
+  }
+
+  public StoreStatisticsRes getStoreStatistics(
+    String storeCode,
+    Pageable pageable
+  ) {
+    Store store = findStoreByCode(storeCode);
+
+    Page<StoreStatistics> page = storeStatisticsRepository.findByStoreOrderByMonth(
+      store,
+      pageable
+    );
+
+    List<StoreStatistics> content = page.getContent();
+    SimplePageInfo simplePageInfo = createSimplePageInfo(page);
+
+    return new StoreStatisticsRes(
+      HttpStatus.OK.value(),
+      "STORE STATISTICS IS RETRIEVED",
+      content,
+      simplePageInfo
+    );
   }
 }
