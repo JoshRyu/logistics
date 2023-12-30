@@ -17,8 +17,8 @@ public class CategoryInput {
     regexp = "^.{2,29}$",
     message = "카테고리 명은 2자 이상 30자 미만이어야 합니다."
   )
-  @Schema(example = "사과")
-  private String categoryName;
+  @Schema(example = "목도리")
+  private String name;
 
   @Schema(example = "category_15")
   private String parentCategoryCode;

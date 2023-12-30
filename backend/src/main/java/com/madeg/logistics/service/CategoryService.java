@@ -18,16 +18,13 @@ public class CategoryService extends CommonService {
 
   public void createCategory(CategoryInput categoryInput) {
     Category existCategory = categoryRepository.findByName(
-      categoryInput.getCategoryName()
+      categoryInput.getName()
     );
 
     if (existCategory != null) {
       throw new ResponseStatusException(
         HttpStatus.CONFLICT,
-        String.format(
-          "CATEGORY %s ALREADY EXIST",
-          categoryInput.getCategoryName()
-        )
+        String.format("CATEGORY %s ALREADY EXIST", categoryInput.getName())
       );
     }
 
@@ -47,7 +44,7 @@ public class CategoryService extends CommonService {
     Category category = Category
       .builder()
       .description(categoryInput.getDescription())
-      .name(categoryInput.getCategoryName())
+      .name(categoryInput.getName())
       .parentCategory(parentCategory)
       .build();
 
