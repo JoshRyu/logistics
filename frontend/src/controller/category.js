@@ -7,9 +7,9 @@ const headers = {
 
 const path = "/api/v1/category";
 
-export async function createCategory(categoryInput) {
+export async function createCategory(input) {
   try {
-    const response = await axios.post(urlBuilder(path), categoryInput, {
+    const response = await axios.post(urlBuilder(path), input, {
       headers,
     });
 
@@ -22,7 +22,33 @@ export async function createCategory(categoryInput) {
 
 export async function getCategoryList() {
   try {
-    const response = await axios.get(urlBuilder(path + "/list"), {
+    const response = await axios.get(urlBuilder(path), {
+      headers,
+    });
+
+    return response.data.category;
+  } catch (error) {
+    console.log("에러 데이터 : " + error);
+    throw error;
+  }
+}
+
+export async function patchCategory(code, input) {
+  try {
+    const response = await axios.patch(urlBuilder(path) + "/" + code, input, {
+      headers,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.log("에러 데이터 : " + error);
+    throw error;
+  }
+}
+
+export async function deleteCategory(code) {
+  try {
+    const response = await axios.delete(urlBuilder(path) + "/" + code, {
       headers,
     });
 

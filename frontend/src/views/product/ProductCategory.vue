@@ -19,50 +19,58 @@
         variant="flat"
         color="grey-darken-3"
         class="ma-3"
-        @click="registerCategory"
-        >저장</v-btn
+        @click="
+          !clickedCategory.categoryCode ? registerCategory() : updateCategory()
+        "
+        >{{
+          !clickedCategory.categoryCode ? "카테고리 저장" : "카테고리 업데이트"
+        }}</v-btn
       >
       <v-divider class="border-opacity-100" color="black"></v-divider>
     </v-row>
     <v-row>
-      <v-col cols="4">
-        <v-hover v-for="category in data.categoryList">
-          <template v-slot:default="{ isHovering, props }">
-            <v-row
-              v-bind="props"
-              :class="
-                category.isClicked
-                  ? data.onClick
-                  : isHovering
-                  ? data.onMouse
-                  : 'borderSolid ma-3'
-              "
-              @click="selectCategory(category)"
-            >
-              <v-col cols="1">
-                <v-icon v-if="isHovering">mdi-format-list-bulleted</v-icon>
-              </v-col>
-              <v-spacer></v-spacer>
-              <v-col cols="4" align="center"
-                ><h3>{{ category.name }}</h3></v-col
+      <v-col cols="4.5">
+        <v-container style="max-height: 500px; overflow-y: auto">
+          <v-hover v-for="category in data.categoryList">
+            <template v-slot:default="{ isHovering, props }">
+              <v-row
+                v-bind="props"
+                :class="
+                  category.isClicked
+                    ? data.onClick
+                    : isHovering
+                    ? data.onMouse
+                    : 'borderSolid ma-3'
+                "
+                @click="selectCategory(category)"
               >
-              <v-spacer></v-spacer>
-              <v-col cols="1">
-                <v-icon v-if="isHovering" @click="deleteCategory(category)"
-                  >mdi-close-circle-outline</v-icon
+                <v-col cols="1">
+                  <v-icon v-if="isHovering">mdi-format-list-bulleted</v-icon>
+                </v-col>
+                <v-spacer></v-spacer>
+                <v-col cols="8" align="center"
+                  ><h3>{{ category.name }}</h3></v-col
                 >
-              </v-col>
-            </v-row>
-          </template>
-        </v-hover>
+                <v-spacer></v-spacer>
+                <v-col cols="1">
+                  <v-icon
+                    v-if="isHovering && category.categoryCode"
+                    @click="removeCategory(category)"
+                    >mdi-close-circle-outline</v-icon
+                  >
+                </v-col>
+              </v-row>
+            </template>
+          </v-hover>
+        </v-container>
       </v-col>
       <v-divider class="border-opacity-100" color="black" vertical></v-divider>
-      <v-col cols="8">
+      <v-col cols="7">
         <h3 class="ma-3">카테고리 명 *</h3>
         <v-row>
           <v-col cols="4" class="ml-3">
             <v-text-field
-              v-model="data.selectedCategory.name"
+              v-model="clickedCategory.name"
               hide-details
               variant="outlined"
               clear-icon="mdi-close-circle"
@@ -71,12 +79,13 @@
             ></v-text-field>
           </v-col>
         </v-row>
-        <h3 class="ma-3">상위 카테고리 명 (선택)</h3>
+        <!-- 현재 Recursive Error가 있어서 사용중지. -->
+        <!-- <h3 class="ma-3">상위 카테고리 명 (선택)</h3>
         <v-row>
           <v-col cols="4" class="ml-3">
             <v-autocomplete
-              v-model="data.selectedCategory.parentCategory"
-              :items="categoryNameList"
+              v-model="clickedCategory.parentCategory.name"
+              :items="parentCategoryList"
               hide-details
               variant="outlined"
               clear-icon="mdi-close-circle"
@@ -85,12 +94,12 @@
               type="text"
             />
           </v-col>
-        </v-row>
+        </v-row> -->
         <h3 class="ma-3">카테고리 설명</h3>
         <v-row>
           <v-col cols="6" class="ml-3">
             <v-textarea
-              v-model="data.selectedCategory.description"
+              v-model="clickedCategory.description"
               hide-details
               variant="outlined"
               type="text"
@@ -109,8 +118,17 @@
 
 <script setup>
 import { reactive, computed, onMounted } from "vue";
-import { createCategory, getCategoryList } from "@/controller/category.js";
+import {
+  createCategory,
+  patchCategory,
+  deleteCategory,
+  getCategoryList,
+} from "@/controller/category.js";
 import YesNoModal from "../components/YesNoModal.vue";
+
+onMounted(() => {
+  retrieveCategoryList();
+});
 
 const resetCategory = () => {
   if (data.newCategoryEnabled) {
@@ -120,61 +138,78 @@ const resetCategory = () => {
 };
 
 const registerCategory = async () => {
+  const payload = {
+    name: clickedCategory.value.name,
+    description: clickedCategory.value.description,
+    parentCategoryCode: clickedCategory.value.parentCategory
+      ? clickedCategory.value.parentCategory.categoryCode
+      : null,
+  };
   try {
-    await createCategory({
-      categoryName: data.selectedCategory.name,
-      description: data.selectedCategory.description,
-      parentCategoryName: data.selectedCategory.parentCategory,
-    });
+    await createCategory(payload);
     alert("성공적으로 카테고리를 등록 하였습니다.");
-    categoryList();
+    data.newCategoryEnabled = false;
+    retrieveCategoryList();
   } catch (e) {
     console.error(e);
 
     if (e.response.data.status == 409) {
-      alert("이미 카테고리 입니다. 다른 명칭을 시도해주세요.");
+      alert("이미 존재하는 카테고리 이름 입니다. 다른 명칭을 시도해주세요.");
     } else {
       alert("카테고리를 등록하지 못했습니다.");
     }
   }
 };
 
-const categoryList = async () => {
+const updateCategory = async () => {
+  const categoryId = clickedCategory.value.categoryCode;
+  const payload = {
+    name: clickedCategory.value.name,
+    description: clickedCategory.value.description,
+    parentCategoryCode: clickedCategory.value.parentCategory
+      ? getCategoryCode(clickedCategory.value.parentCategory.name)
+      : null,
+  };
+  try {
+    await patchCategory(categoryId, payload);
+    alert("성공적으로 카테고리를 업데이트 하였습니다.");
+    retrieveCategoryList();
+  } catch (e) {
+    console.error(e);
+
+    if (e.response.data.status == 409) {
+      alert("이미 존재하는 카테고리 이름 입니다. 다른 명칭을 시도해주세요.");
+    } else {
+      alert("카테고리를 업데이트하지 못했습니다.");
+    }
+  }
+};
+
+const retrieveCategoryList = async () => {
   try {
     const response = await getCategoryList();
 
-    data.categoryList = response;
+    // Transform the response to handle null parentCategory
+    data.categoryList = response.map((item) => {
+      // If parentCategory is null, replace it with {"name": null}
+      if (item.parentCategory === null) {
+        return { ...item, parentCategory: { name: "" } };
+      }
+
+      // Return the item as is if parentCategory is not null
+      return item;
+    });
+    data.newCategoryEnabled = false;
   } catch (error) {
     console.error(error);
   }
 };
 
-onMounted(() => {
-  categoryList();
-});
-
 const data = reactive({
-  categoryList: [
-    {
-      name: "뜨게 가방",
-      parentCategory: "",
-      description: "뜨게 가방 설명",
-      isClicked: false,
-    },
-    {
-      name: "뜨게 케이스",
-      parentCategory: "",
-      description: "뜨게 케이스 설명",
-      isClicked: false,
-    },
-  ],
+  categoryToDelete: null,
+  categoryList: [],
   onMouse: "borderSolid bgColor ma-3",
   onClick: "borderSolid bgColorSelected ma-1",
-  selectedCategory: {
-    name: "",
-    parentCategory: "",
-    description: "",
-  },
   newCategoryEnabled: false,
   modalProps: {
     enabled: false,
@@ -184,15 +219,28 @@ const data = reactive({
   },
 });
 
-const categoryNameList = computed(() => {
+const parentCategoryList = computed(() => {
   return data.categoryList
     .map((category) => {
-      if (data.selectedCategory.name !== category.name) {
+      if (clickedCategory.name !== category.name) {
         return category.name;
       }
       return undefined;
     })
-    .filter((name) => name !== undefined);
+    .filter((name) => name !== "새 카테고리" && name !== undefined);
+});
+
+const clickedCategory = computed(() => {
+  const found = data.categoryList.find((item) => item.isClicked === true);
+
+  if (found) {
+    // Create a new object with the same properties as the found item
+    return {
+      ...found,
+    };
+  } else {
+    return { name: "", description: "", parentCategory: "", isClicked: false };
+  }
 });
 
 const addCategory = () => {
@@ -200,7 +248,7 @@ const addCategory = () => {
     data.newCategoryEnabled = true;
     data.categoryList.unshift({
       name: "새 카테고리",
-      parentCategory: "",
+      parentCategory: { name: "" },
       description: "",
       isClicked: false,
     });
@@ -215,7 +263,8 @@ const addCategory = () => {
   }
 };
 
-const deleteCategory = (selectedCategory) => {
+const removeCategory = (selectedCategory) => {
+  data.categoryToDelete = selectedCategory;
   data.modalProps = {
     enabled: true,
     title: "확인 필요",
@@ -224,9 +273,18 @@ const deleteCategory = (selectedCategory) => {
   };
 };
 
-const handleConfirmation = () => {
-  data.modalProps.enabled = false;
-  // Handle the confirmation action here
+const handleConfirmation = async () => {
+  try {
+    if (data.categoryToDelete) {
+      await deleteCategory(data.categoryToDelete.categoryCode); // Use the stored category
+      data.categoryToDelete = null; // Reset after deletion
+      alert("성공적으로 카테고리를 삭제하였습니다.");
+      retrieveCategoryList();
+    }
+    data.modalProps.enabled = false;
+  } catch (error) {
+    console.error(error);
+  }
 };
 
 const handleCancellation = () => {
@@ -238,11 +296,11 @@ const selectCategory = (selectedCategory) => {
   data.categoryList.forEach((category) => {
     category.isClicked = category === selectedCategory;
   });
-  data.selectedCategory = {
-    name: selectedCategory.name,
-    parentCategory: selectedCategory.parentCategory,
-    description: selectedCategory.description,
-  };
+};
+
+const getCategoryCode = (categoryName) => {
+  const item = data.categoryList.find((item) => item.name === categoryName);
+  return item ? item.categoryCode : null;
 };
 </script>
 <style scoped>
