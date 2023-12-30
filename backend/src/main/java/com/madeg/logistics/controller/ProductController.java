@@ -5,6 +5,7 @@ import com.madeg.logistics.domain.ProductInput;
 import com.madeg.logistics.domain.ProductPatch;
 import com.madeg.logistics.domain.ProductRes;
 import com.madeg.logistics.entity.Product;
+import com.madeg.logistics.enums.ProductType;
 import com.madeg.logistics.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -80,6 +82,7 @@ public class ProductController {
   )
   @GetMapping
   public ResponseEntity<ProductRes> getProductList(
+    @RequestParam(required = false) ProductType type,
     @PageableDefault(
       size = 10,
       page = 0,
@@ -89,7 +92,7 @@ public class ProductController {
   ) {
     return ResponseEntity
       .status(HttpStatus.OK)
-      .body(productService.getProducts(pageable));
+      .body(productService.getProducts(type, pageable));
   }
 
   @Operation(summary = "Get a Specific Product by Code")
