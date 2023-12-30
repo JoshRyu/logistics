@@ -1,5 +1,6 @@
 package com.madeg.logistics.domain;
 
+import com.madeg.logistics.enums.ProductType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
@@ -18,8 +19,11 @@ public class ProductPatch {
   private String categoryCode;
 
   @NotBlank
-  @Schema(example = "신선한오렌지")
+  @Schema(example = "곰돌곰돌목도리")
   private String name;
+
+  @Schema(example = "MATERIAL")
+  private ProductType type;
 
   @NotNull
   @Schema(example = "1300")

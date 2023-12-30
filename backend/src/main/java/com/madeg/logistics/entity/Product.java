@@ -1,6 +1,7 @@
 package com.madeg.logistics.entity;
 
 import com.madeg.logistics.domain.ProductPatch;
+import com.madeg.logistics.enums.ProductType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -48,6 +49,9 @@ public class Product {
   )
   private Category category;
 
+  @Column(name = "type", nullable = false)
+  private ProductType type;
+
   @Column(name = "name", nullable = false)
   private String name;
 
@@ -94,6 +98,10 @@ public class Product {
     this.description = description;
   }
 
+  public void updateType(ProductType type) {
+    this.type = type;
+  }
+
   public boolean isStateChanged(ProductPatch patchInput, byte[] newImgBytes) {
     return (
       !Objects.equals(name, patchInput.getName()) ||
@@ -109,6 +117,7 @@ public class Product {
           : !category.getCategoryCode().equals(patchInput.getCategoryCode())
       ) ||
       !Objects.equals(description, patchInput.getDescription()) ||
+      !Objects.equals(type, patchInput.getType()) ||
       !Arrays.equals(img, newImgBytes) ||
       !Objects.equals(barcode, patchInput.getBarcode())
     );

@@ -6,6 +6,7 @@ import com.madeg.logistics.domain.ProductRes;
 import com.madeg.logistics.domain.SimplePageInfo;
 import com.madeg.logistics.entity.Category;
 import com.madeg.logistics.entity.Product;
+import com.madeg.logistics.enums.ProductType;
 import com.madeg.logistics.repository.CategoryRepository;
 import com.madeg.logistics.repository.ProductRepository;
 import java.io.IOException;
@@ -66,6 +67,7 @@ public class ProductService extends CommonService {
       .name(productInput.getName())
       .price(productInput.getPrice())
       .stock(productInput.getStock())
+      .type(productInput.getType())
       .img(imageBytes)
       .barcode(productInput.getBarcode())
       .description(productInput.getDescription())
@@ -74,8 +76,10 @@ public class ProductService extends CommonService {
     productRepository.save(product);
   }
 
-  public ProductRes getProducts(Pageable pageable) {
-    Page<Product> page = productRepository.findAll(pageable);
+  public ProductRes getProducts(ProductType type, Pageable pageable) {
+    Page<Product> page = type == null
+      ? productRepository.findAll(pageable)
+      : productRepository.findByType(type, pageable);
     List<Product> content = page.getContent();
 
     SimplePageInfo simplePageInfo = createSimplePageInfo(page);
@@ -116,6 +120,10 @@ public class ProductService extends CommonService {
       );
       if (patchInput.getStock() != null) previousProduct.updateStock(
         patchInput.getStock()
+      );
+
+      if (patchInput.getType() != null) previousProduct.updateType(
+        patchInput.getType()
       );
 
       if (patchInput.getCategoryCode() != null) {

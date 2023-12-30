@@ -6,6 +6,7 @@
 
 - product_code(pk) : 제품 코드
 - category_code(fk) : 카테고리 코드
+- type: 제품의 타입 (PRODUCT|MATERIAL)
 - name: 제품의 이름
 - price: 제품의 판매가 (할인 적용 X)
 - stock: 제품 재고 수 (상점에 등록된 재고 수 미포함)
