@@ -53,3 +53,18 @@ npm run dev
 ## Swagger URL
 
 http://localhost:11101/swagger-ui/index.html
+
+## Deploy
+
+### Jar Build
+
+```sh
+sh package.sh
+```
+
+### Execute Jar
+
+```cmd
+java -jar ./backend/target/{jarFileName}.jar
+
+```
