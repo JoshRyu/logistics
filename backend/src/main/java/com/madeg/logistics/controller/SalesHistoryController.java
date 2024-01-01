@@ -20,7 +20,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -47,20 +46,8 @@ public class SalesHistoryController {
   public ResponseEntity<Object> register(
     @PathVariable(name = "store_code", required = true) String storeCode,
     @PathVariable(name = "product_code", required = true) String productCode,
-    @RequestBody @Valid SalesHistoryInput salesHistoryInput,
-    Errors errors
+    @RequestBody @Valid SalesHistoryInput salesHistoryInput
   ) {
-    if (errors.hasErrors()) {
-      return ResponseEntity
-        .status(HttpStatus.BAD_REQUEST)
-        .body(
-          new CommonRes(
-            HttpStatus.BAD_REQUEST.value(),
-            errors.getFieldError().getDefaultMessage()
-          )
-        );
-    }
-
     try {
       salesHistoryService.registerSalesHistory(
         storeCode,
@@ -136,20 +123,8 @@ public class SalesHistoryController {
   public ResponseEntity<Object> patch(
     @PathVariable(name = "store_code", required = true) String storeCode,
     @PathVariable(name = "product_code", required = true) String productCode,
-    @RequestBody @Valid SalesHistoryPatch patchInput,
-    Errors errors
+    @RequestBody @Valid SalesHistoryPatch patchInput
   ) {
-    if (errors.hasErrors()) {
-      return ResponseEntity
-        .status(HttpStatus.BAD_REQUEST)
-        .body(
-          new CommonRes(
-            HttpStatus.BAD_REQUEST.value(),
-            errors.getFieldError().getDefaultMessage()
-          )
-        );
-    }
-
     try {
       salesHistoryService.patchSalesHistory(storeCode, productCode, patchInput);
       return ResponseEntity

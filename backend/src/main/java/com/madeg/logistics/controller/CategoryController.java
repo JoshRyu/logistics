@@ -15,7 +15,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -40,20 +39,8 @@ public class CategoryController {
   )
   @PostMapping
   public ResponseEntity<Object> create(
-    @RequestBody @Valid CategoryInput categoryInput,
-    Errors errors
+    @RequestBody @Valid CategoryInput categoryInput
   ) {
-    if (errors.hasErrors()) {
-      return ResponseEntity
-        .status(HttpStatus.BAD_REQUEST)
-        .body(
-          new CommonRes(
-            HttpStatus.BAD_REQUEST.value(),
-            errors.getFieldError().getDefaultMessage()
-          )
-        );
-    }
-
     try {
       categoryService.createCategory(categoryInput);
       return ResponseEntity
@@ -90,19 +77,8 @@ public class CategoryController {
   @PatchMapping("/{category_code}")
   public ResponseEntity<Object> patch(
     @PathVariable(name = "category_code", required = true) String categoryCode,
-    @RequestBody @Valid CategoryPatch patchInput,
-    Errors errors
+    @RequestBody @Valid CategoryPatch patchInput
   ) {
-    if (errors.hasErrors()) {
-      return ResponseEntity
-        .status(HttpStatus.BAD_REQUEST)
-        .body(
-          new CommonRes(
-            HttpStatus.BAD_REQUEST.value(),
-            errors.getFieldError().getDefaultMessage()
-          )
-        );
-    }
     try {
       categoryService.patchCategory(categoryCode, patchInput);
       return ResponseEntity

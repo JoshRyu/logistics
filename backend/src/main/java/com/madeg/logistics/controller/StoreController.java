@@ -15,7 +15,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -40,20 +39,8 @@ public class StoreController {
   )
   @PostMapping
   public ResponseEntity<Object> create(
-    @RequestBody @Valid StoreInput storeInput,
-    Errors errors
+    @RequestBody @Valid StoreInput storeInput
   ) {
-    if (errors.hasErrors()) {
-      return ResponseEntity
-        .status(HttpStatus.BAD_REQUEST)
-        .body(
-          new CommonRes(
-            HttpStatus.BAD_REQUEST.value(),
-            errors.getFieldError().getDefaultMessage()
-          )
-        );
-    }
-
     try {
       storeService.createStore(storeInput);
       return ResponseEntity
@@ -90,20 +77,8 @@ public class StoreController {
   @PatchMapping("/{store_code}")
   public ResponseEntity<Object> patch(
     @PathVariable(name = "store_code", required = true) String storeCode,
-    @RequestBody @Valid StorePatch patchInput,
-    Errors errors
+    @RequestBody @Valid StorePatch patchInput
   ) {
-    if (errors.hasErrors()) {
-      return ResponseEntity
-        .status(HttpStatus.BAD_REQUEST)
-        .body(
-          new CommonRes(
-            HttpStatus.BAD_REQUEST.value(),
-            errors.getFieldError().getDefaultMessage()
-          )
-        );
-    }
-
     try {
       storeService.patchStore(storeCode, patchInput);
       return ResponseEntity
