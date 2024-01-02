@@ -50,6 +50,16 @@ public class SecurityConfig {
           .permitAll()
           .requestMatchers(CorsUtils::isPreFlightRequest)
           .permitAll()
+          // Allow Frontend Relevant Path
+          .requestMatchers(
+            "/",
+            "/index.html",
+            "/static/**",
+            "/resources/**",
+            "/assets/**",
+            "/favicon.ico"
+          )
+          .permitAll()
           // Allow Swagger Relevant Path
           .requestMatchers(HttpMethod.GET, "/swagger-ui/*")
           .permitAll()
