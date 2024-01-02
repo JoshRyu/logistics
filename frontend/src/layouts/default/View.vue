@@ -26,11 +26,7 @@
           :prepend-icon="navElements.data.user.icon"
           :title="navElements.data.user.title"
           @click="
-            navClick(
-              'user',
-              navElements.data.user.title,
-              navElements.data.user.route
-            )
+            navClick('user', navElements.data.user, navElements.data.user.route)
           "
           :class="selectedNav == navElements.data.user.title ? 'navColor' : ''"
         ></v-list-item>
@@ -49,7 +45,7 @@
             :value="item.title"
             :title="item.title"
             :prepend-icon="item.icon"
-            @click="navClick('product', item.title, item.route)"
+            @click="navClick('product', item, item.route)"
             :class="selectedNav == item.title ? 'navColor' : ''"
           ></v-list-item>
         </v-list-group>
@@ -68,7 +64,7 @@
             :value="item.title"
             :title="item.title"
             :prepend-icon="item.icon"
-            @click="navClick('store', item.title, item.route)"
+            @click="navClick('store', item, item.route)"
             :class="selectedNav == item.title ? 'navColor' : ''"
           ></v-list-item>
         </v-list-group>
@@ -96,12 +92,27 @@
 </template>
 
 <script setup>
-import { computed, reactive } from "vue";
+import { onMounted, computed, reactive } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
 const store = useStore();
+
+onMounted(() => {
+  const navData = store.getters.getNav;
+  // Check if navData is a string and needs parsing
+  if (typeof navData === "string") {
+    try {
+      const parsedNavData = JSON.parse(navData);
+      router.push({ path: parsedNavData.route });
+    } catch (error) {
+      console.error("Error parsing navigation data:", error);
+    }
+  } else if (typeof navData === "object" && navData !== null) {
+    router.push({ path: navData.route });
+  }
+});
 
 const data = reactive({
   drawer: true,
@@ -115,21 +126,25 @@ const isAdmin = computed(() => {
 });
 
 const selectedNav = computed(() => {
-  return store.getters.getNav;
+  try {
+    const navString = store.getters.getNav;
+    const navObject =
+      typeof navString === "string" ? JSON.parse(navString) : navString;
+    return navObject.title;
+  } catch (error) {
+    console.error("Error parsing navigation data:", error);
+    return null; // or a default value
+  }
 });
 
-const navClick = (group, title, route) => {
-  store.commit("updateNav", title);
-  localStorage.setItem("current-nav", title);
+const navClick = (group, navObj, route) => {
+  store.commit("updateNav", navObj);
+  localStorage.setItem("current-nav", JSON.stringify(navObj));
   localStorage.setItem("current-group", group);
   if (group == "user") {
     data.openedGroups = [];
   }
   router.push({ path: route });
-};
-
-const selectedMenu = () => {
-  return { navColor: true };
 };
 
 /** 화면 콤보박스 셋팅 */
@@ -145,7 +160,7 @@ const navElements = reactive({
       },
       {
         idx: 1,
-        title: "제품 관리",
+        title: "제품/재료 관리",
         icon: "mdi-basket-plus-outline",
         route: "/product/management",
       },
