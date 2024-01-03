@@ -58,34 +58,39 @@ public class CategoryService extends CommonService {
   public void patchCategory(String categoryCode, CategoryPatch patchInput) {
     Category previousCategory = findCategoryByCode(categoryCode);
 
-    if (categoryRepository.findByCategoryCode(patchInput.getName()) != null) {
-      throw new ResponseStatusException(
-        HttpStatus.CONFLICT,
-        "CATEGORY NAME ALREADY EXIST"
-      );
-    }
+    if (
+      categoryRepository.findByCategoryCode(patchInput.getName()) != null
+    ) throw new ResponseStatusException(
+      HttpStatus.CONFLICT,
+      "CATEGORY NAME ALREADY EXIST"
+    );
 
-    String parentCategoryCode = patchInput.getParentCategoryCode();
-    if (parentCategoryCode.equals(categoryCode)) {
+    if (
+      patchInput.getParentCategoryCode() != null &&
+      patchInput.getParentCategoryCode().equals(categoryCode)
+    ) {
       throw new ResponseStatusException(
         HttpStatus.BAD_REQUEST,
-        "PARENT CATEGORY CODE SHOULD NOT BE EQUELS TO CATEGORY CODE"
+        "PARENT CATEGORY CODE SHOULD NOT BE EQUALS TO CATEGORY CODE"
       );
     }
 
+    Category parentCategory = null;
+    if (patchInput.getParentCategoryCode() != null) {
+      parentCategory =
+        categoryRepository.findByCategoryCode(
+          patchInput.getParentCategoryCode()
+        );
+      if (parentCategory == null) {
+        throw new ResponseStatusException(
+          HttpStatus.NOT_FOUND,
+          "PARENT CATEGORY NOT FOUND"
+        );
+      }
+    }
     Category updatedCategory = new Category();
     updatedCategory.updateName(patchInput.getName());
     updatedCategory.updateDescription(patchInput.getDescription());
-
-    Category parentCategory = categoryRepository.findByCategoryCode(
-      parentCategoryCode
-    );
-    if (parentCategory == null) {
-      throw new ResponseStatusException(
-        HttpStatus.NOT_FOUND,
-        "PARENT CATEGORY NOT FOUND"
-      );
-    }
     updatedCategory.updateParentCategory(parentCategory);
 
     if (previousCategory.isStateChanged(updatedCategory)) {
@@ -94,7 +99,6 @@ public class CategoryService extends CommonService {
       previousCategory.updateParentCategory(
         updatedCategory.getParentCategory()
       );
-
       categoryRepository.save(previousCategory);
     } else {
       throw new ResponseStatusException(
