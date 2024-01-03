@@ -1,6 +1,6 @@
 # logistics
 
-- 제품, 상점을 관리하는 어플리케이션
+> 제품, 상점을 관리하는 어플리케이션
 
 # how to start
 
@@ -17,14 +17,14 @@ docker-compose up -d
 
   - nvm 사용시 아래 명령어로 버전 변경 가능
 
-  ```
+  ```cmd
     nvm install 18.12.0
     nvm use 18.12.0
   ```
 
 - Frontend 설치 및 실행
 
-```
+```cmd
 cd frontend
 npm i
 npm run dev
@@ -36,23 +36,30 @@ npm run dev
 
 - Spring Boot 실행 전 application.yml 수정
 
-```
-  sql:
-    init:
-      mode: always -> never
+```yml
+sql:
+  init:
+    mode: always -> never
 ```
 
 - Spring Boot 실행 후 (JPA Entity 생성 후)
 
+```yml
+sql:
+  init:
+    mode: never -> always
 ```
-  sql:
-    init:
-      mode: never -> always
+
+- 실행
+
+```sh
+cd backend
+./mvnw spring-boot:run
 ```
 
 ## Swagger URL
 
-http://localhost:11101/swagger-ui/index.html
+> http://localhost:11101/swagger-ui/index.html
 
 ## Deploy
 
@@ -66,5 +73,4 @@ sh package.sh
 
 ```cmd
 java -jar ./backend/target/{jarFileName}.jar
-
 ```
