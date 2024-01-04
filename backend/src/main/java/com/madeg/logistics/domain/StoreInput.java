@@ -15,10 +15,7 @@ import lombok.Setter;
 public class StoreInput {
 
   @NotBlank(message = "상점 명은 반드시 있어야 합니다")
-  @Pattern(
-    regexp = "^.{2,29}$",
-    message = "상점 명은 2자 이상 30자 미만이어야 합니다."
-  )
+  @Pattern(regexp = "^.{2,29}$", message = "상점 명은 2자 이상 30자 미만이어야 합니다.")
   @Schema(example = "아이디어스")
   private String name;
 
@@ -30,10 +27,7 @@ public class StoreInput {
   private Integer fixedCost;
 
   @DecimalMin(value = "0.0", message = "수수료율은 0.0 미만이 될 수 없습니다.")
-  @DecimalMax(
-    value = "100.0",
-    message = "수수료율은 100.0을 초과할 수 없습니다."
-  )
+  @DecimalMax(value = "100.0", message = "수수료율은 100.0을 초과할 수 없습니다.")
   @Schema(example = "3.5")
   private Double commissionRate;
 

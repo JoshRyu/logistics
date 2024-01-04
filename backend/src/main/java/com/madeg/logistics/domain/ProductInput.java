@@ -18,10 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class ProductInput {
 
   @NotBlank(message = "제품 명은 반드시 있어야 합니다")
-  @Pattern(
-    regexp = "^.{5,29}$",
-    message = "제품 명은 5자 이상 30자 미만이어야 합니다."
-  )
+  @Pattern(regexp = "^.{1,29}$", message = "제품 명은 1자 이상 30자 미만이어야 합니다.")
   @Schema(example = "양털곰돌목도리")
   private String name;
 
