@@ -25,23 +25,14 @@ import org.hibernate.annotations.Parameter;
 public class Category {
 
   @Id
-  @GeneratedValue(
-    strategy = GenerationType.SEQUENCE,
-    generator = "category_code_seq"
-  )
-  @GenericGenerator(
-    name = "category_code_seq",
-    strategy = "com.madeg.logistics.entity.CustomSequenceGenerator",
-    parameters = { @Parameter(name = "prefix", value = "category_code_") }
-  )
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "category_code_seq")
+  @GenericGenerator(name = "category_code_seq", strategy = "com.madeg.logistics.entity.CustomSequenceGenerator", parameters = {
+      @Parameter(name = "prefix", value = "category_code_"), @Parameter(name = "increment_size", value = "1") })
   @Column(name = "category_code", unique = true, nullable = false)
   private String categoryCode;
 
   @ManyToOne
-  @JoinColumn(
-    name = "parent_category_code",
-    referencedColumnName = "category_code"
-  )
+  @JoinColumn(name = "parent_category_code", referencedColumnName = "category_code")
   private Category parentCategory;
 
   @Column(name = "name", nullable = false)
@@ -63,10 +54,8 @@ public class Category {
   }
 
   public boolean isStateChanged(Category other) {
-    return (
-      !Objects.equals(name, other.name) ||
-      !Objects.equals(description, other.description) ||
-      !Objects.equals(parentCategory, other.parentCategory)
-    );
+    return (!Objects.equals(name, other.name) ||
+        !Objects.equals(description, other.description) ||
+        !Objects.equals(parentCategory, other.parentCategory));
   }
 }
