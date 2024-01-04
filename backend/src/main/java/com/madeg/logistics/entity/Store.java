@@ -25,15 +25,9 @@ import org.hibernate.annotations.Parameter;
 public class Store {
 
   @Id
-  @GeneratedValue(
-    strategy = GenerationType.SEQUENCE,
-    generator = "store_code_seq"
-  )
-  @GenericGenerator(
-    name = "store_code_seq",
-    strategy = "com.madeg.logistics.entity.CustomSequenceGenerator",
-    parameters = { @Parameter(name = "prefix", value = "store_code_") }
-  )
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "store_code_seq")
+  @GenericGenerator(name = "store_code_seq", strategy = "com.madeg.logistics.entity.CustomSequenceGenerator", parameters = {
+      @Parameter(name = "prefix", value = "store_code_"), @Parameter(name = "increment_size", value = "1") })
   @Column(name = "store_code", unique = true, nullable = false)
   private String storeCode;
 
@@ -80,12 +74,10 @@ public class Store {
   }
 
   public boolean isStateChanged(StorePatch patchInput) {
-    return (
-      !Objects.equals(name, patchInput.getName()) ||
-      !Objects.equals(address, patchInput.getAddress()) ||
-      !Objects.equals(fixedCost, patchInput.getFixedCost()) ||
-      !Objects.equals(commissionRate, patchInput.getCommissionRate()) ||
-      !Objects.equals(description, patchInput.getDescription())
-    );
+    return (!Objects.equals(name, patchInput.getName()) ||
+        !Objects.equals(address, patchInput.getAddress()) ||
+        !Objects.equals(fixedCost, patchInput.getFixedCost()) ||
+        !Objects.equals(commissionRate, patchInput.getCommissionRate()) ||
+        !Objects.equals(description, patchInput.getDescription()));
   }
 }
