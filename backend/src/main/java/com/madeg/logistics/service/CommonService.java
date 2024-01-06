@@ -6,6 +6,7 @@ import com.madeg.logistics.entity.Product;
 import com.madeg.logistics.entity.SalesHistory;
 import com.madeg.logistics.entity.Store;
 import com.madeg.logistics.entity.StoreProduct;
+import com.madeg.logistics.enums.ResponseCode;
 import com.madeg.logistics.repository.CategoryRepository;
 import com.madeg.logistics.repository.ProductRepository;
 import com.madeg.logistics.repository.SalesHistoryRepository;
@@ -40,9 +41,8 @@ public class CommonService {
 
     if (category == null) {
       throw new ResponseStatusException(
-        HttpStatus.NOT_FOUND,
-        "CATEGORY NOT FOUND"
-      );
+          ResponseCode.NOTFOUND.getStatus(),
+          ResponseCode.NOTFOUND.getMessage("카테고리"));
     }
 
     return category;
@@ -52,9 +52,8 @@ public class CommonService {
     Store store = storeRepository.findByStoreCode(storeCode);
     if (store == null) {
       throw new ResponseStatusException(
-        HttpStatus.NOT_FOUND,
-        "STORE NOT FOUND"
-      );
+          HttpStatus.NOT_FOUND,
+          "STORE NOT FOUND");
     }
     return store;
   }
@@ -63,42 +62,36 @@ public class CommonService {
     Product product = productRepository.findByProductCode(productCode);
     if (product == null) {
       throw new ResponseStatusException(
-        HttpStatus.NOT_FOUND,
-        "PRODUCT NOT FOUND"
-      );
+          HttpStatus.NOT_FOUND,
+          "PRODUCT NOT FOUND");
     }
     return product;
   }
 
   protected StoreProduct findStoreProduct(Store store, Product product) {
     StoreProduct storeProduct = storeProductRepository.findByStoreAndProduct(
-      store,
-      product
-    );
+        store,
+        product);
 
     if (storeProduct == null) {
       throw new ResponseStatusException(
-        HttpStatus.NOT_FOUND,
-        "STORE PRODUCT NOT FOUND"
-      );
+          HttpStatus.NOT_FOUND,
+          "STORE PRODUCT NOT FOUND");
     }
     return storeProduct;
   }
 
   protected SalesHistory findSalesHistory(
-    StoreProduct storeProduct,
-    String salesMonth
-  ) {
+      StoreProduct storeProduct,
+      String salesMonth) {
     SalesHistory salesHistory = salesHistoryRepository.findByStoreProductAndSalesMonth(
-      storeProduct,
-      salesMonth
-    );
+        storeProduct,
+        salesMonth);
 
     if (salesHistory == null) {
       throw new ResponseStatusException(
-        HttpStatus.NOT_FOUND,
-        "SALES HISTORY NOT FOUND"
-      );
+          HttpStatus.NOT_FOUND,
+          "SALES HISTORY NOT FOUND");
     }
 
     return salesHistory;
@@ -109,10 +102,9 @@ public class CommonService {
   }
 
   protected void validateStock(
-    Integer stock1,
-    Integer stock2,
-    String errorMsg
-  ) {
+      Integer stock1,
+      Integer stock2,
+      String errorMsg) {
     if (stock1 < stock2) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMsg);
     }

@@ -3,10 +3,11 @@ package com.madeg.logistics.service;
 import com.madeg.logistics.domain.CategoryInput;
 import com.madeg.logistics.domain.CategoryPatch;
 import com.madeg.logistics.entity.Category;
+import com.madeg.logistics.enums.ResponseCode;
 import com.madeg.logistics.repository.CategoryRepository;
+
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -18,35 +19,29 @@ public class CategoryService extends CommonService {
 
   public void createCategory(CategoryInput categoryInput) {
     Category existCategory = categoryRepository.findByName(
-      categoryInput.getName()
-    );
+        categoryInput.getName());
 
     if (existCategory != null) {
       throw new ResponseStatusException(
-        HttpStatus.CONFLICT,
-        String.format("CATEGORY %s ALREADY EXIST", categoryInput.getName())
-      );
+          ResponseCode.CONFLICT.getStatus(),
+          ResponseCode.CONFLICT.getMessage("카테고리"));
     }
 
     Category parentCategory = categoryRepository.findByCategoryCode(
-      categoryInput.getParentCategoryCode()
-    );
+        categoryInput.getParentCategoryCode());
 
-    if (
-      categoryInput.getParentCategoryCode() != null && parentCategory == null
-    ) {
+    if (categoryInput.getParentCategoryCode() != null && parentCategory == null) {
       throw new ResponseStatusException(
-        HttpStatus.NOT_FOUND,
-        "PARENT CATEGORY NOT FOUND"
-      );
+          ResponseCode.NOTFOUND.getStatus(),
+          ResponseCode.NOTFOUND.getMessage("부모 카테고리"));
     }
 
     Category category = Category
-      .builder()
-      .description(categoryInput.getDescription())
-      .name(categoryInput.getName())
-      .parentCategory(parentCategory)
-      .build();
+        .builder()
+        .description(categoryInput.getDescription())
+        .name(categoryInput.getName())
+        .parentCategory(parentCategory)
+        .build();
 
     categoryRepository.save(category);
   }
@@ -58,34 +53,26 @@ public class CategoryService extends CommonService {
   public void patchCategory(String categoryCode, CategoryPatch patchInput) {
     Category previousCategory = findCategoryByCode(categoryCode);
 
-    if (
-      categoryRepository.findByCategoryCode(patchInput.getName()) != null
-    ) throw new ResponseStatusException(
-      HttpStatus.CONFLICT,
-      "CATEGORY NAME ALREADY EXIST"
-    );
-
-    if (
-      patchInput.getParentCategoryCode() != null &&
-      patchInput.getParentCategoryCode().equals(categoryCode)
-    ) {
+    if (categoryRepository.findByCategoryCode(patchInput.getName()) != null)
       throw new ResponseStatusException(
-        HttpStatus.BAD_REQUEST,
-        "PARENT CATEGORY CODE SHOULD NOT BE EQUALS TO CATEGORY CODE"
-      );
+          ResponseCode.CONFLICT.getStatus(),
+          ResponseCode.CONFLICT.getMessage("카테고리 이름"));
+
+    if (patchInput.getParentCategoryCode() != null &&
+        patchInput.getParentCategoryCode().equals(categoryCode)) {
+      throw new ResponseStatusException(
+          ResponseCode.BADREQUEST.getStatus(),
+          ResponseCode.BADREQUEST.getMessage("부모 카테고리 코드는 카테고리 코드와 달라야 합니다"));
     }
 
     Category parentCategory = null;
     if (patchInput.getParentCategoryCode() != null) {
-      parentCategory =
-        categoryRepository.findByCategoryCode(
-          patchInput.getParentCategoryCode()
-        );
+      parentCategory = categoryRepository.findByCategoryCode(
+          patchInput.getParentCategoryCode());
       if (parentCategory == null) {
         throw new ResponseStatusException(
-          HttpStatus.NOT_FOUND,
-          "PARENT CATEGORY NOT FOUND"
-        );
+            ResponseCode.NOTFOUND.getStatus(),
+            ResponseCode.NOTFOUND.getMessage("부모 카테고리"));
       }
     }
     Category updatedCategory = new Category();
@@ -97,14 +84,12 @@ public class CategoryService extends CommonService {
       previousCategory.updateName(updatedCategory.getName());
       previousCategory.updateDescription(updatedCategory.getDescription());
       previousCategory.updateParentCategory(
-        updatedCategory.getParentCategory()
-      );
+          updatedCategory.getParentCategory());
       categoryRepository.save(previousCategory);
     } else {
       throw new ResponseStatusException(
-        HttpStatus.NO_CONTENT,
-        "CATEGORY IS NOT UPDATED"
-      );
+          ResponseCode.UNCHANGED.getStatus(),
+          ResponseCode.UNCHANGED.getMessage("카테고리"));
     }
   }
 
