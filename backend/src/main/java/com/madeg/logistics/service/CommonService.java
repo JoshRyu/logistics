@@ -12,10 +12,11 @@ import com.madeg.logistics.repository.ProductRepository;
 import com.madeg.logistics.repository.SalesHistoryRepository;
 import com.madeg.logistics.repository.StoreProductRepository;
 import com.madeg.logistics.repository.StoreRepository;
+import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
@@ -52,8 +53,8 @@ public class CommonService {
     Store store = storeRepository.findByStoreCode(storeCode);
     if (store == null) {
       throw new ResponseStatusException(
-          HttpStatus.NOT_FOUND,
-          "STORE NOT FOUND");
+          ResponseCode.NOTFOUND.getStatus(),
+          ResponseCode.NOTFOUND.getMessage("매장"));
     }
     return store;
   }
@@ -62,8 +63,8 @@ public class CommonService {
     Product product = productRepository.findByProductCode(productCode);
     if (product == null) {
       throw new ResponseStatusException(
-          HttpStatus.NOT_FOUND,
-          "PRODUCT NOT FOUND");
+          ResponseCode.NOTFOUND.getStatus(),
+          ResponseCode.NOTFOUND.getMessage("제품"));
     }
     return product;
   }
@@ -75,8 +76,8 @@ public class CommonService {
 
     if (storeProduct == null) {
       throw new ResponseStatusException(
-          HttpStatus.NOT_FOUND,
-          "STORE PRODUCT NOT FOUND");
+          ResponseCode.NOTFOUND.getStatus(),
+          ResponseCode.NOTFOUND.getMessage("매장 제품"));
     }
     return storeProduct;
   }
@@ -90,11 +91,24 @@ public class CommonService {
 
     if (salesHistory == null) {
       throw new ResponseStatusException(
-          HttpStatus.NOT_FOUND,
-          "SALES HISTORY NOT FOUND");
+          ResponseCode.NOTFOUND.getStatus(),
+          ResponseCode.NOTFOUND.getMessage("판매 이력"));
     }
 
     return salesHistory;
+  }
+
+  protected byte[] getImageBytes(MultipartFile image) {
+    if (image == null) {
+      return null;
+    }
+    try {
+      return image.getBytes();
+    } catch (IOException e) {
+      throw new ResponseStatusException(
+          ResponseCode.BADREQUEST.getStatus(),
+          ResponseCode.BADREQUEST.getMessage("잘못된 이미지 입력입니다"));
+    }
   }
 
   protected String generateMonthFormat(Integer year, Integer month) {
@@ -106,7 +120,8 @@ public class CommonService {
       Integer stock2,
       String errorMsg) {
     if (stock1 < stock2) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMsg);
+      throw new ResponseStatusException(ResponseCode.BADREQUEST.getStatus(),
+          ResponseCode.BADREQUEST.getMessage(errorMsg));
     }
   }
 
