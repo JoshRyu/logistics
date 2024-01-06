@@ -4,6 +4,7 @@ import com.madeg.logistics.domain.CategoryInput;
 import com.madeg.logistics.domain.CategoryPatch;
 import com.madeg.logistics.domain.CategoryRes;
 import com.madeg.logistics.domain.CommonRes;
+import com.madeg.logistics.enums.ResponseCode;
 import com.madeg.logistics.service.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -34,80 +35,67 @@ public class CategoryController {
   private CategoryService categoryService;
 
   @Operation(summary = "Register new Category")
-  @ApiResponse(
-    content = @Content(schema = @Schema(implementation = CommonRes.class))
-  )
+  @ApiResponse(content = @Content(schema = @Schema(implementation = CommonRes.class)))
   @PostMapping
   public ResponseEntity<Object> create(
-    @RequestBody @Valid CategoryInput categoryInput
-  ) {
+      @RequestBody @Valid CategoryInput categoryInput) {
     try {
       categoryService.createCategory(categoryInput);
       return ResponseEntity
-        .status(HttpStatus.CREATED)
-        .body(new CommonRes(HttpStatus.CREATED.value(), "CATEGORY IS CREATED"));
+          .status(ResponseCode.CREATED.getStatus())
+          .body(new CommonRes(ResponseCode.CREATED.getCode(), ResponseCode.CREATED.getMessage("카테고리")));
     } catch (ResponseStatusException ex) {
       return ResponseEntity
-        .status(ex.getStatusCode())
-        .body(new CommonRes(ex.getStatusCode().value(), ex.getReason()));
+          .status(ex.getStatusCode())
+          .body(new CommonRes(ex.getStatusCode().value(), ex.getReason()));
     }
   }
 
   @Operation(summary = "Get All Category List")
-  @ApiResponse(
-    content = @Content(schema = @Schema(implementation = List.class))
-  )
+  @ApiResponse(content = @Content(schema = @Schema(implementation = List.class)))
   @GetMapping
   public ResponseEntity<CategoryRes> getCategoryList() {
     return ResponseEntity
-      .status(HttpStatus.OK)
-      .body(
-        new CategoryRes(
-          HttpStatus.OK.value(),
-          "CATEGORIES ARE RETRIEVED",
-          categoryService.getCategories()
-        )
-      );
+        .status(ResponseCode.RETRIEVED.getStatus())
+        .body(
+            new CategoryRes(
+                ResponseCode.RETRIEVED.getCode(),
+                ResponseCode.RETRIEVED.getMessage("카테고리"),
+                categoryService.getCategories()));
   }
 
   @Operation(summary = "Update a Specific Category by Code")
-  @ApiResponse(
-    content = @Content(schema = @Schema(implementation = CommonRes.class))
-  )
+  @ApiResponse(content = @Content(schema = @Schema(implementation = CommonRes.class)))
   @PatchMapping("/{category_code}")
   public ResponseEntity<Object> patch(
-    @PathVariable(name = "category_code", required = true) String categoryCode,
-    @RequestBody @Valid CategoryPatch patchInput
-  ) {
+      @PathVariable(name = "category_code", required = true) String categoryCode,
+      @RequestBody @Valid CategoryPatch patchInput) {
     try {
       categoryService.patchCategory(categoryCode, patchInput);
       return ResponseEntity
-        .status(HttpStatus.ACCEPTED)
-        .body(
-          new CommonRes(HttpStatus.ACCEPTED.value(), "CATEGORY IS UPDATED")
-        );
+          .status(ResponseCode.UPDATED.getStatus())
+          .body(
+              new CommonRes(ResponseCode.UPDATED.getCode(), ResponseCode.UPDATED.getMessage("카테고리")));
     } catch (ResponseStatusException ex) {
       return ResponseEntity
-        .status(ex.getStatusCode())
-        .body(new CommonRes(ex.getStatusCode().value(), ex.getReason()));
+          .status(ex.getStatusCode())
+          .body(new CommonRes(ex.getStatusCode().value(), ex.getReason()));
     }
   }
 
   @Operation(summary = "Delete a Specific Category by Code")
-  @ApiResponse(
-    content = @Content(schema = @Schema(implementation = CommonRes.class))
-  )
+  @ApiResponse(content = @Content(schema = @Schema(implementation = CommonRes.class)))
   @DeleteMapping("/{category_code}")
   public ResponseEntity<Object> delete(
-    @PathVariable(name = "category_code", required = true) String categoryCode
-  ) {
+      @PathVariable(name = "category_code", required = true) String categoryCode) {
     try {
       categoryService.deleteCategory(categoryCode);
-      return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+      return ResponseEntity
+          .status(ResponseCode.DELETED.getStatus()).build();
     } catch (ResponseStatusException ex) {
       return ResponseEntity
-        .status(ex.getStatusCode())
-        .body(new CommonRes(ex.getStatusCode().value(), ex.getReason()));
+          .status(ex.getStatusCode())
+          .body(new CommonRes(ex.getStatusCode().value(), ex.getReason()));
     }
   }
 }
