@@ -14,8 +14,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class StoreInput {
 
-  @NotBlank(message = "상점 명은 반드시 있어야 합니다")
-  @Pattern(regexp = "^.{2,29}$", message = "상점 명은 2자 이상 30자 미만이어야 합니다.")
+  @NotBlank(message = "매장 명은 반드시 있어야 합니다")
+  @Pattern(regexp = "^.{2,29}$", message = "매장 명은 2자 이상 30자 미만이어야 합니다.")
   @Schema(example = "아이디어스")
   private String name;
 
@@ -31,6 +31,6 @@ public class StoreInput {
   @Schema(example = "3.5")
   private Double commissionRate;
 
-  @Schema(example = "메인 상점")
+  @Schema(example = "메인 매장")
   private String description;
 }

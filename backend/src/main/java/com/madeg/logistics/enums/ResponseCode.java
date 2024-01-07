@@ -9,6 +9,7 @@ import lombok.Getter;
 @Getter
 public enum ResponseCode {
 
+    SUCCESS(HttpStatus.OK, "{0}에 성공하였습니다"),
     RETRIEVED(HttpStatus.OK, "{0} 조회에 성공하였습니다."),
     UPDATED(HttpStatus.OK, "{0} 업데이트에 성공하였습니다."),
     CREATED(HttpStatus.CREATED, "{0}이(가) 생성되었습니다."),
