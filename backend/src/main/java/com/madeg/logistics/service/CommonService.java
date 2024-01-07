@@ -40,32 +40,25 @@ public class CommonService {
   protected Category findCategoryByCode(String categoryCode) {
     Category category = categoryRepository.findByCategoryCode(categoryCode);
 
-    if (category == null) {
-      throw new ResponseStatusException(
-          ResponseCode.NOTFOUND.getStatus(),
-          ResponseCode.NOTFOUND.getMessage("카테고리"));
-    }
+    if (category == null)
+      throwNotFound("카테고리");
 
     return category;
   }
 
   protected Store findStoreByCode(String storeCode) {
     Store store = storeRepository.findByStoreCode(storeCode);
-    if (store == null) {
-      throw new ResponseStatusException(
-          ResponseCode.NOTFOUND.getStatus(),
-          ResponseCode.NOTFOUND.getMessage("매장"));
-    }
+    if (store == null)
+      throwNotFound("매장");
+
     return store;
   }
 
   protected Product findProductByCode(String productCode) {
     Product product = productRepository.findByProductCode(productCode);
-    if (product == null) {
-      throw new ResponseStatusException(
-          ResponseCode.NOTFOUND.getStatus(),
-          ResponseCode.NOTFOUND.getMessage("제품"));
-    }
+    if (product == null)
+      throwNotFound("제품");
+
     return product;
   }
 
@@ -74,11 +67,9 @@ public class CommonService {
         store,
         product);
 
-    if (storeProduct == null) {
-      throw new ResponseStatusException(
-          ResponseCode.NOTFOUND.getStatus(),
-          ResponseCode.NOTFOUND.getMessage("매장 제품"));
-    }
+    if (storeProduct == null)
+      throwNotFound("매장 제품");
+
     return storeProduct;
   }
 
@@ -89,13 +80,16 @@ public class CommonService {
         storeProduct,
         salesMonth);
 
-    if (salesHistory == null) {
-      throw new ResponseStatusException(
-          ResponseCode.NOTFOUND.getStatus(),
-          ResponseCode.NOTFOUND.getMessage("판매 이력"));
-    }
+    if (salesHistory == null)
+      throwNotFound("판매 이력");
 
     return salesHistory;
+  }
+
+  private void throwNotFound(String entityType) {
+    throw new ResponseStatusException(
+        ResponseCode.NOTFOUND.getStatus(),
+        ResponseCode.NOTFOUND.getMessage(entityType));
   }
 
   protected byte[] getImageBytes(MultipartFile image) {
