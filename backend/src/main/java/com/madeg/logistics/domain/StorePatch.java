@@ -13,7 +13,7 @@ import lombok.Setter;
 public class StorePatch {
 
   @NotBlank
-  @Pattern(regexp = "^.{2,29}$", message = "상점 명은 2자 이상 30자 미만이어야 합니다.")
+  @Pattern(regexp = "^.{2,29}$", message = "매장 명은 2자 이상 30자 미만이어야 합니다.")
   @Schema(example = "네이버 스토어")
   private String name;
 
@@ -29,6 +29,6 @@ public class StorePatch {
   @Schema(example = "3.5")
   private Double commissionRate;
 
-  @Schema(example = "메인 상점")
+  @Schema(example = "메인 매장")
   private String description;
 }

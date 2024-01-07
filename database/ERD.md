@@ -9,7 +9,7 @@
 - type: 제품의 타입 (PRODUCT|MATERIAL)
 - name: 제품의 이름
 - price: 제품의 판매가 (할인 적용 X)
-- stock: 제품 재고 수 (상점에 등록된 재고 수 미포함)
+- stock: 제품 재고 수 (매장에 등록된 재고 수 미포함)
 - img: 제품의 이미지
 - barcode: 제품의 바코드 정보
 - description: 제품 설명

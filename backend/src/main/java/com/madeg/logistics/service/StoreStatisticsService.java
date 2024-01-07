@@ -5,6 +5,7 @@ import com.madeg.logistics.domain.StoreStatisticsRes;
 import com.madeg.logistics.entity.SalesHistory;
 import com.madeg.logistics.entity.Store;
 import com.madeg.logistics.entity.StoreStatistics;
+import com.madeg.logistics.enums.ResponseCode;
 import com.madeg.logistics.repository.SalesHistoryRepository;
 import com.madeg.logistics.repository.StoreProductRepository;
 import com.madeg.logistics.repository.StoreStatisticsRepository;
@@ -14,7 +15,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -30,23 +30,20 @@ public class StoreStatisticsService extends CommonService {
   private StoreStatisticsRepository storeStatisticsRepository;
 
   public void calculateStatistics(
-    String storeCode,
-    Integer year,
-    Integer month
-  ) {
+      String storeCode,
+      Integer year,
+      Integer month) {
     String targetMonth = generateMonthFormat(year, month);
     Store store = findStoreByCode(storeCode);
 
     List<Long> storeProductIds = storeProductRepository.findStoreProductIdsByStore(
-      storeCode
-    );
+        storeCode);
 
     BigDecimal monthRevenue = BigDecimal.ZERO;
     for (Long id : storeProductIds) {
       SalesHistory productRevenue = salesHistoryRepository.findByStoreProduct_StoreProductIdAndSalesMonth(
-        id,
-        targetMonth
-      );
+          id,
+          targetMonth);
       BigDecimal salesPrice = productRevenue.getSalesPrice();
       BigDecimal quantity = BigDecimal.valueOf(productRevenue.getQuantity());
 
@@ -54,19 +51,15 @@ public class StoreStatisticsService extends CommonService {
     }
 
     BigDecimal oneMinusCommissionRate = BigDecimal.ONE.subtract(
-      BigDecimal.valueOf((double) store.getCommissionRate() / 100)
-    );
+        BigDecimal.valueOf((double) store.getCommissionRate() / 100));
     BigDecimal revenueAfterCommission = monthRevenue.multiply(
-      oneMinusCommissionRate
-    );
+        oneMinusCommissionRate);
     BigDecimal monthProfit = revenueAfterCommission.subtract(
-      BigDecimal.valueOf(store.getFixedCost())
-    );
+        BigDecimal.valueOf(store.getFixedCost()));
 
     StoreStatistics existStoreStatistics = storeStatisticsRepository.findByStoreAndMonth(
-      store,
-      targetMonth
-    );
+        store,
+        targetMonth);
 
     if (existStoreStatistics != null) {
       existStoreStatistics.updateMonthRevenue(monthRevenue);
@@ -75,37 +68,34 @@ public class StoreStatisticsService extends CommonService {
       storeStatisticsRepository.save(existStoreStatistics);
     } else {
       StoreStatistics storeStatistics = StoreStatistics
-        .builder()
-        .month(targetMonth)
-        .store(store)
-        .lastUpdatedTime(LocalDateTime.now())
-        .monthRevenue(monthRevenue)
-        .monthProfit(monthProfit)
-        .build();
+          .builder()
+          .month(targetMonth)
+          .store(store)
+          .lastUpdatedTime(LocalDateTime.now())
+          .monthRevenue(monthRevenue)
+          .monthProfit(monthProfit)
+          .build();
 
       storeStatisticsRepository.save(storeStatistics);
     }
   }
 
   public StoreStatisticsRes getStoreStatistics(
-    String storeCode,
-    Pageable pageable
-  ) {
+      String storeCode,
+      Pageable pageable) {
     Store store = findStoreByCode(storeCode);
 
     Page<StoreStatistics> page = storeStatisticsRepository.findByStoreOrderByMonth(
-      store,
-      pageable
-    );
+        store,
+        pageable);
 
     List<StoreStatistics> content = page.getContent();
     SimplePageInfo simplePageInfo = createSimplePageInfo(page);
 
     return new StoreStatisticsRes(
-      HttpStatus.OK.value(),
-      "STORE STATISTICS IS RETRIEVED",
-      content,
-      simplePageInfo
-    );
+        ResponseCode.RETRIEVED.getCode(),
+        ResponseCode.RETRIEVED.getMessage("매장 통계 목록"),
+        content,
+        simplePageInfo);
   }
 }

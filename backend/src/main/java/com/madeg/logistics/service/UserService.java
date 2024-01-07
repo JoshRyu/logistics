@@ -5,12 +5,12 @@ import com.madeg.logistics.domain.UserLogin;
 import com.madeg.logistics.domain.UserLoginInput;
 import com.madeg.logistics.domain.UserPatch;
 import com.madeg.logistics.entity.User;
+import com.madeg.logistics.enums.ResponseCode;
 import com.madeg.logistics.enums.Role;
 import com.madeg.logistics.repository.UserRepository;
 import com.madeg.logistics.util.JwtUtil;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -27,35 +27,30 @@ public class UserService {
   @Autowired
   private PasswordEncoder passwordEncoder;
 
-  private static final String NOT_FOUND_MSG = "USER NOT_FOUND";
-
   public UserLogin userLogin(UserLoginInput loginInfo) {
     User user = userRepository.findByUsername(loginInfo.getUsername());
 
     if (user == null) {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, NOT_FOUND_MSG);
+      throw new ResponseStatusException(ResponseCode.NOTFOUND.getStatus(), ResponseCode.NOTFOUND.getMessage("사용자"));
     }
 
     if (passwordEncoder.matches(loginInfo.getPassword(), user.getPassword())) {
       UserLogin userLogin = UserLogin
-        .builder()
-        .username(loginInfo.getUsername())
-        .password(loginInfo.getPassword())
-        .role(Role.valueOf(user.getRole()))
-        .token(
-          jwtUtil.generateToken(
-            user.getUsername(),
-            Role.valueOf(user.getRole())
-          )
-        )
-        .build();
+          .builder()
+          .username(loginInfo.getUsername())
+          .password(loginInfo.getPassword())
+          .role(Role.valueOf(user.getRole()))
+          .token(
+              jwtUtil.generateToken(
+                  user.getUsername(),
+                  Role.valueOf(user.getRole())))
+          .build();
       return userLogin;
     }
 
     throw new ResponseStatusException(
-      HttpStatus.BAD_REQUEST,
-      "INVALID PASSWORD"
-    );
+        ResponseCode.BADREQUEST.getStatus(),
+        ResponseCode.BADREQUEST.getMessage("유효하지 않은 비밀번호입니다"));
   }
 
   public List<User> getUsers() {
@@ -66,9 +61,8 @@ public class UserService {
     User previousUser = userRepository.findByUsername(userInput.getUsername());
     if (previousUser != null) {
       throw new ResponseStatusException(
-        HttpStatus.CONFLICT,
-        "USER ALREADY EXIST"
-      );
+          ResponseCode.CONFLICT.getStatus(),
+          ResponseCode.CONFLICT.getMessage("사용자"));
     }
 
     Role userRole = Role.USER;
@@ -78,38 +72,33 @@ public class UserService {
     }
 
     User user = User
-      .builder()
-      .username(userInput.getUsername())
-      .password(passwordEncoder.encode(userInput.getPassword()))
-      .role(userRole.name())
-      .build();
+        .builder()
+        .username(userInput.getUsername())
+        .password(passwordEncoder.encode(userInput.getPassword()))
+        .role(userRole.name())
+        .build();
 
     userRepository.save(user);
   }
 
   public void patchUser(Long id, UserPatch patchInput) {
     User previousUser = userRepository
-      .findById(id)
-      .orElseThrow(() ->
-        new ResponseStatusException(HttpStatus.NOT_FOUND, NOT_FOUND_MSG)
-      );
+        .findById(id)
+        .orElseThrow(() -> new ResponseStatusException(ResponseCode.NOTFOUND.getStatus(),
+            ResponseCode.NOTFOUND.getMessage("사용자")));
 
     if (patchInput.getPassword() != null) {
       previousUser.setPassword(
-        passwordEncoder.encode(patchInput.getPassword())
-      );
+          passwordEncoder.encode(patchInput.getPassword()));
     }
 
     if (patchInput.getRole() != null) {
-      if (
-        previousUser.getRole().equals(Role.ADMIN.name()) &&
-        patchInput.getRole() == Role.USER &&
-        userRepository.countByRole(Role.ADMIN.name()) == 1
-      ) {
+      if (previousUser.getRole().equals(Role.ADMIN.name()) &&
+          patchInput.getRole() == Role.USER &&
+          userRepository.countByRole(Role.ADMIN.name()) == 1) {
         throw new ResponseStatusException(
-          HttpStatus.BAD_REQUEST,
-          "CANNOT PATCH LAST ADMIN USER"
-        );
+            ResponseCode.BADREQUEST.getStatus(),
+            ResponseCode.BADREQUEST.getMessage("유일한 관리자 권한의 사용자의 권한을 바꿀 수 없습니다"));
       }
       previousUser.setRole(patchInput.getRole().name());
     }
@@ -119,19 +108,15 @@ public class UserService {
 
   public void deleteUser(Long id) {
     User previousUser = userRepository
-      .findById(id)
-      .orElseThrow(() ->
-        new ResponseStatusException(HttpStatus.NOT_FOUND, NOT_FOUND_MSG)
-      );
+        .findById(id)
+        .orElseThrow(() -> new ResponseStatusException(ResponseCode.NOTFOUND.getStatus(),
+            ResponseCode.NOTFOUND.getMessage("사용자")));
 
-    if (
-      previousUser.getRole().equals(Role.ADMIN.name()) &&
-      userRepository.countByRole(Role.ADMIN.name()) == 1
-    ) {
+    if (previousUser.getRole().equals(Role.ADMIN.name()) &&
+        userRepository.countByRole(Role.ADMIN.name()) == 1) {
       throw new ResponseStatusException(
-        HttpStatus.BAD_REQUEST,
-        "CANNOT DELETE LAST ADMIN USER"
-      );
+          ResponseCode.BADREQUEST.getStatus(),
+          ResponseCode.BADREQUEST.getMessage("유일한 관리자 권한의 사용자를 삭제할 수 없습니다"));
     }
 
     userRepository.delete(previousUser);

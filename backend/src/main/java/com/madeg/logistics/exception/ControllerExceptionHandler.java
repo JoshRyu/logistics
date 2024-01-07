@@ -1,7 +1,8 @@
 package com.madeg.logistics.exception;
 
 import com.madeg.logistics.domain.CommonRes;
-import org.springframework.http.HttpStatus;
+import com.madeg.logistics.enums.ResponseCode;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
@@ -14,25 +15,23 @@ public class ControllerExceptionHandler {
 
   @ExceptionHandler(HttpMessageNotReadableException.class)
   public ResponseEntity<CommonRes> handleHttpMessageNotReadableException(
-    HttpMessageNotReadableException ex
-  ) {
+      HttpMessageNotReadableException ex) {
     String errorMessage = ex.getLocalizedMessage();
     return ResponseEntity
-      .status(HttpStatus.BAD_REQUEST)
-      .body(new CommonRes(HttpStatus.BAD_REQUEST.value(), errorMessage));
+        .status(ResponseCode.BADREQUEST.getStatus())
+        .body(new CommonRes(ResponseCode.BADREQUEST.getCode(), errorMessage));
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<Object> handleValidationExceptions(
-    MethodArgumentNotValidException ex
-  ) {
+      MethodArgumentNotValidException ex) {
     FieldError fieldError = ex.getBindingResult().getFieldError();
     String errorMessage = (fieldError != null)
-      ? fieldError.getDefaultMessage()
-      : "Bad Request";
+        ? fieldError.getDefaultMessage()
+        : "잘못된 요청입니다";
 
     return ResponseEntity
-      .status(HttpStatus.BAD_REQUEST)
-      .body(new CommonRes(HttpStatus.BAD_REQUEST.value(), errorMessage));
+        .status(ResponseCode.BADREQUEST.getStatus())
+        .body(new CommonRes(ResponseCode.BADREQUEST.getCode(), errorMessage));
   }
 }
