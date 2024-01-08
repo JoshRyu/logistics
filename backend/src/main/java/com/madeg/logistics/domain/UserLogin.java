@@ -14,11 +14,13 @@ import lombok.Setter;
 public class UserLogin {
 
   @NotBlank(message = "사용자 명은 반드시 있어야 합니다.")
-  private String username;
+  private String userName;
 
   @NotBlank(message = "비밀번호는 반드시 있어야 합니다.")
   private String password;
 
   private Role role;
-  private String token;
+
+  private String accessToken;
+  private String refreshToken;
 }

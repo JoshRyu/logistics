@@ -2,9 +2,10 @@ package com.madeg.logistics.controller;
 
 import com.madeg.logistics.domain.CommonRes;
 import com.madeg.logistics.domain.UserInput;
-import com.madeg.logistics.domain.UserLogin;
+import com.madeg.logistics.domain.UserLoginRes;
 import com.madeg.logistics.domain.UserLoginInput;
 import com.madeg.logistics.domain.UserPatch;
+import com.madeg.logistics.domain.UserRefreshRes;
 import com.madeg.logistics.domain.UserRes;
 import com.madeg.logistics.enums.ResponseCode;
 import com.madeg.logistics.service.UserService;
@@ -15,6 +16,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -36,7 +39,7 @@ public class UserController {
   private UserService userService;
 
   @Operation(summary = "Login with username and password")
-  @ApiResponse(content = @Content(schema = @Schema(implementation = UserLogin.class)))
+  @ApiResponse(content = @Content(schema = @Schema(implementation = UserLoginRes.class)))
   @PostMapping("/login")
   public ResponseEntity<Object> login(
       @RequestBody @Valid UserLoginInput loginInfo) {
@@ -45,8 +48,22 @@ public class UserController {
         ResponseCode.SUCCESS.getStatus());
   }
 
+  @Operation(summary = "Get Access Token with Refresh Token")
+  @ApiResponse(content = @Content(schema = @Schema(implementation = UserRefreshRes.class)))
+  @GetMapping("/refresh")
+  public ResponseEntity<?> refreshAccessToken(@RequestParam("refreshToken") String refreshToken) {
+    try {
+      return new ResponseEntity<>(
+          userService.refreshAccessToken(refreshToken),
+          ResponseCode.SUCCESS.getStatus());
+    } catch (IllegalArgumentException e) {
+      return ResponseEntity.status(ResponseCode.BADREQUEST.getStatus())
+          .body(ResponseCode.BADREQUEST.getMessage("유효하지 않은 Refresh Token 입니다"));
+    }
+  }
+
   @Operation(summary = "Register new User")
-  @ApiResponse(content = @Content(schema = @Schema(implementation = UserLogin.class)))
+  @ApiResponse(content = @Content(schema = @Schema(implementation = UserLoginRes.class)))
   @PostMapping
   public ResponseEntity<Object> create(
       @RequestBody @Valid UserInput userInput) {

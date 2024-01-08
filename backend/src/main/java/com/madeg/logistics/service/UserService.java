@@ -2,8 +2,10 @@ package com.madeg.logistics.service;
 
 import com.madeg.logistics.domain.UserInput;
 import com.madeg.logistics.domain.UserLogin;
+import com.madeg.logistics.domain.UserLoginRes;
 import com.madeg.logistics.domain.UserLoginInput;
 import com.madeg.logistics.domain.UserPatch;
+import com.madeg.logistics.domain.UserRefreshRes;
 import com.madeg.logistics.entity.User;
 import com.madeg.logistics.enums.ResponseCode;
 import com.madeg.logistics.enums.Role;
@@ -27,30 +29,36 @@ public class UserService {
   @Autowired
   private PasswordEncoder passwordEncoder;
 
-  public UserLogin userLogin(UserLoginInput loginInfo) {
-    User user = userRepository.findByUsername(loginInfo.getUsername());
+  public UserLoginRes userLogin(UserLoginInput loginInfo) {
+    User user = userRepository.findByUsername(loginInfo.getUserName());
 
     if (user == null) {
       throw new ResponseStatusException(ResponseCode.NOTFOUND.getStatus(), ResponseCode.NOTFOUND.getMessage("사용자"));
     }
 
     if (passwordEncoder.matches(loginInfo.getPassword(), user.getPassword())) {
-      UserLogin userLogin = UserLogin
-          .builder()
-          .username(loginInfo.getUsername())
-          .password(loginInfo.getPassword())
-          .role(Role.valueOf(user.getRole()))
-          .token(
-              jwtUtil.generateToken(
-                  user.getUsername(),
-                  Role.valueOf(user.getRole())))
-          .build();
-      return userLogin;
+
+      UserLogin userLogin = UserLogin.builder().userName(loginInfo.getUserName()).password(loginInfo.getPassword())
+          .role(user.getRole()).accessToken(jwtUtil.generateAccessToken(
+              user.getUsername(),
+              user.getRole()))
+          .refreshToken(jwtUtil.generateRefreshToken(user.getUsername())).build();
+
+      return new UserLoginRes(ResponseCode.RETRIEVED.getCode(),
+          ResponseCode.RETRIEVED.getMessage("로그인 정보"), userLogin);
     }
 
     throw new ResponseStatusException(
         ResponseCode.BADREQUEST.getStatus(),
         ResponseCode.BADREQUEST.getMessage("유효하지 않은 비밀번호입니다"));
+  }
+
+  public UserRefreshRes refreshAccessToken(String refreshToken) {
+
+    String newAccessToken = jwtUtil.refreshAccessToken(refreshToken);
+
+    return new UserRefreshRes(ResponseCode.RETRIEVED.getCode(),
+        ResponseCode.RETRIEVED.getMessage("Access 토큰 정보"), newAccessToken);
   }
 
   public List<User> getUsers() {
@@ -75,7 +83,7 @@ public class UserService {
         .builder()
         .username(userInput.getUsername())
         .password(passwordEncoder.encode(userInput.getPassword()))
-        .role(userRole.name())
+        .role(userRole)
         .build();
 
     userRepository.save(user);
@@ -93,14 +101,14 @@ public class UserService {
     }
 
     if (patchInput.getRole() != null) {
-      if (previousUser.getRole().equals(Role.ADMIN.name()) &&
+      if (previousUser.getRole().equals(Role.ADMIN) &&
           patchInput.getRole() == Role.USER &&
           userRepository.countByRole(Role.ADMIN.name()) == 1) {
         throw new ResponseStatusException(
             ResponseCode.BADREQUEST.getStatus(),
             ResponseCode.BADREQUEST.getMessage("유일한 관리자 권한의 사용자의 권한을 바꿀 수 없습니다"));
       }
-      previousUser.setRole(patchInput.getRole().name());
+      previousUser.setRole(patchInput.getRole());
     }
 
     userRepository.save(previousUser);
@@ -112,7 +120,7 @@ public class UserService {
         .orElseThrow(() -> new ResponseStatusException(ResponseCode.NOTFOUND.getStatus(),
             ResponseCode.NOTFOUND.getMessage("사용자")));
 
-    if (previousUser.getRole().equals(Role.ADMIN.name()) &&
+    if (previousUser.getRole().equals(Role.ADMIN) &&
         userRepository.countByRole(Role.ADMIN.name()) == 1) {
       throw new ResponseStatusException(
           ResponseCode.BADREQUEST.getStatus(),

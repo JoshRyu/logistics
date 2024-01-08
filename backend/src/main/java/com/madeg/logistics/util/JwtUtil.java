@@ -1,6 +1,8 @@
 package com.madeg.logistics.util;
 
+import com.madeg.logistics.entity.User;
 import com.madeg.logistics.enums.Role;
+import com.madeg.logistics.repository.UserRepository;
 import com.madeg.logistics.service.UserServiceImpl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -28,35 +30,59 @@ public class JwtUtil {
   @Value("${security.jwt.token.key}")
   private String secretKey;
 
-  private SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
+  @Value("${security.jwt.access.expire.minute}")
+  private int accessExpireMinute;
 
+  @Value("${security.jwt.refresh.expire.minute}")
+  private int refreshExpireMinute;
+
+  private SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
   private Key signingKey;
 
   @Autowired
   private UserServiceImpl userServiceImpl;
 
+  @Autowired
+  private UserRepository userRepository;
+
   @PostConstruct
   public void init() {
     byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(secretKey);
-    this.signingKey =
-      new SecretKeySpec(apiKeySecretBytes, signatureAlgorithm.getJcaName());
+    this.signingKey = new SecretKeySpec(apiKeySecretBytes, signatureAlgorithm.getJcaName());
   }
 
-  public String generateToken(String username, Role userRole) {
+  public String generateAccessToken(String username, Role userRole) {
     Map<String, Object> claims = new HashMap<>();
     claims.put("role", userRole);
-    return createToken(claims, username);
+    return createToken(claims, username, 1000 * 60 * accessExpireMinute);
   }
 
-  private String createToken(Map<String, Object> claims, String subject) {
-    return Jwts
-      .builder()
-      .setClaims(claims)
-      .setSubject(subject)
-      .setIssuedAt(new Date(System.currentTimeMillis()))
-      .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 hours
-      .signWith(signingKey, signatureAlgorithm)
-      .compact();
+  public String generateRefreshToken(String username) {
+    Map<String, Object> claims = new HashMap<>();
+    return createToken(claims, username, 1000 * 60 * refreshExpireMinute);
+  }
+
+  private String createToken(Map<String, Object> claims, String subject, long validity) {
+    return Jwts.builder()
+        .setClaims(claims)
+        .setSubject(subject)
+        .setIssuedAt(new Date(System.currentTimeMillis()))
+        .setExpiration(new Date(System.currentTimeMillis() + validity))
+        .signWith(signingKey, signatureAlgorithm)
+        .compact();
+  }
+
+  public String refreshAccessToken(String refreshToken) {
+    if (!validateRefreshToken(refreshToken)) {
+      throw new IllegalArgumentException("유효하지 않은 refresh token");
+    }
+    String username = extractUsername(refreshToken);
+    User user = userRepository.findByUsername(username);
+    return generateAccessToken(username, user.getRole());
+  }
+
+  public boolean validateRefreshToken(String token) {
+    return !isTokenExpired(token);
   }
 
   public boolean validateToken(String token, String username) {
@@ -87,17 +113,16 @@ public class JwtUtil {
 
   private Claims extractAllClaims(String token) {
     return Jwts
-      .parserBuilder()
-      .setSigningKey(signingKey)
-      .build()
-      .parseClaimsJws(token)
-      .getBody();
+        .parserBuilder()
+        .setSigningKey(signingKey)
+        .build()
+        .parseClaimsJws(token)
+        .getBody();
   }
 
   public String resolveToken(HttpServletRequest request) {
     ContentCachingRequestWrapper wrappedRequest = new ContentCachingRequestWrapper(
-      request
-    );
+        request);
     String token = wrappedRequest.getHeader("Authorization");
     if (token != null && token.startsWith("Bearer ")) {
       token = token.substring(7);
@@ -107,12 +132,10 @@ public class JwtUtil {
 
   public Authentication getAuthentication(String token) {
     UserDetails userDetails = userServiceImpl.loadUserByUsername(
-      extractUsername(token)
-    );
+        extractUsername(token));
     return new UsernamePasswordAuthenticationToken(
-      userDetails,
-      "",
-      userDetails.getAuthorities()
-    );
+        userDetails,
+        "",
+        userDetails.getAuthorities());
   }
 }
