@@ -5,6 +5,7 @@ import com.madeg.logistics.domain.UserInput;
 import com.madeg.logistics.domain.UserLoginRes;
 import com.madeg.logistics.domain.UserLoginInput;
 import com.madeg.logistics.domain.UserPatch;
+import com.madeg.logistics.domain.UserRefreshRes;
 import com.madeg.logistics.domain.UserRes;
 import com.madeg.logistics.enums.ResponseCode;
 import com.madeg.logistics.service.UserService;
@@ -15,7 +16,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -49,7 +49,7 @@ public class UserController {
   }
 
   @Operation(summary = "Get Access Token with Refresh Token")
-  @ApiResponse(content = @Content(schema = @Schema(implementation = Map.class)))
+  @ApiResponse(content = @Content(schema = @Schema(implementation = UserRefreshRes.class)))
   @GetMapping("/refresh")
   public ResponseEntity<?> refreshAccessToken(@RequestParam("refreshToken") String refreshToken) {
     try {

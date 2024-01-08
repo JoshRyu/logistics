@@ -1,6 +1,7 @@
 package com.madeg.logistics.service;
 
 import com.madeg.logistics.domain.UserInput;
+import com.madeg.logistics.domain.UserLogin;
 import com.madeg.logistics.domain.UserLoginRes;
 import com.madeg.logistics.domain.UserLoginInput;
 import com.madeg.logistics.domain.UserPatch;
@@ -29,19 +30,22 @@ public class UserService {
   private PasswordEncoder passwordEncoder;
 
   public UserLoginRes userLogin(UserLoginInput loginInfo) {
-    User user = userRepository.findByUsername(loginInfo.getUsername());
+    User user = userRepository.findByUsername(loginInfo.getUserName());
 
     if (user == null) {
       throw new ResponseStatusException(ResponseCode.NOTFOUND.getStatus(), ResponseCode.NOTFOUND.getMessage("사용자"));
     }
 
     if (passwordEncoder.matches(loginInfo.getPassword(), user.getPassword())) {
-      return new UserLoginRes(ResponseCode.RETRIEVED.getCode(),
-          ResponseCode.RETRIEVED.getMessage("로그인 정보"), loginInfo.getUsername(),
-          loginInfo.getPassword(), user.getRole(), jwtUtil.generateAccessToken(
+
+      UserLogin userLogin = UserLogin.builder().userName(loginInfo.getUserName()).password(loginInfo.getPassword())
+          .role(user.getRole()).accessToken(jwtUtil.generateAccessToken(
               user.getUsername(),
-              user.getRole()),
-          jwtUtil.generateRefreshToken(user.getUsername()));
+              user.getRole()))
+          .refreshToken(jwtUtil.generateRefreshToken(user.getUsername())).build();
+
+      return new UserLoginRes(ResponseCode.RETRIEVED.getCode(),
+          ResponseCode.RETRIEVED.getMessage("로그인 정보"), userLogin);
     }
 
     throw new ResponseStatusException(
