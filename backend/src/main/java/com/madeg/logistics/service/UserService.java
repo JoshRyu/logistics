@@ -9,7 +9,9 @@ import com.madeg.logistics.enums.ResponseCode;
 import com.madeg.logistics.enums.Role;
 import com.madeg.logistics.repository.UserRepository;
 import com.madeg.logistics.util.JwtUtil;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -39,18 +41,29 @@ public class UserService {
           .builder()
           .username(loginInfo.getUsername())
           .password(loginInfo.getPassword())
-          .role(Role.valueOf(user.getRole()))
-          .token(
-              jwtUtil.generateToken(
+          .role(user.getRole())
+          .accessToken(
+              jwtUtil.generateAccessToken(
                   user.getUsername(),
-                  Role.valueOf(user.getRole())))
+                  user.getRole()))
+          .refreshToken(jwtUtil.generateRefreshToken(user.getUsername()))
           .build();
+
       return userLogin;
     }
 
     throw new ResponseStatusException(
         ResponseCode.BADREQUEST.getStatus(),
         ResponseCode.BADREQUEST.getMessage("유효하지 않은 비밀번호입니다"));
+  }
+
+  public Map<String, String> refreshAccessToken(String refreshToken) {
+
+    String newAccessToken = jwtUtil.refreshAccessToken(refreshToken);
+    Map<String, String> tokenMap = new HashMap<>();
+    tokenMap.put("accessToken", newAccessToken);
+
+    return tokenMap;
   }
 
   public List<User> getUsers() {
@@ -75,7 +88,7 @@ public class UserService {
         .builder()
         .username(userInput.getUsername())
         .password(passwordEncoder.encode(userInput.getPassword()))
-        .role(userRole.name())
+        .role(userRole)
         .build();
 
     userRepository.save(user);
@@ -93,14 +106,14 @@ public class UserService {
     }
 
     if (patchInput.getRole() != null) {
-      if (previousUser.getRole().equals(Role.ADMIN.name()) &&
+      if (previousUser.getRole().equals(Role.ADMIN) &&
           patchInput.getRole() == Role.USER &&
           userRepository.countByRole(Role.ADMIN.name()) == 1) {
         throw new ResponseStatusException(
             ResponseCode.BADREQUEST.getStatus(),
             ResponseCode.BADREQUEST.getMessage("유일한 관리자 권한의 사용자의 권한을 바꿀 수 없습니다"));
       }
-      previousUser.setRole(patchInput.getRole().name());
+      previousUser.setRole(patchInput.getRole());
     }
 
     userRepository.save(previousUser);
@@ -112,7 +125,7 @@ public class UserService {
         .orElseThrow(() -> new ResponseStatusException(ResponseCode.NOTFOUND.getStatus(),
             ResponseCode.NOTFOUND.getMessage("사용자")));
 
-    if (previousUser.getRole().equals(Role.ADMIN.name()) &&
+    if (previousUser.getRole().equals(Role.ADMIN) &&
         userRepository.countByRole(Role.ADMIN.name()) == 1) {
       throw new ResponseStatusException(
           ResponseCode.BADREQUEST.getStatus(),

@@ -30,6 +30,12 @@ security:
     token:
       key: madeGIsPopular1e34-willpro13ducealotprofits-2uvb9876aacx
       expire-length: 3600000
+    access:
+      expire:
+        minute: 60
+    refresh:
+      expire:
+        minute: 1440
 
 logging:
   level:

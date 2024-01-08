@@ -15,6 +15,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -43,6 +46,21 @@ public class UserController {
     return new ResponseEntity<>(
         userService.userLogin(loginInfo),
         ResponseCode.SUCCESS.getStatus());
+  }
+
+  @Operation(summary = "Get Access Token with Refresh Token")
+  @ApiResponse(content = @Content(schema = @Schema(implementation = Map.class)))
+  @GetMapping("/refresh")
+  public ResponseEntity<?> refreshAccessToken(@RequestParam("refreshToken") String refreshToken) {
+    try {
+      Map<String, String> tokenMap = userService.refreshAccessToken(refreshToken);
+      return new ResponseEntity<>(
+          tokenMap,
+          ResponseCode.SUCCESS.getStatus());
+    } catch (IllegalArgumentException e) {
+      return ResponseEntity.status(ResponseCode.BADREQUEST.getStatus())
+          .body(ResponseCode.BADREQUEST.getMessage("유효하지 않은 Refresh Token 입니다"));
+    }
   }
 
   @Operation(summary = "Register new User")
