@@ -2,7 +2,7 @@ package com.madeg.logistics.controller;
 
 import com.madeg.logistics.domain.CommonRes;
 import com.madeg.logistics.domain.UserInput;
-import com.madeg.logistics.domain.UserLogin;
+import com.madeg.logistics.domain.UserLoginRes;
 import com.madeg.logistics.domain.UserLoginInput;
 import com.madeg.logistics.domain.UserPatch;
 import com.madeg.logistics.domain.UserRes;
@@ -39,7 +39,7 @@ public class UserController {
   private UserService userService;
 
   @Operation(summary = "Login with username and password")
-  @ApiResponse(content = @Content(schema = @Schema(implementation = UserLogin.class)))
+  @ApiResponse(content = @Content(schema = @Schema(implementation = UserLoginRes.class)))
   @PostMapping("/login")
   public ResponseEntity<Object> login(
       @RequestBody @Valid UserLoginInput loginInfo) {
@@ -53,9 +53,8 @@ public class UserController {
   @GetMapping("/refresh")
   public ResponseEntity<?> refreshAccessToken(@RequestParam("refreshToken") String refreshToken) {
     try {
-      Map<String, String> tokenMap = userService.refreshAccessToken(refreshToken);
       return new ResponseEntity<>(
-          tokenMap,
+          userService.refreshAccessToken(refreshToken),
           ResponseCode.SUCCESS.getStatus());
     } catch (IllegalArgumentException e) {
       return ResponseEntity.status(ResponseCode.BADREQUEST.getStatus())
@@ -64,7 +63,7 @@ public class UserController {
   }
 
   @Operation(summary = "Register new User")
-  @ApiResponse(content = @Content(schema = @Schema(implementation = UserLogin.class)))
+  @ApiResponse(content = @Content(schema = @Schema(implementation = UserLoginRes.class)))
   @PostMapping
   public ResponseEntity<Object> create(
       @RequestBody @Valid UserInput userInput) {

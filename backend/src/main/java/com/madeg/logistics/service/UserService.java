@@ -1,17 +1,16 @@
 package com.madeg.logistics.service;
 
 import com.madeg.logistics.domain.UserInput;
-import com.madeg.logistics.domain.UserLogin;
+import com.madeg.logistics.domain.UserLoginRes;
 import com.madeg.logistics.domain.UserLoginInput;
 import com.madeg.logistics.domain.UserPatch;
+import com.madeg.logistics.domain.UserRefreshRes;
 import com.madeg.logistics.entity.User;
 import com.madeg.logistics.enums.ResponseCode;
 import com.madeg.logistics.enums.Role;
 import com.madeg.logistics.repository.UserRepository;
 import com.madeg.logistics.util.JwtUtil;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -29,7 +28,7 @@ public class UserService {
   @Autowired
   private PasswordEncoder passwordEncoder;
 
-  public UserLogin userLogin(UserLoginInput loginInfo) {
+  public UserLoginRes userLogin(UserLoginInput loginInfo) {
     User user = userRepository.findByUsername(loginInfo.getUsername());
 
     if (user == null) {
@@ -37,19 +36,12 @@ public class UserService {
     }
 
     if (passwordEncoder.matches(loginInfo.getPassword(), user.getPassword())) {
-      UserLogin userLogin = UserLogin
-          .builder()
-          .username(loginInfo.getUsername())
-          .password(loginInfo.getPassword())
-          .role(user.getRole())
-          .accessToken(
-              jwtUtil.generateAccessToken(
-                  user.getUsername(),
-                  user.getRole()))
-          .refreshToken(jwtUtil.generateRefreshToken(user.getUsername()))
-          .build();
-
-      return userLogin;
+      return new UserLoginRes(ResponseCode.RETRIEVED.getCode(),
+          ResponseCode.RETRIEVED.getMessage("로그인 정보"), loginInfo.getUsername(),
+          loginInfo.getPassword(), user.getRole(), jwtUtil.generateAccessToken(
+              user.getUsername(),
+              user.getRole()),
+          jwtUtil.generateRefreshToken(user.getUsername()));
     }
 
     throw new ResponseStatusException(
@@ -57,13 +49,12 @@ public class UserService {
         ResponseCode.BADREQUEST.getMessage("유효하지 않은 비밀번호입니다"));
   }
 
-  public Map<String, String> refreshAccessToken(String refreshToken) {
+  public UserRefreshRes refreshAccessToken(String refreshToken) {
 
     String newAccessToken = jwtUtil.refreshAccessToken(refreshToken);
-    Map<String, String> tokenMap = new HashMap<>();
-    tokenMap.put("accessToken", newAccessToken);
 
-    return tokenMap;
+    return new UserRefreshRes(ResponseCode.RETRIEVED.getCode(),
+        ResponseCode.RETRIEVED.getMessage("Access 토큰 정보"), newAccessToken);
   }
 
   public List<User> getUsers() {
