@@ -20,5 +20,7 @@ public class UserLogin {
   private String password;
 
   private Role role;
-  private String token;
+
+  private String accessToken;
+  private String refreshToken;
 }
