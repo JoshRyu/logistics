@@ -22,7 +22,7 @@ export async function createProduct(input) {
 
 export async function getProductList() {
   try {
-    const response = await axios.get(urlBuilder(path + "/list"), {
+    const response = await axios.get(urlBuilder(path), {
       headers,
     });
 
