@@ -141,10 +141,10 @@ const registerCategory = async () => {
   const payload = {
     name: clickedCategory.value.name,
     description: clickedCategory.value.description,
-    parentCategoryCode: clickedCategory.value.parentCategory
-      ? clickedCategory.value.parentCategory.categoryCode
-      : null,
   };
+  // parentCategoryCode: clickedCategory.value.parentCategory
+  //   ? clickedCategory.value.parentCategory.categoryCode
+  //   : null,
   try {
     await createCategory(payload);
     alert("성공적으로 카테고리를 등록 하였습니다.");
@@ -166,10 +166,14 @@ const updateCategory = async () => {
   const payload = {
     name: clickedCategory.value.name,
     description: clickedCategory.value.description,
-    parentCategoryCode: clickedCategory.value.parentCategory
-      ? getCategoryCode(clickedCategory.value.parentCategory.name)
-      : null,
+    parentCategoryCode:
+      clickedCategory.value.parentCategory.name != ""
+        ? getCategoryCode(clickedCategory.value.parentCategory.name)
+        : null,
   };
+  console.log(clickedCategory.value);
+  console.log(payload);
+
   try {
     await patchCategory(categoryId, payload);
     alert("성공적으로 카테고리를 업데이트 하였습니다.");
