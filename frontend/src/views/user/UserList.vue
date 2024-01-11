@@ -171,7 +171,7 @@ const userList = async () => {
   try {
     const response = await readUsers();
 
-    data.items = response;
+    data.items = response.user;
   } catch (error) {
     console.error(error);
   }

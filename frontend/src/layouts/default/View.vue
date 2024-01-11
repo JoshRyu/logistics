@@ -10,7 +10,7 @@
       <v-app-bar-title>메이드G - 재고 관리 시스템</v-app-bar-title>
 
       <v-spacer></v-spacer>
-      <h4>{{ data.username }}</h4>
+      <h4>현재 사용자: {{ data.username }}</h4>
       <v-btn @click="logout" prepend-icon="mdi-logout" class="ml-2 mr-10">
         Logout
       </v-btn>
@@ -118,6 +118,7 @@ const data = reactive({
   drawer: true,
   openedGroups: [localStorage.getItem("current-group")],
   userRole: localStorage.getItem("role"),
+  username: localStorage.getItem("username"),
   navClass: "navColor",
 });
 

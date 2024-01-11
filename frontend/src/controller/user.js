@@ -22,7 +22,7 @@ export async function createUser(userInput) {
 
 export async function readUsers() {
   try {
-    const response = await axios.get(urlBuilder(userPath + "/list"), {
+    const response = await axios.get(urlBuilder(userPath), {
       headers,
     });
 
