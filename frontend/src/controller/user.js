@@ -2,7 +2,7 @@ import axios from "axios";
 import { urlBuilder } from "./common";
 
 const headers = {
-  Authorization: `Bearer ${localStorage.getItem("apollo-token")}`,
+  Authorization: `Bearer ${localStorage.getItem("access-token")}`,
 };
 
 const userPath = "/api/v1/user";
