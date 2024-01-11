@@ -67,7 +67,7 @@ const executeLogin = async (params) => {
   if (validLogin.value) {
     try {
       const response = await login({
-        username: params.username,
+        userName: params.username,
         password: params.password,
       });
 
@@ -80,15 +80,15 @@ const executeLogin = async (params) => {
 };
 
 const handleLoginResponse = (response) => {
-  let token = response.token;
-  let username = response.username;
-  let userRole = response.role;
-  if (token) {
-    localStorage.setItem("apollo-token", token);
-    localStorage.setItem("username", username);
-    localStorage.setItem("role", userRole);
-    if (userRole == "ADMIN") {
-      router.push({ path: "/user" });
+  let loginInfo = response.loginInfo;
+
+  if (loginInfo) {
+    localStorage.setItem("access-token", loginInfo.accessToken);
+    localStorage.setItem("refresh-token", loginInfo.refreshToken);
+    localStorage.setItem("username", loginInfo.userName);
+    localStorage.setItem("role", loginInfo.role);
+    if (loginInfo.role == "ADMIN") {
+      router.push({ path: "/product" });
     } else {
       router.push({ path: "/product" });
     }

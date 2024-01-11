@@ -201,7 +201,8 @@ const navElements = reactive({
 });
 
 const logout = () => {
-  localStorage.removeItem("apollo-token");
+  localStorage.removeItem("access-token");
+  localStorage.removeItem("refresh-token");
   localStorage.removeItem("username");
   router.push({ path: "/login" });
 };
