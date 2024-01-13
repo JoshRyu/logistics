@@ -110,4 +110,8 @@ const router = createRouter({
   routes,
 });
 
+router.beforeEach((to, from, next) => {
+  requireAuth(to, from, next);
+});
+
 export default router;

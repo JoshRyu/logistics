@@ -10,7 +10,9 @@ const path = "/api/v1/category";
 export async function createCategory(input) {
   try {
     const response = await axios.post(urlBuilder(path), input, {
-      headers,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("access-token")}`,
+      },
     });
 
     return response.data;
@@ -23,7 +25,9 @@ export async function createCategory(input) {
 export async function getCategoryList() {
   try {
     const response = await axios.get(urlBuilder(path), {
-      headers,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("access-token")}`,
+      },
     });
 
     return response.data.category;
@@ -36,7 +40,9 @@ export async function getCategoryList() {
 export async function patchCategory(code, input) {
   try {
     const response = await axios.patch(urlBuilder(path) + "/" + code, input, {
-      headers,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("access-token")}`,
+      },
     });
 
     return response.data;
@@ -49,7 +55,9 @@ export async function patchCategory(code, input) {
 export async function deleteCategory(code) {
   try {
     const response = await axios.delete(urlBuilder(path) + "/" + code, {
-      headers,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("access-token")}`,
+      },
     });
 
     return response.data;

@@ -10,7 +10,9 @@ const path = "/api/v1/product";
 export async function createProduct(input) {
   try {
     const response = await axios.post(urlBuilder(path), input, {
-      headers,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("access-token")}`,
+      },
     });
 
     return response.data;
@@ -20,11 +22,17 @@ export async function createProduct(input) {
   }
 }
 
-export async function getProductList() {
+export async function getProductList(params) {
   try {
-    const response = await axios.get(urlBuilder(path), {
-      headers,
-    });
+    const response = await axios.get(
+      urlBuilder(path) +
+        `?type=${params.type}&page=${params.page}&size=${params.size}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access-token")}`,
+        },
+      }
+    );
 
     return response.data;
   } catch (error) {
@@ -36,7 +44,9 @@ export async function getProductList() {
 export async function getProductById(id) {
   try {
     const response = await axios.get(urlBuilder(path + "/" + id), {
-      headers,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("access-token")}`,
+      },
     });
 
     return response.data;
@@ -49,7 +59,9 @@ export async function getProductById(id) {
 export async function patchProduct(code, input) {
   try {
     const response = await axios.patch(urlBuilder(path) + "/" + code, input, {
-      headers,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("access-token")}`,
+      },
     });
 
     return response.data;

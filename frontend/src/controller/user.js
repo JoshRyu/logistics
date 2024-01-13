@@ -10,7 +10,9 @@ const userPath = "/api/v1/user";
 export async function createUser(userInput) {
   try {
     const response = await axios.post(urlBuilder(userPath), userInput, {
-      headers,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("access-token")}`,
+      },
     });
 
     return response.data;
@@ -23,7 +25,9 @@ export async function createUser(userInput) {
 export async function readUsers() {
   try {
     const response = await axios.get(urlBuilder(userPath), {
-      headers,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("access-token")}`,
+      },
     });
 
     return response.data;
@@ -39,7 +43,9 @@ export async function updateUser(id, userInput) {
       urlBuilder(userPath) + `/${id}`,
       userInput,
       {
-        headers,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access-token")}`,
+        },
       }
     );
     return response;
@@ -52,7 +58,9 @@ export async function updateUser(id, userInput) {
 export async function deleteUser(id) {
   try {
     const response = await axios.delete(urlBuilder(userPath) + `/${id}`, {
-      headers,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("access-token")}`,
+      },
     });
 
     return response.data;
