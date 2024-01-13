@@ -88,9 +88,9 @@ const handleLoginResponse = (response) => {
     localStorage.setItem("username", loginInfo.userName);
     localStorage.setItem("role", loginInfo.role);
     if (loginInfo.role == "ADMIN") {
-      router.push({ path: "/product" });
+      router.push({ path: "/product/list" });
     } else {
-      router.push({ path: "/product" });
+      router.push({ path: "/product/list" });
     }
   }
 };

@@ -6,82 +6,6 @@ const routes = [
   {
     path: "/",
     redirect: "/login",
-    component: () => import("@/layouts/default/Default.vue"),
-    children: [
-      {
-        path: "/home",
-        name: "Home",
-        component: () => import("@/views/Home.vue"),
-      },
-      {
-        path: "/user",
-        redirect: "/user/list",
-        children: [
-          {
-            path: "list",
-            name: "UserList",
-            component: () => import("@/views/user/UserList.vue"),
-          },
-        ],
-        beforeEnter: requireAuth,
-        // 접근 제한이 필요한 페이지에, 아래 내용을 넣어 특정한 유저만 접근할 수 있게 한다.
-        meta: {
-          role: ["ADMIN"],
-        },
-      },
-      {
-        path: "/product",
-        redirect: "/product/list",
-        children: [
-          {
-            path: "list",
-            name: "ProductList",
-            component: () => import("@/views/product/ProductList.vue"),
-          },
-          {
-            path: "management",
-            name: "ProductManagement",
-            component: () => import("@/views/product/ProductManagement.vue"),
-          },
-          {
-            path: "management/:id",
-            name: "ProductManagementWithId",
-            component: () => import("@/views/product/ProductManagement.vue"),
-          },
-          {
-            path: "category",
-            name: "ProductCategory",
-            component: () => import("@/views/product/ProductCategory.vue"),
-          },
-          {
-            path: "statistics",
-            name: "ProductStatistics",
-            component: () => import("@/views/product/ProductStatistics.vue"),
-          },
-        ],
-        beforeEnter: requireAuth,
-        // 접근 제한이 필요한 페이지에, 아래 내용을 넣어 특정한 유저만 접근할 수 있게 한다.
-        meta: {
-          role: ["ADMIN", "USER"],
-        },
-      },
-      {
-        path: "/store",
-        redirect: "/store/status",
-        children: [
-          {
-            path: "status",
-            name: "StoreStatus",
-            component: () => import("@/views/store/StoreStatus.vue"),
-          },
-        ],
-        beforeEnter: requireAuth,
-        // 접근 제한이 필요한 페이지에, 아래 내용을 넣어 특정한 유저만 접근할 수 있게 한다.
-        meta: {
-          role: ["ADMIN"],
-        },
-      },
-    ],
   },
   {
     path: "/login",
@@ -89,19 +13,86 @@ const routes = [
     component: () => import("@/views/login/Login.vue"),
   },
   {
-    path: "/error",
-    name: "Error",
-    children: [
-      {
-        path: "403",
-        name: "403",
-        component: () => import("@/views/error/403.vue"),
-      },
-      {
-        path: "/:pathMatch(.*)*",
-        component: () => import("@/views/error/404.vue"),
-      },
-    ],
+    path: "/home",
+    name: "Home",
+    component: () => import("@/views/Home.vue"),
+    beforeEnter: requireAuth,
+    meta: {
+      role: ["ADMIN", "USER"], // Adjust roles as needed
+    },
+  },
+  {
+    path: "/user/list",
+    name: "UserList",
+    component: () => import("@/views/user/UserList.vue"),
+    beforeEnter: requireAuth,
+    meta: {
+      role: ["ADMIN"],
+    },
+  },
+  {
+    path: "/product/list",
+    name: "ProductList",
+    component: () => import("@/views/product/ProductList.vue"),
+    beforeEnter: requireAuth,
+    meta: {
+      role: ["ADMIN", "USER"],
+    },
+  },
+  {
+    path: "/product/management",
+    name: "ProductManagement",
+    component: () => import("@/views/product/ProductManagement.vue"),
+    beforeEnter: requireAuth,
+    meta: {
+      role: ["ADMIN", "USER"],
+    },
+  },
+  {
+    path: "/product/management/:id",
+    name: "ProductManagementWithId",
+    component: () => import("@/views/product/ProductManagement.vue"),
+    beforeEnter: requireAuth,
+    meta: {
+      role: ["ADMIN", "USER"],
+    },
+  },
+  {
+    path: "/product/category",
+    name: "ProductCategory",
+    component: () => import("@/views/product/ProductCategory.vue"),
+    beforeEnter: requireAuth,
+    meta: {
+      role: ["ADMIN", "USER"],
+    },
+  },
+  {
+    path: "/product/statistics",
+    name: "ProductStatistics",
+    component: () => import("@/views/product/ProductStatistics.vue"),
+    beforeEnter: requireAuth,
+    meta: {
+      role: ["ADMIN", "USER"],
+    },
+  },
+  {
+    path: "/store/status",
+    name: "StoreStatus",
+    component: () => import("@/views/store/StoreStatus.vue"),
+    beforeEnter: requireAuth,
+    meta: {
+      role: ["ADMIN"],
+    },
+  },
+  {
+    path: "/error/403",
+    name: "403",
+    component: () => import("@/views/error/403.vue"),
+  },
+  {
+    path: "/:pathMatch(.*)*",
+    name: "NotFound",
+    component: () => import("@/views/error/404.vue"),
   },
 ];
 
