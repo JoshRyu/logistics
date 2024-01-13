@@ -53,13 +53,11 @@ function handleUserRoleAuthorization(to, next) {
 
 function isAccessTokenValid() {
   const accessToken = getAccessToken();
-  console.log("access: ", isTokenExpired(accessToken));
   return !!accessToken && !isTokenExpired(accessToken);
 }
 
 function isRefreshTokenValid() {
   const refreshToken = getRefreshToken();
-  console.log("refresh: ", isTokenExpired(refreshToken));
   return !!refreshToken && !isTokenExpired(refreshToken);
 }
 

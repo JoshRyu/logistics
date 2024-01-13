@@ -111,7 +111,11 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  requireAuth(to, from, next);
+  if (to.path === "/login" || to.path === "/") {
+    next();
+  } else {
+    requireAuth(to, from, next);
+  }
 });
 
 export default router;
