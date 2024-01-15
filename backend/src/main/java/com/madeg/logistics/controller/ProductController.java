@@ -2,6 +2,7 @@ package com.madeg.logistics.controller;
 
 import com.madeg.logistics.domain.CommonRes;
 import com.madeg.logistics.domain.ProductInput;
+import com.madeg.logistics.domain.ProductListReq;
 import com.madeg.logistics.domain.ProductPatch;
 import com.madeg.logistics.domain.ProductRes;
 import com.madeg.logistics.entity.Product;
@@ -64,7 +65,9 @@ public class ProductController {
   @GetMapping
   public ResponseEntity<ProductRes> getProductList(
       @RequestParam(required = false) ProductType type,
+      @ModelAttribute @Valid ProductListReq productListReq,
       @PageableDefault(size = 10, page = 0, sort = "productCode", direction = Sort.Direction.ASC) Pageable pageable) {
+
     return ResponseEntity
         .status(ResponseCode.RETRIEVED.getStatus())
         .body(productService.getProducts(type, pageable));
