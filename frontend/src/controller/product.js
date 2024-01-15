@@ -70,3 +70,18 @@ export async function patchProduct(code, input) {
     throw error;
   }
 }
+
+export async function deleteProduct(code) {
+  try {
+    const response = await axios.delete(urlBuilder(path) + "/" + code, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("access-token")}`,
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.log("에러 데이터 : " + error);
+    throw error;
+  }
+}

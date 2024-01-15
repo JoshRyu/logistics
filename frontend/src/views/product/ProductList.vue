@@ -8,10 +8,10 @@
       </v-col>
       <v-col cols="2">
         <v-switch
-          v-model="data.enableDense"
+          v-model="data.biggerContents"
           hide-details
           inset
-          :label="data.enableDense ? '작게보기' : '크게보기'"
+          :label="data.biggerContents ? '작게보기' : '크게보기'"
         ></v-switch>
       </v-col>
       <v-spacer></v-spacer>
@@ -53,11 +53,7 @@
     </v-row>
 
     <v-row dense>
-      <v-col
-        v-for="card in data.cards"
-        :key="card.name"
-        :cols="getColSize(card)"
-      >
+      <v-col v-for="card in data.cards" :key="card.name" :cols="getColSize()">
         <v-card :class="getCardClass">
           <v-card-title>
             <span
@@ -71,7 +67,7 @@
             :src="
               card.img ? 'data:image/jpeg;base64,' + card.img : data.noImgSrc
             "
-            v-if="data.enableDense"
+            v-if="data.biggerContents"
             class="align-end"
             cover
             height="250px"
@@ -80,7 +76,9 @@
 
           <v-card-text
             :class="
-              data.enableDense ? 'bg-card-text-content' : 'sm-card-text-content'
+              data.biggerContents
+                ? 'bg-card-text-content'
+                : 'sm-card-text-content'
             "
           >
             <span
@@ -110,6 +108,7 @@
                 color="surface-variant"
                 variant="text"
                 icon="mdi-pencil-circle"
+                @click="routeTo(card.productCode)"
               ></v-btn>
               <v-btn
                 :class="btnWidthClass"
@@ -117,13 +116,26 @@
                 color="surface-variant"
                 variant="text"
                 icon="mdi-delete-circle"
+                @click="removeProduct(card.productCode, card.name)"
               ></v-btn>
             </div>
           </v-container>
         </v-card>
       </v-col>
     </v-row>
+    <v-row>
+      <v-spacer />
+      <v-col cols="4"
+        ><v-pagination
+          v-model="data.currentPage"
+          :length="data.lastPage"
+          @click="productList('PRODUCT', data.currentPage - 1)"
+        ></v-pagination
+      ></v-col>
+      <v-spacer />
+    </v-row>
   </v-container>
+
   <YesNoModal
     :propObj="data.modalProps"
     @confirmed="handleConfirmation"
@@ -132,8 +144,8 @@
 </template>
 
 <script setup>
-import { reactive, onMounted, computed } from "vue";
-import { getProductList } from "@/controller/product.js";
+import { reactive, onMounted, computed, watch } from "vue";
+import { getProductList, deleteProduct } from "@/controller/product.js";
 import { getCategoryList } from "@/controller/category.js";
 import { useRouter } from "vue-router";
 import YesNoModal from "../components/YesNoModal.vue";
@@ -141,35 +153,68 @@ import noImageSrc from "@/assets/images/No_Image_Available.jpg";
 
 const router = useRouter();
 
-const getColSize = (card) => (data.enableDense ? 3 : 2);
+const data = reactive({
+  targetProductId: "",
+  noImgSrc: noImageSrc,
+  currentStore: "",
+  biggerContents: true,
+  selectedCategory: "",
+  searchValue: "",
+  categoryList: [],
+  cards: [],
+  modalProps: {
+    enabled: false,
+    title: "",
+    message: "",
+    confirmOnly: false,
+  },
+  currentPage: 1,
+  lastPage: 1,
+});
+
+const getColSize = () => (data.biggerContents ? 3 : 2);
 const getCardClass = computed(() =>
-  data.enableDense
+  data.biggerContents
     ? "border-solid bg-card-height"
     : "border-solid sm-card-height"
 );
 const getTitleSize = computed(() =>
-  data.enableDense ? "bg-title" : "sm-title"
+  data.biggerContents ? "bg-title" : "sm-title"
 );
 const getSubtitleSize = computed(() =>
-  data.enableDense ? "bg-subtitle float-right" : "sm-subtitle float-right"
+  data.biggerContents ? "bg-subtitle float-right" : "sm-subtitle float-right"
 );
 
 const boldClass = computed(() =>
-  data.enableDense ? "bg-bold align-self-end" : "sm-bold align-self-end"
+  data.biggerContents ? "bg-bold align-self-end" : "sm-bold align-self-end"
 );
 const btnWidthClass = computed(() =>
-  data.enableDense ? "bg-btn-width" : "sm-btn-width"
+  data.biggerContents ? "bg-btn-width" : "sm-btn-width"
 );
 
 const formatPrice = (price) => {
   return price.toLocaleString();
 };
 
-const productList = async () => {
+watch(
+  () => data.biggerContents,
+  (newVal, oldVal) => {
+    if (newVal !== oldVal) {
+      productList("PRODUCT", 0);
+    }
+  }
+);
+
+const productList = async (type, page) => {
   try {
-    const response = await getProductList();
+    const response = await getProductList({
+      type: type,
+      page: page,
+      size: data.biggerContents ? 8 : 12,
+    });
 
     data.cards = response.content;
+    data.lastPage = response.pageable.totalPages;
   } catch (error) {
     console.error(error);
   }
@@ -186,7 +231,7 @@ const categoryList = async () => {
 };
 
 onMounted(() => {
-  productList();
+  productList("PRODUCT", 0);
   categoryList();
 });
 
@@ -194,40 +239,51 @@ const routeTo = (path) => {
   router.push({ path: `/product/management/${path}` });
 };
 
-const deleteProduct = (productId, productName) => {
+const removeProduct = (productId, productName) => {
   data.modalProps = {
     enabled: true,
     title: "확인 필요",
     message: `정말 "${productName}" 제품을 삭제하시겠습니까?`,
     confirmOnly: false,
   };
+  data.targetProductId = productId;
 };
 
-const handleConfirmation = () => {
-  data.modalProps.enabled = false;
+const handleConfirmation = async () => {
   // Handle the confirmation action here
+  if (data.targetProductId != "") {
+    try {
+      await deleteProduct(data.targetProductId);
+
+      data.modalProps = {
+        enabled: true,
+        title: "성공",
+        message: `제품이 성공적으로 삭제되었습니다.`,
+        confirmOnly: true,
+      };
+
+      data.targetProductId = "";
+      productList("PRODUCT", 0);
+    } catch (error) {
+      data.modalProps = {
+        enabled: true,
+        title: "실패",
+        message: error.response.data.message,
+        confirmOnly: true,
+      };
+
+      console.error(error);
+    }
+  } else {
+    data.modalProps.enabled = false;
+  }
 };
 
 const handleCancellation = () => {
   data.modalProps.enabled = false;
+  data.targetProductId = "";
   // Handle the cancellation action here
 };
-
-const data = reactive({
-  noImgSrc: noImageSrc,
-  currentStore: "",
-  enableDense: true,
-  selectedCategory: "",
-  searchValue: "",
-  categoryList: [],
-  cards: [],
-  modalProps: {
-    enabled: false,
-    title: "",
-    message: "",
-    confirmOnly: false,
-  },
-});
 </script>
 <style scoped>
 .border-solid {
@@ -274,7 +330,8 @@ const data = reactive({
 }
 
 .bg-btn-width {
-  width: 35px;
+  width: 40px;
+  height: 40px;
 }
 
 .sm-card-height {
