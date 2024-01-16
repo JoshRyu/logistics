@@ -155,7 +155,7 @@ const navElements = reactive({
     product: [
       {
         idx: 0,
-        title: "제료 조회",
+        title: "재료 조회",
         icon: "mdi-magnify",
         route: "/product/material/list",
       },

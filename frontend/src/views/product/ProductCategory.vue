@@ -1,6 +1,6 @@
 <template>
   <v-container style="max-width: 85%">
-    <h1 class="mb-10">제품 카테고리 페이지</h1>
+    <h1 class="mb-10">카테고리 관리</h1>
     <v-row>
       <v-icon class="ma-5" size="x-large" @click="addCategory"
         >mdi-plus-circle</v-icon
