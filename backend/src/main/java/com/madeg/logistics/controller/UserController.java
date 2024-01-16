@@ -57,8 +57,8 @@ public class UserController {
           userService.refreshAccessToken(refreshToken),
           ResponseCode.SUCCESS.getStatus());
     } catch (IllegalArgumentException e) {
-      return ResponseEntity.status(ResponseCode.BADREQUEST.getStatus())
-          .body(ResponseCode.BADREQUEST.getMessage("유효하지 않은 Refresh Token 입니다"));
+      return ResponseEntity.status(ResponseCode.BAD_REQUEST.getStatus())
+          .body(ResponseCode.BAD_REQUEST.getMessage("유효하지 않은 Refresh Token 입니다"));
     }
   }
 

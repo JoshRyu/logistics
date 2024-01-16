@@ -83,8 +83,8 @@ public class StoreService extends CommonService {
       store.updateType(StoreType.FIX);
     } else {
       throw new ResponseStatusException(
-          ResponseCode.BADREQUEST.getStatus(),
-          ResponseCode.BADREQUEST.getMessage("수수료과 매대비(고정비) 중 적어도 하나는 0보다 커야 합니다"));
+          ResponseCode.BAD_REQUEST.getStatus(),
+          ResponseCode.BAD_REQUEST.getMessage("수수료과 매대비(고정비) 중 적어도 하나는 0보다 커야 합니다"));
     }
   }
 

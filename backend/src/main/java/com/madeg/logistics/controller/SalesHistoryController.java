@@ -68,13 +68,21 @@ public class SalesHistoryController {
       @PathVariable(name = "store_code", required = true) String storeCode,
       @PathVariable(name = "product_code", required = true) String productCode,
       @PageableDefault(size = 10, page = 0) Pageable pageable) {
+
+    SalesHistoryRes salesHistory;
+    try {
+      salesHistory = salesHistoryService.getSalesHistoryByStoreAndProduct(
+          storeCode,
+          productCode,
+          pageable);
+
+    } catch (Exception e) {
+      return ResponseEntity.status(ResponseCode.INTERNAL_ERROR.getStatus()).body(
+          new SalesHistoryRes(ResponseCode.INTERNAL_ERROR.getCode(), e.getMessage(), null, null));
+    }
     return ResponseEntity
         .status(ResponseCode.RETRIEVED.getStatus())
-        .body(
-            salesHistoryService.getSalesHistoryByStoreAndProduct(
-                storeCode,
-                productCode,
-                pageable));
+        .body(salesHistory);
   }
 
   @Operation(summary = "Get the list of all Sales History in the Store in specific month")
@@ -85,14 +93,22 @@ public class SalesHistoryController {
       @RequestParam @NotNull @Min(1900) Integer salesYear,
       @RequestParam @NotNull @Min(1) @Max(12) Integer salesMonth,
       @PageableDefault(size = 10, page = 0) Pageable pageable) {
+
+    SalesHistoryRes salesHistory;
+    try {
+      salesHistory = salesHistoryService.getSalesHistoryByStoreAndSalesMonth(
+          storeCode,
+          salesYear,
+          salesMonth,
+          pageable);
+
+    } catch (Exception e) {
+      return ResponseEntity.status(ResponseCode.INTERNAL_ERROR.getStatus()).body(
+          new SalesHistoryRes(ResponseCode.INTERNAL_ERROR.getCode(), e.getMessage(), null, null));
+    }
     return ResponseEntity
         .status(ResponseCode.RETRIEVED.getStatus())
-        .body(
-            salesHistoryService.getSalesHistoryByStoreAndSalesMonth(
-                storeCode,
-                salesYear,
-                salesMonth,
-                pageable));
+        .body(salesHistory);
   }
 
   @Operation(summary = "Update Sales History Of Store Product")

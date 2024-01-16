@@ -58,8 +58,15 @@ public class StoreStatisticsController {
   public ResponseEntity<StoreStatisticsRes> getStoreStatisticsByStore(
       @PathVariable(name = "store_code", required = true) String storeCode,
       @PageableDefault(size = 10, page = 0) Pageable pageable) {
+    StoreStatisticsRes storeStatistics;
+    try {
+      storeStatistics = storeStatisticsService.getStoreStatistics(storeCode, pageable);
+    } catch (Exception e) {
+      return ResponseEntity.status(ResponseCode.INTERNAL_ERROR.getStatus()).body(
+          new StoreStatisticsRes(ResponseCode.INTERNAL_ERROR.getCode(), e.getMessage(), null, null));
+    }
     return ResponseEntity
         .status(ResponseCode.RETRIEVED.getStatus())
-        .body(storeStatisticsService.getStoreStatistics(storeCode, pageable));
+        .body(storeStatistics);
   }
 }

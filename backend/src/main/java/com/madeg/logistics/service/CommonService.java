@@ -88,8 +88,8 @@ public class CommonService {
 
   private void throwNotFound(String entityType) {
     throw new ResponseStatusException(
-        ResponseCode.NOTFOUND.getStatus(),
-        ResponseCode.NOTFOUND.getMessage(entityType));
+        ResponseCode.NOT_FOUND.getStatus(),
+        ResponseCode.NOT_FOUND.getMessage(entityType));
   }
 
   protected byte[] getImageBytes(MultipartFile image) {
@@ -100,8 +100,8 @@ public class CommonService {
       return image.getBytes();
     } catch (IOException e) {
       throw new ResponseStatusException(
-          ResponseCode.BADREQUEST.getStatus(),
-          ResponseCode.BADREQUEST.getMessage("잘못된 이미지 입력입니다"));
+          ResponseCode.BAD_REQUEST.getStatus(),
+          ResponseCode.BAD_REQUEST.getMessage("잘못된 이미지 입력입니다"));
     }
   }
 
@@ -114,8 +114,8 @@ public class CommonService {
       Integer stock2,
       String errorMsg) {
     if (stock1 < stock2) {
-      throw new ResponseStatusException(ResponseCode.BADREQUEST.getStatus(),
-          ResponseCode.BADREQUEST.getMessage(errorMsg));
+      throw new ResponseStatusException(ResponseCode.BAD_REQUEST.getStatus(),
+          ResponseCode.BAD_REQUEST.getMessage(errorMsg));
     }
   }
 

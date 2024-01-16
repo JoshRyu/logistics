@@ -33,7 +33,7 @@ public class UserService {
     User user = userRepository.findByUsername(loginInfo.getUserName());
 
     if (user == null) {
-      throw new ResponseStatusException(ResponseCode.NOTFOUND.getStatus(), ResponseCode.NOTFOUND.getMessage("사용자"));
+      throw new ResponseStatusException(ResponseCode.NOT_FOUND.getStatus(), ResponseCode.NOT_FOUND.getMessage("사용자"));
     }
 
     if (passwordEncoder.matches(loginInfo.getPassword(), user.getPassword())) {
@@ -49,8 +49,8 @@ public class UserService {
     }
 
     throw new ResponseStatusException(
-        ResponseCode.BADREQUEST.getStatus(),
-        ResponseCode.BADREQUEST.getMessage("유효하지 않은 비밀번호입니다"));
+        ResponseCode.BAD_REQUEST.getStatus(),
+        ResponseCode.BAD_REQUEST.getMessage("유효하지 않은 비밀번호입니다"));
   }
 
   public UserRefreshRes refreshAccessToken(String refreshToken) {
@@ -92,8 +92,8 @@ public class UserService {
   public void patchUser(Long id, UserPatch patchInput) {
     User previousUser = userRepository
         .findById(id)
-        .orElseThrow(() -> new ResponseStatusException(ResponseCode.NOTFOUND.getStatus(),
-            ResponseCode.NOTFOUND.getMessage("사용자")));
+        .orElseThrow(() -> new ResponseStatusException(ResponseCode.NOT_FOUND.getStatus(),
+            ResponseCode.NOT_FOUND.getMessage("사용자")));
 
     if (patchInput.getPassword() != null) {
       previousUser.setPassword(
@@ -105,8 +105,8 @@ public class UserService {
           patchInput.getRole() == Role.USER &&
           userRepository.countByRole(Role.ADMIN.name()) == 1) {
         throw new ResponseStatusException(
-            ResponseCode.BADREQUEST.getStatus(),
-            ResponseCode.BADREQUEST.getMessage("유일한 관리자 권한의 사용자의 권한을 바꿀 수 없습니다"));
+            ResponseCode.BAD_REQUEST.getStatus(),
+            ResponseCode.BAD_REQUEST.getMessage("유일한 관리자 권한의 사용자의 권한을 바꿀 수 없습니다"));
       }
       previousUser.setRole(patchInput.getRole());
     }
@@ -117,14 +117,14 @@ public class UserService {
   public void deleteUser(Long id) {
     User previousUser = userRepository
         .findById(id)
-        .orElseThrow(() -> new ResponseStatusException(ResponseCode.NOTFOUND.getStatus(),
-            ResponseCode.NOTFOUND.getMessage("사용자")));
+        .orElseThrow(() -> new ResponseStatusException(ResponseCode.NOT_FOUND.getStatus(),
+            ResponseCode.NOT_FOUND.getMessage("사용자")));
 
     if (previousUser.getRole().equals(Role.ADMIN) &&
         userRepository.countByRole(Role.ADMIN.name()) == 1) {
       throw new ResponseStatusException(
-          ResponseCode.BADREQUEST.getStatus(),
-          ResponseCode.BADREQUEST.getMessage("유일한 관리자 권한의 사용자를 삭제할 수 없습니다"));
+          ResponseCode.BAD_REQUEST.getStatus(),
+          ResponseCode.BAD_REQUEST.getMessage("유일한 관리자 권한의 사용자를 삭제할 수 없습니다"));
     }
 
     userRepository.delete(previousUser);

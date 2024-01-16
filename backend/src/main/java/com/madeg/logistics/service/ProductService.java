@@ -1,8 +1,10 @@
 package com.madeg.logistics.service;
 
 import com.madeg.logistics.domain.ProductInput;
+import com.madeg.logistics.domain.ProductListReq;
 import com.madeg.logistics.domain.ProductPatch;
 import com.madeg.logistics.domain.ProductRes;
+import com.madeg.logistics.domain.ProductSpecification;
 import com.madeg.logistics.domain.SimplePageInfo;
 import com.madeg.logistics.entity.Category;
 import com.madeg.logistics.entity.Product;
@@ -14,6 +16,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -40,8 +43,8 @@ public class ProductService extends CommonService {
 
     if (existCategory == null) {
       throw new ResponseStatusException(
-          ResponseCode.NOTFOUND.getStatus(),
-          ResponseCode.NOTFOUND.getMessage("카테고리"));
+          ResponseCode.NOT_FOUND.getStatus(),
+          ResponseCode.NOT_FOUND.getMessage("카테고리"));
     }
 
     byte[] imageBytes = getImageBytes(productInput.getImg());
@@ -61,10 +64,9 @@ public class ProductService extends CommonService {
     productRepository.save(product);
   }
 
-  public ProductRes getProducts(ProductType type, Pageable pageable) {
-    Page<Product> page = type == null
-        ? productRepository.findAll(pageable)
-        : productRepository.findByType(type, pageable);
+  public ProductRes getProducts(ProductType type, ProductListReq productListReq, Pageable pageable) {
+    Specification<Product> spec = ProductSpecification.withDynamicQuery(type, productListReq);
+    Page<Product> page = productRepository.findAll(spec, pageable);
     List<Product> content = page.getContent();
 
     SimplePageInfo simplePageInfo = createSimplePageInfo(page);
@@ -103,8 +105,8 @@ public class ProductService extends CommonService {
             patchInput.getCategoryCode());
         if (category == null) {
           throw new ResponseStatusException(
-              ResponseCode.NOTFOUND.getStatus(),
-              ResponseCode.NOTFOUND.getMessage("카테고리"));
+              ResponseCode.NOT_FOUND.getStatus(),
+              ResponseCode.NOT_FOUND.getMessage("카테고리"));
         }
         previousProduct.updateCategory(category);
       }
