@@ -69,14 +69,23 @@ public class ProductController {
       @RequestParam(required = false) ProductSearchType searchType,
       @RequestParam(required = false) String searchKeyWord,
       @PageableDefault(size = 10, page = 0, sort = "productCode", direction = Sort.Direction.ASC) Pageable pageable) {
+    ProductRes products;
+    try {
 
-    ProductListReq productListReq = new ProductListReq();
-    productListReq.setSearchKeyWord(searchKeyWord);
-    productListReq.setSearchType(searchType);
+      ProductListReq productListReq = new ProductListReq();
+      productListReq.setSearchKeyWord(searchKeyWord);
+      productListReq.setSearchType(searchType);
+
+      products = productService.getProducts(type, productListReq, pageable);
+    } catch (Exception e) {
+      return ResponseEntity.status(ResponseCode.INTERNALERROR.getStatus()).body(
+          new ProductRes(ResponseCode.INTERNALERROR.getCode(), e.getMessage(), null, null));
+    }
 
     return ResponseEntity
         .status(ResponseCode.RETRIEVED.getStatus())
-        .body(productService.getProducts(type, productListReq, pageable));
+        .body(products);
+
   }
 
   @Operation(summary = "Get a Specific Product by Code")

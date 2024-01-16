@@ -18,7 +18,8 @@ public enum ResponseCode {
     UNCHANGED(HttpStatus.NO_CONTENT, "{0}은(는) 변경 사항이 없어 업데이트되지 않았습니다."),
     CONFLICT(HttpStatus.CONFLICT, "{0}이(가) 이미 존재합니다."),
     BADREQUEST(HttpStatus.BAD_REQUEST, "{0}."),
-    NOTFOUND(HttpStatus.NOT_FOUND, "{0}을(를) 찾을 수 없습니다.");
+    NOTFOUND(HttpStatus.NOT_FOUND, "{0}을(를) 찾을 수 없습니다."),
+    INTERNALERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Error");
 
     private final HttpStatus status;
     private final String message;

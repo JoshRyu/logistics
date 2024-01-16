@@ -4,26 +4,26 @@ import com.madeg.logistics.entity.SalesHistory;
 import com.madeg.logistics.entity.StoreProduct;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SalesHistoryRepository
-    extends JpaRepository<SalesHistory, Long> {
-  SalesHistory findByStoreProductAndSalesMonth(
-      StoreProduct storeProduct,
-      String salesMonth);
+        extends JpaRepository<SalesHistory, Long> {
+    SalesHistory findByStoreProductAndSalesMonth(
+            StoreProduct storeProduct,
+            String salesMonth);
 
-  SalesHistory findByStoreProduct_StoreProductIdAndSalesMonth(
-      Long storeProductId,
-      String salesMonth);
+    SalesHistory findByStoreProduct_StoreProductIdAndSalesMonth(
+            Long storeProductId,
+            String salesMonth);
 
-  Page<SalesHistory> findByStoreProductOrderBySalesMonth(
-      StoreProduct storeProduct,
-      Pageable pageable);
+    Page<SalesHistory> findByStoreProductOrderBySalesMonth(
+            StoreProduct storeProduct,
+            Pageable pageable);
 
-  Page<SalesHistory> findByStoreProductAndSalesMonth(
-      StoreProduct storeProduct,
-      String salesMonth,
-      Pageable pageable);
+    Page<SalesHistory> findByStoreProductAndSalesMonth(
+            StoreProduct storeProduct,
+            String salesMonth,
+            Pageable pageable);
 }
