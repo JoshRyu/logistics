@@ -98,8 +98,8 @@ public class SalesHistoryService extends CommonService {
 
     if (storeProduct == null) {
       throw new ResponseStatusException(
-          ResponseCode.NOTFOUND.getStatus(),
-          ResponseCode.NOTFOUND.getMessage("매장 제품"));
+          ResponseCode.NOT_FOUND.getStatus(),
+          ResponseCode.NOT_FOUND.getMessage("매장 제품"));
     }
 
     Page<SalesHistory> page = salesHistoryRepository.findByStoreProductAndSalesMonth(

@@ -78,8 +78,8 @@ public class ProductController {
 
       products = productService.getProducts(type, productListReq, pageable);
     } catch (Exception e) {
-      return ResponseEntity.status(ResponseCode.INTERNALERROR.getStatus()).body(
-          new ProductRes(ResponseCode.INTERNALERROR.getCode(), e.getMessage(), null, null));
+      return ResponseEntity.status(ResponseCode.INTERNAL_ERROR.getStatus()).body(
+          new ProductRes(ResponseCode.INTERNAL_ERROR.getCode(), e.getMessage(), null, null));
     }
 
     return ResponseEntity

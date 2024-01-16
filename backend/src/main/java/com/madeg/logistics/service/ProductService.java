@@ -43,8 +43,8 @@ public class ProductService extends CommonService {
 
     if (existCategory == null) {
       throw new ResponseStatusException(
-          ResponseCode.NOTFOUND.getStatus(),
-          ResponseCode.NOTFOUND.getMessage("카테고리"));
+          ResponseCode.NOT_FOUND.getStatus(),
+          ResponseCode.NOT_FOUND.getMessage("카테고리"));
     }
 
     byte[] imageBytes = getImageBytes(productInput.getImg());
@@ -105,8 +105,8 @@ public class ProductService extends CommonService {
             patchInput.getCategoryCode());
         if (category == null) {
           throw new ResponseStatusException(
-              ResponseCode.NOTFOUND.getStatus(),
-              ResponseCode.NOTFOUND.getMessage("카테고리"));
+              ResponseCode.NOT_FOUND.getStatus(),
+              ResponseCode.NOT_FOUND.getMessage("카테고리"));
         }
         previousProduct.updateCategory(category);
       }

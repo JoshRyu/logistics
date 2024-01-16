@@ -18,8 +18,8 @@ public class ControllerExceptionHandler {
       HttpMessageNotReadableException ex) {
     String errorMessage = ex.getLocalizedMessage();
     return ResponseEntity
-        .status(ResponseCode.BADREQUEST.getStatus())
-        .body(new CommonRes(ResponseCode.BADREQUEST.getCode(), errorMessage));
+        .status(ResponseCode.BAD_REQUEST.getStatus())
+        .body(new CommonRes(ResponseCode.BAD_REQUEST.getCode(), errorMessage));
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -31,7 +31,7 @@ public class ControllerExceptionHandler {
         : "잘못된 요청입니다";
 
     return ResponseEntity
-        .status(ResponseCode.BADREQUEST.getStatus())
-        .body(new CommonRes(ResponseCode.BADREQUEST.getCode(), errorMessage));
+        .status(ResponseCode.BAD_REQUEST.getStatus())
+        .body(new CommonRes(ResponseCode.BAD_REQUEST.getCode(), errorMessage));
   }
 }

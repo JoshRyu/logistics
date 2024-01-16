@@ -32,8 +32,8 @@ public class CategoryService extends CommonService {
 
     if (categoryInput.getParentCategoryCode() != null && parentCategory == null) {
       throw new ResponseStatusException(
-          ResponseCode.NOTFOUND.getStatus(),
-          ResponseCode.NOTFOUND.getMessage("부모 카테고리"));
+          ResponseCode.NOT_FOUND.getStatus(),
+          ResponseCode.NOT_FOUND.getMessage("부모 카테고리"));
     }
 
     Category category = Category
@@ -61,8 +61,8 @@ public class CategoryService extends CommonService {
     if (patchInput.getParentCategoryCode() != null &&
         patchInput.getParentCategoryCode().equals(categoryCode)) {
       throw new ResponseStatusException(
-          ResponseCode.BADREQUEST.getStatus(),
-          ResponseCode.BADREQUEST.getMessage("부모 카테고리 코드는 카테고리 코드와 달라야 합니다"));
+          ResponseCode.BAD_REQUEST.getStatus(),
+          ResponseCode.BAD_REQUEST.getMessage("부모 카테고리 코드는 카테고리 코드와 달라야 합니다"));
     }
 
     Category parentCategory = null;
@@ -71,8 +71,8 @@ public class CategoryService extends CommonService {
           patchInput.getParentCategoryCode());
       if (parentCategory == null) {
         throw new ResponseStatusException(
-            ResponseCode.NOTFOUND.getStatus(),
-            ResponseCode.NOTFOUND.getMessage("부모 카테고리"));
+            ResponseCode.NOT_FOUND.getStatus(),
+            ResponseCode.NOT_FOUND.getMessage("부모 카테고리"));
       }
     }
     Category updatedCategory = new Category();
