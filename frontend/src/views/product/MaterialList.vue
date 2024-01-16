@@ -1,5 +1,5 @@
 <template>
-  <SearchBasic></SearchBasic>
+  <SearchBasic target="material"></SearchBasic>
 </template>
 
 <script setup>

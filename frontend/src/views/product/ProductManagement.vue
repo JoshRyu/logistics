@@ -375,7 +375,11 @@ const getCategoryCode = (categoryName) => {
 const handleConfirmation = () => {
   data.modalProps.enabled = false;
   if (data.backToList) {
-    router.push({ path: "/product/list" });
+    if (data.product.type == "PRODUCT") {
+      router.push({ path: "/product/list" });
+    } else {
+      router.push({ path: "/product/material/list" });
+    }
   }
 };
 

@@ -39,6 +39,11 @@ const routes = [
             component: () => import("@/views/product/ProductList.vue"),
           },
           {
+            path: "material/list",
+            name: "MaterialList",
+            component: () => import("@/views/product/MaterialList.vue"),
+          },
+          {
             path: "management",
             name: "ProductManagement",
             component: () => import("@/views/product/ProductManagement.vue"),
@@ -53,11 +58,11 @@ const routes = [
             name: "ProductCategory",
             component: () => import("@/views/product/ProductCategory.vue"),
           },
-          {
-            path: "statistics",
-            name: "ProductStatistics",
-            component: () => import("@/views/product/ProductStatistics.vue"),
-          },
+          // {
+          //   path: "statistics",
+          //   name: "ProductStatistics",
+          //   component: () => import("@/views/product/ProductStatistics.vue"),
+          // },
         ],
         beforeEnter: requireAuth,
         // 접근 제한이 필요한 페이지에, 아래 내용을 넣어 특정한 유저만 접근할 수 있게 한다.
@@ -65,22 +70,22 @@ const routes = [
           role: ["ADMIN", "USER"],
         },
       },
-      {
-        path: "/store",
-        redirect: "/store/status",
-        children: [
-          {
-            path: "status",
-            name: "StoreStatus",
-            component: () => import("@/views/store/StoreStatus.vue"),
-          },
-        ],
-        beforeEnter: requireAuth,
-        // 접근 제한이 필요한 페이지에, 아래 내용을 넣어 특정한 유저만 접근할 수 있게 한다.
-        meta: {
-          role: ["ADMIN"],
-        },
-      },
+      // {
+      //   path: "/store",
+      //   redirect: "/store/status",
+      //   children: [
+      //     {
+      //       path: "status",
+      //       name: "StoreStatus",
+      //       component: () => import("@/views/store/StoreStatus.vue"),
+      //     },
+      //   ],
+      //   beforeEnter: requireAuth,
+      //   // 접근 제한이 필요한 페이지에, 아래 내용을 넣어 특정한 유저만 접근할 수 있게 한다.
+      //   meta: {
+      //     role: ["ADMIN"],
+      //   },
+      // },
     ],
   },
   {

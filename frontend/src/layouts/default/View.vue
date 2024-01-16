@@ -50,7 +50,7 @@
           ></v-list-item>
         </v-list-group>
 
-        <v-list-group v-if="isAdmin" value="store">
+        <!-- <v-list-group v-if="isAdmin" value="store">
           <template v-slot:activator="{ props }">
             <v-list-item
               prepend-icon="mdi-store"
@@ -67,7 +67,7 @@
             @click="navClick('store', item, item.route)"
             :class="selectedNav == item.title ? 'navColor' : ''"
           ></v-list-item>
-        </v-list-group>
+        </v-list-group> -->
       </v-list>
     </v-navigation-drawer>
     <!-- 좌측 메뉴바 END -->
@@ -155,28 +155,34 @@ const navElements = reactive({
     product: [
       {
         idx: 0,
+        title: "제료 조회",
+        icon: "mdi-magnify",
+        route: "/product/material/list",
+      },
+      {
+        idx: 1,
         title: "제품 조회",
         icon: "mdi-magnify",
         route: "/product/list",
       },
       {
-        idx: 1,
+        idx: 2,
         title: "제품/재료 관리",
         icon: "mdi-basket-plus-outline",
         route: "/product/management",
       },
       {
-        idx: 2,
-        title: "제품 카테고리",
+        idx: 3,
+        title: "카테고리 관리",
         icon: "mdi-view-list",
         route: "/product/category",
       },
-      {
-        idx: 3,
-        title: "제품 통계",
-        icon: "mdi-chart-bar",
-        route: "/product/statistics",
-      },
+      // {
+      //   idx: 3,
+      //   title: "제품 통계",
+      //   icon: "mdi-chart-bar",
+      //   route: "/product/statistics",
+      // },
     ],
     store: [
       {
