@@ -64,9 +64,18 @@ public class StoreProductController {
   public ResponseEntity<StoreProductRes> getProductsInStore(
       @PathVariable(name = "store_code", required = true) String storeCode,
       @PageableDefault(size = 10, page = 0) Pageable pageable) {
+
+    StoreProductRes storeProducts;
+    try {
+      storeProducts = storeProductService.getStoreProducts(storeCode, pageable);
+
+    } catch (Exception e) {
+      return ResponseEntity.status(ResponseCode.INTERNAL_ERROR.getStatus()).body(
+          new StoreProductRes(ResponseCode.INTERNAL_ERROR.getCode(), e.getMessage(), null, null));
+    }
     return ResponseEntity
         .status(ResponseCode.RETRIEVED.getStatus())
-        .body(storeProductService.getStoreProducts(storeCode, pageable));
+        .body(storeProducts);
   }
 
   @Operation(summary = "Update a Specific Store Product By Store and Product Code")
