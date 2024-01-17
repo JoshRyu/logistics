@@ -1,5 +1,4 @@
-import endpoint from "@/config/endpoint.json";
-
 export function urlBuilder(path) {
-  return endpoint.protocol + "://" + endpoint.url + ":" + endpoint.port + path;
+  const baseURL = import.meta.env.VITE_APP_API_URL;
+  return baseURL + path;
 }
