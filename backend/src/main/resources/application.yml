@@ -7,9 +7,6 @@ spring:
     url: jdbc:postgresql://localhost:11112/postgres
     username: postgres
     password: post123!
-  sql:
-    init:
-      mode: never
   servlet:
     multipart:
       enabled: true
@@ -20,6 +17,11 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: update
+
+account:
+  admin:
+    id: admin
+    password: admin
 
 # mybatis:
 #   type-aliases-package: com.madeg.logistics.domain
