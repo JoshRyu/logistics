@@ -49,7 +49,9 @@
                 </v-col>
                 <v-spacer></v-spacer>
                 <v-col cols="8" align="center"
-                  ><h3>{{ category.name }}</h3></v-col
+                  ><h3>
+                    {{ category.isNewCategory ? "새 카테고리" : category.name }}
+                  </h3></v-col
                 >
                 <v-spacer></v-spacer>
                 <v-col cols="1">
@@ -171,8 +173,6 @@ const updateCategory = async () => {
         ? getCategoryCode(clickedCategory.value.parentCategory.name)
         : null,
   };
-  console.log(clickedCategory.value);
-  console.log(payload);
 
   try {
     await patchCategory(categoryId, payload);
@@ -251,10 +251,11 @@ const addCategory = () => {
   if (!data.newCategoryEnabled) {
     data.newCategoryEnabled = true;
     data.categoryList.unshift({
-      name: "새 카테고리",
+      name: "",
       parentCategory: { name: "" },
       description: "",
       isClicked: false,
+      isNewCategory: true,
     });
     selectCategory(data.categoryList[0]);
   } else {
