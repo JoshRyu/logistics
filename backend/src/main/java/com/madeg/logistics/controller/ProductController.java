@@ -6,6 +6,7 @@ import com.madeg.logistics.domain.ProductListReq;
 import com.madeg.logistics.domain.ProductPatch;
 import com.madeg.logistics.domain.ProductRes;
 import com.madeg.logistics.entity.Product;
+import com.madeg.logistics.enums.CompareType;
 import com.madeg.logistics.enums.ProductSearchType;
 import com.madeg.logistics.enums.ProductType;
 import com.madeg.logistics.enums.ResponseCode;
@@ -19,6 +20,7 @@ import jakarta.validation.Valid;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -67,6 +69,7 @@ public class ProductController {
   public ResponseEntity<ProductRes> getProductList(
       @RequestParam(required = false) ProductType type,
       @RequestParam(required = false) ProductSearchType searchType,
+      @RequestParam(required = false) CompareType compareType,
       @RequestParam(required = false) String searchKeyWord,
       @PageableDefault(size = 10, page = 0, sort = "productCode", direction = Sort.Direction.ASC) Pageable pageable) {
     ProductRes products;
@@ -75,6 +78,7 @@ public class ProductController {
       ProductListReq productListReq = new ProductListReq();
       productListReq.setSearchKeyWord(searchKeyWord);
       productListReq.setSearchType(searchType);
+      productListReq.setCompareType(Optional.ofNullable(compareType).orElse(CompareType.E));
 
       products = productService.getProducts(type, productListReq, pageable);
     } catch (Exception e) {

@@ -1,7 +1,6 @@
 package com.madeg.logistics.repository;
 
 import com.madeg.logistics.entity.Product;
-import com.madeg.logistics.enums.ProductType;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,8 +13,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, String>, JpaSpecificationExecutor<Product> {
   Page<Product> findAll(Specification<Product> spec, Pageable pageable);
-
-  Page<Product> findByType(ProductType type, Pageable pageable);
 
   Product findByName(String name);
 
