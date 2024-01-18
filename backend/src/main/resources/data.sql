@@ -2,6 +2,6 @@ INSERT INTO member (id, username, password, role)
 VALUES (
         1,
         'admin',
-        '{bcrypt}$2a$05$pgzjl3PrenmR85feuZctf.VDL3qUUq/aQl4ELHbJAa7FY.pNODW3y',
+        '{bcrypt}$2a$10$DN7bk6emH.YmUdWF6P08FeprVSDh/L1PnYrawj5XrQaTpCFZblQae',
         'ADMIN'
     ) ON CONFLICT (id) DO NOTHING;
