@@ -1,11 +1,13 @@
 package com.madeg.logistics.domain;
 
 import org.springframework.data.jpa.domain.Specification;
-
 import com.madeg.logistics.entity.Product;
+import com.madeg.logistics.enums.CompareType;
 import com.madeg.logistics.enums.ProductType;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -32,12 +34,12 @@ public class ProductSpecification {
                                 "%" + productListReq.getSearchKeyWord() + "%"));
                         break;
                     case STOCK:
-                        predicates.add(
-                                builder.equal(root.get("stock"), Integer.parseInt(productListReq.getSearchKeyWord())));
+                        addComparablePredicate(predicates, builder, root, "stock",
+                                Integer.parseInt(productListReq.getSearchKeyWord()), productListReq.getCompareType());
                         break;
                     case PRICE:
-                        predicates.add(
-                                builder.equal(root.get("price"), new BigDecimal(productListReq.getSearchKeyWord())));
+                        addComparablePredicate(predicates, builder, root, "price",
+                                new BigDecimal(productListReq.getSearchKeyWord()), productListReq.getCompareType());
                         break;
                     case DESCRIPTION:
                         predicates.add(
@@ -48,5 +50,26 @@ public class ProductSpecification {
 
             return builder.and(predicates.toArray(new Predicate[0]));
         };
+    }
+
+    private static <T extends Comparable<T>> void addComparablePredicate(List<Predicate> predicates,
+            CriteriaBuilder builder, Root<Product> root, String fieldName, T value, CompareType compareType) {
+        switch (compareType) {
+            case E:
+                predicates.add(builder.equal(root.get(fieldName), value));
+                break;
+            case GT:
+                predicates.add(builder.greaterThan(root.get(fieldName), value));
+                break;
+            case LT:
+                predicates.add(builder.lessThan(root.get(fieldName), value));
+                break;
+            case GTE:
+                predicates.add(builder.greaterThanOrEqualTo(root.get(fieldName), value));
+                break;
+            case LTE:
+                predicates.add(builder.lessThanOrEqualTo(root.get(fieldName), value));
+                break;
+        }
     }
 }

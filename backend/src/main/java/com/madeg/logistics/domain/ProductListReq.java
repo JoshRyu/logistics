@@ -1,5 +1,6 @@
 package com.madeg.logistics.domain;
 
+import com.madeg.logistics.enums.CompareType;
 import com.madeg.logistics.enums.ProductSearchType;
 
 import lombok.Getter;
@@ -14,5 +15,7 @@ public class ProductListReq {
     private String searchKeyWord;
 
     private ProductSearchType searchType;
+
+    private CompareType compareType;
 
 }
