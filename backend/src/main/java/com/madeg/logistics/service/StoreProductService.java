@@ -50,7 +50,7 @@ public class StoreProductService extends CommonService {
         : storeProductInput.getIncomeCnt();
 
     validateStock(
-        product.getStock(),
+        (int) Math.round(product.getStock()),
         income,
         "매장 제품 재고 수는 미등록 제품 재고 수보다 작거나 같아야 합니다");
 
@@ -145,7 +145,7 @@ public class StoreProductService extends CommonService {
     StoreProduct previousStoreProduct = findStoreProduct(store, product);
 
     validateStock(
-        product.getStock(),
+        (int) Math.round(product.getStock()),
         restockCnt,
         "재입고 수량은 등록된 제품 재고 수보다 작거나 같아야 합니다");
 

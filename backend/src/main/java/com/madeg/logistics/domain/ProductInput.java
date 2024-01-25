@@ -36,7 +36,7 @@ public class ProductInput {
 
   @NotNull(message = "재고 수량은 반드시 있어야 합니다")
   @Schema(example = "11")
-  private int stock;
+  private Double stock;
 
   private MultipartFile img;
 

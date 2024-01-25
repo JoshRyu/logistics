@@ -50,7 +50,7 @@ public class Product {
   private BigDecimal price;
 
   @Column(name = "stock", nullable = false)
-  private Integer stock;
+  private Double stock;
 
   @Column(name = "img")
   private byte[] img;
@@ -69,7 +69,7 @@ public class Product {
     this.price = price;
   }
 
-  public void updateStock(int stock) {
+  public void updateStock(Double stock) {
     this.stock = stock;
   }
 
