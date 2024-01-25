@@ -58,16 +58,16 @@ public class ProductSpecification {
             case E:
                 predicates.add(builder.equal(root.get(fieldName), value));
                 break;
-            case MT:
+            case GT:
                 predicates.add(builder.greaterThan(root.get(fieldName), value));
                 break;
             case LT:
                 predicates.add(builder.lessThan(root.get(fieldName), value));
                 break;
-            case MET:
+            case GTE:
                 predicates.add(builder.greaterThanOrEqualTo(root.get(fieldName), value));
                 break;
-            case LET:
+            case LTE:
                 predicates.add(builder.lessThanOrEqualTo(root.get(fieldName), value));
                 break;
         }

@@ -2,8 +2,8 @@ package com.madeg.logistics.enums;
 
 public enum CompareType {
     E,
-    MT,
+    GT,
     LT,
-    MET,
-    LET
+    GTE,
+    LTE
 }
