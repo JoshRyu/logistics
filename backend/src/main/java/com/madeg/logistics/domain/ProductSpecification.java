@@ -35,7 +35,7 @@ public class ProductSpecification {
                         break;
                     case STOCK:
                         addComparablePredicate(predicates, builder, root, "stock",
-                                Integer.parseInt(productListReq.getSearchKeyWord()), productListReq.getCompareType());
+                                Double.parseDouble(productListReq.getSearchKeyWord()), productListReq.getCompareType());
                         break;
                     case PRICE:
                         addComparablePredicate(predicates, builder, root, "price",
