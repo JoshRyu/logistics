@@ -144,6 +144,7 @@
         ><v-pagination
           v-model="data.currentPage"
           :length="data.lastPage"
+          :total-visible="5"
           @click="retrieveTargetList(data.currentPage - 1)"
         ></v-pagination
       ></v-col>
