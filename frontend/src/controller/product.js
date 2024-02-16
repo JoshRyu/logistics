@@ -26,7 +26,7 @@ export async function getProductList(params) {
   try {
     const response = await axios.get(
       urlBuilder(path) +
-        `?type=${params.type}&searchType=${params.searchType}&searchKeyWord=${params.searchKeyWord}&page=${params.page}&size=${params.size}&sort=name`,
+        `?type=${params.type}&searchType=${params.searchType}&searchKeyWord=${params.searchKeyWord}&compareType=${params.compareType}&page=${params.page}&size=${params.size}&sort=name`,
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access-token")}`,

@@ -36,16 +36,28 @@
               clearable
             ></v-autocomplete>
           </v-col>
-          <v-col cols="4" class="mt-2">
+
+          <v-col v-if="isNumberActivated" cols="1" class="mt-2">
+            <v-select
+              v-model="data.selectedCompareType"
+              label="비교 기준"
+              variant="outlined"
+              item-title="name"
+              :items="data.compareType"
+              hide-details
+            ></v-select>
+          </v-col>
+
+          <v-col :cols="isNumberActivated ? 2 : 4" class="mt-2">
             <v-text-field
               v-model="data.searchValue"
-              label="검색어"
+              :label="isNumberActivated ? '비교값' : '검색어'"
               hide-details
-              placeholder="검색어"
+              :placeholder="isNumberActivated ? '비교값' : '검색어'"
               variant="outlined"
               clear-icon="mdi-close-circle"
               clearable
-              type="text"
+              :type="isNumberActivated ? 'number' : 'text'"
               @keyup.enter="retrieveTargetList(0)"
             ></v-text-field>
           </v-col>
@@ -68,7 +80,12 @@
     </v-row>
 
     <v-row dense>
-      <v-col v-for="card in data.cards" :key="card.name" :cols="getColSize()">
+      <v-col
+        v-for="card in data.cards"
+        :key="card.name"
+        :cols="getColSize()"
+        height="auto"
+      >
         <v-card :class="getCardClass">
           <v-card-title>
             <span
@@ -83,9 +100,8 @@
               card.img ? 'data:image/jpeg;base64,' + card.img : data.noImgSrc
             "
             v-if="data.biggerContents"
-            class="align-end"
             cover
-            height="250px"
+            height="300px"
           >
           </v-img>
 
@@ -182,6 +198,14 @@ const data = reactive({
   biggerContents: true,
   searchValue: "",
   selectedTarget: "PRODUCT_NAME",
+  selectedCompareType: "E",
+  compareType: [
+    { name: "=", value: "E" },
+    { name: ">", value: "GT" },
+    { name: "<", value: "LT" },
+    { name: "≥", value: "GTE" },
+    { name: "≤", value: "LTE" },
+  ],
   searchTargetList: [
     {
       title: props.target.toUpperCase() == "PRODUCT" ? "상품명" : "재료명",
@@ -209,6 +233,11 @@ const getCardClass = computed(() =>
     ? "border-solid bg-card-height"
     : "border-solid sm-card-height"
 );
+
+const isNumberActivated = computed(() => {
+  return data.selectedTarget == "PRICE" || data.selectedTarget == "STOCK";
+});
+
 const getTitleSize = computed(() =>
   data.biggerContents ? "bg-title" : "sm-title"
 );
@@ -244,6 +273,7 @@ const retrieveTargetList = async (page) => {
       page: page,
       searchType: data.selectedTarget,
       searchKeyWord: data.searchValue,
+      compareType: isNumberActivated.value ? data.selectedCompareType : "E",
       size: data.biggerContents ? 8 : 12,
     });
 
