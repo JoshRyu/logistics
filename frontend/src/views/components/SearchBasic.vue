@@ -1,7 +1,7 @@
 <template>
   <v-container style="max-width: 85%" class="mt-5">
     <v-row>
-      <v-col cols="2">
+      <v-col cols="3">
         <v-card-title class="text-h4">
           <span
             >{{
@@ -12,14 +12,7 @@
           </span>
         </v-card-title>
       </v-col>
-      <v-col cols="2">
-        <v-switch
-          v-model="data.biggerContents"
-          hide-details
-          inset
-          :label="data.biggerContents ? '작게보기' : '크게보기'"
-        ></v-switch>
-      </v-col>
+
       <v-spacer></v-spacer>
     </v-row>
     <v-row class="mt-4 mb-4">
@@ -70,7 +63,15 @@
               >검색</v-btn
             >
           </v-col>
-          <v-col cols="4"> </v-col>
+          <v-col cols="2">
+            <v-switch
+              v-model="data.biggerContents"
+              hide-details
+              inset
+              :label="data.biggerContents ? '작게보기' : '크게보기'"
+            ></v-switch>
+          </v-col>
+          <v-spacer></v-spacer>
         </v-row>
       </v-toolbar>
     </v-row>
@@ -377,7 +378,7 @@ const handleCancellation = () => {
 }
 
 .bg-card-height {
-  height: 525px;
+  height: 570px;
 }
 
 .bg-card-text-content {
