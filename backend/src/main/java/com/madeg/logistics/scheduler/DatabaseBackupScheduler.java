@@ -18,8 +18,8 @@ public class DatabaseBackupScheduler {
     private static final Logger logger = LoggerFactory.getLogger(DatabaseBackupScheduler.class);
     private final ExecutorService executor = Executors.newCachedThreadPool();
 
-    @Scheduled(cron = "*/10 * * * * ?")
-    // @Scheduled(cron = "0 1 * * * 0")
+    // @Scheduled(cron = "*/10 * * * * ?")
+    @Scheduled(cron = "0 1 * * * 0")
     public void backupDatabase() {
         LocalDate today = LocalDate.now();
         String formattedDate = today.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
@@ -36,7 +36,6 @@ public class DatabaseBackupScheduler {
         ProcessBuilder pb = new ProcessBuilder(cmd);
         try {
             Process process = pb.start();
-
             boolean finished = process.waitFor(60, TimeUnit.SECONDS);
             if (finished && process.exitValue() == 0) {
                 logger.info("Database backup created successfully at " + backupPath + backupFileName);
@@ -50,34 +49,4 @@ public class DatabaseBackupScheduler {
         }
     }
 
-    public void restoreDatabase(String backupFileName) {
-        String backupPath = "C:/Users/yeahee/Desktop/project/logistics/backend/src/main/resources/";
-        String containerPath = "/tmp/" + backupFileName;
-        String[] copyCmd = {
-                "cmd.exe", "/c",
-                "docker cp " + backupPath + backupFileName + " madeg_postgres:" + containerPath
-        };
-        String[] restoreCmd = {
-                "cmd.exe", "/c",
-                "docker exec -i madeg_postgres psql -U postgres -d postgres -f " + containerPath
-        };
-
-        ProcessBuilder copyPb = new ProcessBuilder(copyCmd);
-        ProcessBuilder restorePb = new ProcessBuilder(restoreCmd);
-        try {
-            Process copyProcess = copyPb.start();
-            copyProcess.waitFor(60, TimeUnit.SECONDS);
-
-            Process restoreProcess = restorePb.start();
-            boolean finishedRestore = restoreProcess.waitFor(60, TimeUnit.SECONDS);
-
-            if (finishedRestore && restoreProcess.exitValue() == 0) {
-                logger.info("Database restored successfully from " + backupPath);
-            } else {
-                logger.error("Error occurred during database restoration or timeout reached.");
-            }
-        } catch (InterruptedException | IOException e) {
-            logger.error("Exception occurred during restore process", e);
-        }
-    }
 }
