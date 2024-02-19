@@ -180,6 +180,7 @@
 import { reactive, onMounted, computed, watch } from "vue";
 import { getProductList, deleteProduct } from "@/controller/product.js";
 import { useRouter } from "vue-router";
+import { useStore } from "vuex";
 import YesNoModal from "../components/YesNoModal.vue";
 import noImageSrc from "@/assets/images/No_Image_Available.jpg";
 
@@ -192,6 +193,7 @@ const props = defineProps({
 });
 
 const router = useRouter();
+const store = useStore();
 
 const data = reactive({
   targetProductId: "",
@@ -273,20 +275,43 @@ const retrieveTargetList = async (page) => {
       type: targetType,
       page: page,
       searchType: data.selectedTarget,
-      searchKeyWord: data.searchValue,
+      searchKeyWord: data.searchValue == null ? "" : data.searchValue,
       compareType: isNumberActivated.value ? data.selectedCompareType : "E",
       size: data.biggerContents ? 8 : 12,
     });
 
     data.cards = response.content;
     data.lastPage = response.pageable.totalPages;
+
+    store.commit("updateSearchHistory", {
+      target: props.target,
+      history: {
+        searchTarget: data.selectedTarget,
+        compareType: isNumberActivated.value ? data.selectedCompareType : "E",
+        searchValue: data.searchValue == null ? "" : data.searchValue,
+        currentPage: page,
+      },
+    });
   } catch (error) {
     console.error(error);
   }
 };
 
 onMounted(() => {
-  retrieveTargetList(0);
+  const searchHistory = store.getters.getHistory;
+  if (props.target == "product") {
+    data.selectedTarget = searchHistory.product.searchTarget;
+    data.selectedCompareType = searchHistory.product.compareType;
+    data.searchValue = searchHistory.product.searchValue;
+    data.currentPage = searchHistory.product.currentPage + 1;
+    retrieveTargetList(searchHistory.product.currentPage);
+  } else {
+    data.selectedTarget = searchHistory.material.searchTarget;
+    data.selectedCompareType = searchHistory.material.compareType;
+    data.searchValue = searchHistory.material.searchValue;
+    data.currentPage = searchHistory.material.currentPage + 1;
+    retrieveTargetList(searchHistory.material.currentPage);
+  }
 });
 
 const routeTo = (path) => {
