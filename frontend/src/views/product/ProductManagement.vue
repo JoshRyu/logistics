@@ -64,6 +64,7 @@
                 @update:modelValue="resetError('type')"
                 label="제품/재료*"
                 placeholder="제품/재료*"
+                auto-select-first
                 variant="outlined"
                 clear-icon="mdi-close-circle"
                 clearable
@@ -97,6 +98,7 @@
                 variant="outlined"
                 clear-icon="mdi-close-circle"
                 clearable
+                auto-select-first
                 no-data-text="해당하는 카테고리가 없습니다."
                 type="text"
               >
@@ -312,8 +314,8 @@ const submitProduct = async (isNew) => {
   formData.append("name", data.product.name);
   formData.append("type", data.product.type);
   formData.append("categoryCode", getCategoryCode(data.product.categoryCode));
-  formData.append("price", data.product.price);
-  formData.append("stock", data.product.stock);
+  formData.append("price", data.product.price == null ? 0 : data.product.price);
+  formData.append("stock", data.product.stock == null ? 0 : data.product.stock);
   formData.append("barcode", data.product.barcode);
   formData.append("description", data.product.description);
 
@@ -397,8 +399,8 @@ const data = reactive({
     barcode: "",
     name: "-",
     categoryCode: null,
-    price: 0,
-    stock: 0,
+    price: null,
+    stock: null,
     type: "PRODUCT",
     description: "-",
   },
