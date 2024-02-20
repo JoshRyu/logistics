@@ -2,12 +2,14 @@ package com.madeg.logistics.scheduler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import com.madeg.logistics.util.DatabaseUtil;
+
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ExecutorService;
@@ -17,8 +19,8 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class DatabaseBackupScheduler {
 
-    private static final Logger logger = LoggerFactory.getLogger(DatabaseBackupScheduler.class);
-    private final ExecutorService executor = Executors.newCachedThreadPool();
+    @Autowired
+    private DatabaseUtil databaseUtil;
 
     @Value("${spring.datasource.url}")
     private String dbUrl;
@@ -32,6 +34,9 @@ public class DatabaseBackupScheduler {
     @Value("${backup.path.linux}")
     private String linuxBackupPath;
 
+    private static final Logger logger = LoggerFactory.getLogger(DatabaseBackupScheduler.class);
+    private final ExecutorService executor = Executors.newCachedThreadPool();
+
     // @Scheduled(cron = "*/10 * * * * ?")
     @Scheduled(cron = "0 1 * * * 0")
     public void backupDatabase() {
@@ -40,12 +45,10 @@ public class DatabaseBackupScheduler {
         String backupFileName = "db_backup_" + formattedDate + ".sql";
         String tmpBackupPath = "/tmp/" + backupFileName;
 
-        String basePath = Paths.get(System.getProperty("user.dir")).getParent().toString();
-        String backupPath = System.getProperty("os.name").toLowerCase().contains("win") ? winBackupPath
-                : linuxBackupPath;
+        String basePath = databaseUtil.getBasePath();
+        String backupPath = databaseUtil.getBackupPath(winBackupPath, linuxBackupPath);
         String fullPath = basePath + backupPath;
-
-        String dbName = dbUrl.substring(dbUrl.lastIndexOf('/') + 1);
+        String dbName = databaseUtil.getDbName(dbUrl);
 
         String[] cmd = {
                 "cmd.exe", "/c",

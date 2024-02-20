@@ -1,17 +1,21 @@
 package com.madeg.logistics.service;
 
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.madeg.logistics.util.DatabaseUtil;
+
 @Service
 public class RestoreService {
-    private static final Logger logger = LoggerFactory.getLogger(RestoreService.class);
+
+    @Autowired
+    private DatabaseUtil databaseUtil;
 
     @Value("${spring.datasource.url}")
     private String dbUrl;
@@ -25,15 +29,17 @@ public class RestoreService {
     @Value("${backup.path.linux}")
     private String linuxBackupPath;
 
-    public void restoreDatabase(String backupFileName) {
-        String basePath = Paths.get(System.getProperty("user.dir")).getParent().toString();
-        String backupPath = System.getProperty("os.name").toLowerCase().contains("win") ? winBackupPath
-                : linuxBackupPath;
-        String fullPath = basePath + backupPath;
+    private static final Logger logger = LoggerFactory.getLogger(RestoreService.class);
 
-        String dbName = dbUrl.substring(dbUrl.lastIndexOf('/') + 1);
+    public void restoreDatabase(String backupFileName) {
+
+        String basePath = databaseUtil.getBasePath();
+        String backupPath = databaseUtil.getBackupPath(winBackupPath, linuxBackupPath);
+        String fullPath = basePath + backupPath;
+        String dbName = databaseUtil.getDbName(dbUrl);
 
         String tmpBackupPath = "/tmp/" + backupFileName;
+
         String[] copyCmd = {
                 "cmd.exe", "/c",
                 "docker cp " + fullPath + backupFileName + " madeg_postgres:" + tmpBackupPath
