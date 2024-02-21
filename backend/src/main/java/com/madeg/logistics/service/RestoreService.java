@@ -32,11 +32,8 @@ public class RestoreService {
     private static final Logger logger = LoggerFactory.getLogger(RestoreService.class);
 
     public void restoreDatabase(String backupFileName) {
-
-        String basePath = databaseUtil.getBasePath();
-        String backupPath = databaseUtil.getBackupPath(winBackupPath, linuxBackupPath);
-        String fullPath = basePath + backupPath;
         String dbName = databaseUtil.getDbName(dbUrl);
+        String fullPath = databaseUtil.getFullBackupPath(winBackupPath, linuxBackupPath);
         boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
 
         String[] cmd;
@@ -46,7 +43,7 @@ public class RestoreService {
                     + " -f /tmp/" + backupFileName;
             cmd = new String[] { "cmd.exe", "/c", dockerCopyCmd + " && " + dockerRestoreCmd };
         } else {
-            String restoreCmd = "sudo -u postgres psql -U " + userName + " -d " + dbName + " -f " + backupPath
+            String restoreCmd = "sudo -u postgres psql -U " + userName + " -d " + dbName + " -f " + fullPath
                     + backupFileName;
             cmd = new String[] { "/bin/bash", "-c", restoreCmd };
         }
@@ -57,7 +54,7 @@ public class RestoreService {
             boolean finish = process.waitFor(60, TimeUnit.SECONDS);
 
             if (finish && process.exitValue() == 0) {
-                logger.info("Database restored successfully from " + backupPath);
+                logger.info("Database restored successfully from " + fullPath);
             } else {
                 logger.error("Error occurred during database restoration or timeout reached.");
             }

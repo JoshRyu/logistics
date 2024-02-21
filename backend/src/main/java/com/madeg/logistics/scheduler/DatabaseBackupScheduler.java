@@ -45,19 +45,15 @@ public class DatabaseBackupScheduler {
     // @Scheduled(cron = "*/15 * * * * ?") // FOR TEST
     @Scheduled(cron = "0 1 * * * 0") // Every Sunday at 1AM
     public void backupDatabase() {
-
-        String formattedDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-        String backupFileName = "db_backup_" + formattedDate + ".sql";
-        String tmpBackupPath = "/tmp/" + backupFileName;
-
-        String backupPath = databaseUtil.getBackupPath(winBackupPath, linuxBackupPath);
-        String fullPath = databaseUtil.getBasePath() + backupPath;
+        String backupFileName = "db_backup_" + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")) + ".sql";
         String dbName = databaseUtil.getDbName(dbUrl);
+        String fullPath = databaseUtil.getFullBackupPath(winBackupPath, linuxBackupPath);
 
         String[] winCmd = {
                 "cmd.exe", "/c",
-                "docker exec madeg_postgres pg_dump -U " + userName + " -d " + dbName + " -f " + tmpBackupPath +
-                        " && docker cp madeg_postgres:" + tmpBackupPath + " " + fullPath + backupFileName
+                "docker exec madeg_postgres pg_dump -U " + userName + " -d " + dbName + " -f " + "/tmp/"
+                        + backupFileName +
+                        " && docker cp madeg_postgres:" + "/tmp/" + backupFileName + " " + fullPath + backupFileName
         };
 
         String[] linuxCmd = {
@@ -85,8 +81,7 @@ public class DatabaseBackupScheduler {
     // @Scheduled(cron = "*/15 * * * * ?") // FOR TEST
     @Scheduled(cron = "0 2 * * * 0") // Every Sunday at 2AM
     public void deleteOldBackups() {
-        String backupPath = databaseUtil.getBackupPath(winBackupPath, linuxBackupPath);
-        String fullPath = databaseUtil.getBasePath() + backupPath;
+        String fullPath = databaseUtil.getFullBackupPath(winBackupPath, linuxBackupPath);
         LocalDate oneMonthAgo = LocalDate.now().minusMonths(1);
 
         try (Stream<Path> files = Files.walk(Paths.get(fullPath))) {
