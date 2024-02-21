@@ -37,28 +37,27 @@ public class RestoreService {
         String backupPath = databaseUtil.getBackupPath(winBackupPath, linuxBackupPath);
         String fullPath = basePath + backupPath;
         String dbName = databaseUtil.getDbName(dbUrl);
+        String osName = System.getProperty("os.name").toLowerCase();
+        boolean isWindows = osName.contains("win");
 
-        String tmpBackupPath = "/tmp/" + backupFileName;
+        String[] cmd;
+        if (isWindows) {
+            String dockerCopyCmd = "docker cp " + fullPath + backupFileName + " madeg_postgres:/tmp/" + backupFileName;
+            String dockerRestoreCmd = "docker exec -i madeg_postgres psql -U " + userName + " -d " + dbName
+                    + " -f /tmp/" + backupFileName;
+            cmd = new String[] { "cmd.exe", "/c", dockerCopyCmd + " && " + dockerRestoreCmd };
+        } else {
+            String restoreCmd = "sudo -u postgres psql -U " + userName + " -d " + dbName + " -f " + backupPath
+                    + backupFileName;
+            cmd = new String[] { "/bin/bash", "-c", restoreCmd };
+        }
 
-        String[] copyCmd = {
-                "cmd.exe", "/c",
-                "docker cp " + fullPath + backupFileName + " madeg_postgres:" + tmpBackupPath
-        };
-        String[] restoreCmd = {
-                "cmd.exe", "/c",
-                "docker exec -i madeg_postgres psql -U " + userName + " -d " + dbName + " -f " + tmpBackupPath
-        };
-
-        ProcessBuilder copyPb = new ProcessBuilder(copyCmd);
-        ProcessBuilder restorePb = new ProcessBuilder(restoreCmd);
         try {
-            Process copyProcess = copyPb.start();
-            copyProcess.waitFor(60, TimeUnit.SECONDS);
+            ProcessBuilder pb = new ProcessBuilder(cmd);
+            Process process = pb.start();
+            boolean finish = process.waitFor(60, TimeUnit.SECONDS);
 
-            Process restoreProcess = restorePb.start();
-            boolean finishedRestore = restoreProcess.waitFor(60, TimeUnit.SECONDS);
-
-            if (finishedRestore && restoreProcess.exitValue() == 0) {
+            if (finish && process.exitValue() == 0) {
                 logger.info("Database restored successfully from " + backupPath);
             } else {
                 logger.error("Error occurred during database restoration or timeout reached.");

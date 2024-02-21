@@ -20,7 +20,7 @@ spring:
 backup:
   path:
     win: \database\
-    linux: /database/
+    linux: /home/madeg/backup/
 
 account:
   admin:

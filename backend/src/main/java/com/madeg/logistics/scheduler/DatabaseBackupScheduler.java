@@ -37,8 +37,8 @@ public class DatabaseBackupScheduler {
     private static final Logger logger = LoggerFactory.getLogger(DatabaseBackupScheduler.class);
     private final ExecutorService executor = Executors.newCachedThreadPool();
 
-    // @Scheduled(cron = "*/10 * * * * ?")
-    @Scheduled(cron = "0 1 * * * 0")
+    // @Scheduled(cron = "*/15 * * * * ?") //FOR TEST
+    @Scheduled(cron = "0 1 * * * 0") // Every Sunday 1AM
     public void backupDatabase() {
 
         String formattedDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
@@ -50,11 +50,18 @@ public class DatabaseBackupScheduler {
         String fullPath = basePath + backupPath;
         String dbName = databaseUtil.getDbName(dbUrl);
 
-        String[] cmd = {
+        String[] winCmd = {
                 "cmd.exe", "/c",
                 "docker exec madeg_postgres pg_dump -U " + userName + " -d " + dbName + " -f " + tmpBackupPath +
                         " && docker cp madeg_postgres:" + tmpBackupPath + " " + fullPath + backupFileName
         };
+
+        String[] linuxCmd = {
+                "/bin/bash", "-c",
+                "sudo -u postgres pg_dump -U " + userName + " -d " + dbName + " -f " + backupPath + backupFileName
+        };
+
+        String[] cmd = System.getProperty("os.name").toLowerCase().contains("win") ? winCmd : linuxCmd;
 
         ProcessBuilder pb = new ProcessBuilder(cmd);
         try {
