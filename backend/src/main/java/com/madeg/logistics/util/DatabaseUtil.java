@@ -6,7 +6,9 @@ import java.nio.file.Paths;
 @Component
 public class DatabaseUtil {
     public String getBasePath() {
-        return Paths.get(System.getProperty("user.dir")).toString();
+        return System.getProperty("os.name").toLowerCase().contains("win")
+                ? Paths.get(System.getProperty("user.dir")).toString()
+                : "";
     }
 
     public String getBackupPath(String winBackupPath, String linuxBackupPath) {

@@ -9,12 +9,17 @@ import org.springframework.stereotype.Component;
 
 import com.madeg.logistics.util.DatabaseUtil;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 @Component
 public class DatabaseBackupScheduler {
@@ -37,17 +42,16 @@ public class DatabaseBackupScheduler {
     private static final Logger logger = LoggerFactory.getLogger(DatabaseBackupScheduler.class);
     private final ExecutorService executor = Executors.newCachedThreadPool();
 
-    // @Scheduled(cron = "*/15 * * * * ?") //FOR TEST
-    @Scheduled(cron = "0 1 * * * 0") // Every Sunday 1AM
+    // @Scheduled(cron = "*/15 * * * * ?") // FOR TEST
+    @Scheduled(cron = "0 1 * * * 0") // Every Sunday at 1AM
     public void backupDatabase() {
 
         String formattedDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         String backupFileName = "db_backup_" + formattedDate + ".sql";
         String tmpBackupPath = "/tmp/" + backupFileName;
 
-        String basePath = databaseUtil.getBasePath();
         String backupPath = databaseUtil.getBackupPath(winBackupPath, linuxBackupPath);
-        String fullPath = basePath + backupPath;
+        String fullPath = databaseUtil.getBasePath() + backupPath;
         String dbName = databaseUtil.getDbName(dbUrl);
 
         String[] winCmd = {
@@ -58,11 +62,10 @@ public class DatabaseBackupScheduler {
 
         String[] linuxCmd = {
                 "/bin/bash", "-c",
-                "sudo -u postgres pg_dump -U " + userName + " -d " + dbName + " -f " + backupPath + backupFileName
+                "sudo -u postgres pg_dump -U " + userName + " -d " + dbName + " -f " + fullPath + backupFileName
         };
 
         String[] cmd = System.getProperty("os.name").toLowerCase().contains("win") ? winCmd : linuxCmd;
-
         ProcessBuilder pb = new ProcessBuilder(cmd);
         try {
             Process process = pb.start();
@@ -76,6 +79,38 @@ public class DatabaseBackupScheduler {
             logger.error("Exception occurred during backup process", e);
         } finally {
             executor.shutdownNow();
+        }
+    }
+
+    // @Scheduled(cron = "*/15 * * * * ?") // FOR TEST
+    @Scheduled(cron = "0 2 * * * 0") // Every Sunday at 2AM
+    public void deleteOldBackups() {
+        String backupPath = databaseUtil.getBackupPath(winBackupPath, linuxBackupPath);
+        String fullPath = databaseUtil.getBasePath() + backupPath;
+        LocalDate oneMonthAgo = LocalDate.now().minusMonths(1);
+
+        try (Stream<Path> files = Files.walk(Paths.get(fullPath))) {
+            files.filter(Files::isRegularFile)
+                    .filter(path -> path.toString().endsWith(".sql"))
+                    .forEach(path -> {
+                        String fileName = path.getFileName().toString();
+                        String datePart = fileName.replace("db_backup_", "").replace(".sql", "");
+                        try {
+                            LocalDate fileDate = LocalDate.parse(datePart, DateTimeFormatter.ofPattern("yyyyMMdd"));
+                            if (fileDate.isBefore(oneMonthAgo)) {
+                                File file = path.toFile();
+                                if (file.delete()) {
+                                    logger.info("Deleted old backup file: " + file.getPath());
+                                } else {
+                                    logger.error("Failed to delete file: " + file.getPath());
+                                }
+                            }
+                        } catch (Exception e) {
+                            logger.error("Error deleting file: " + path, e);
+                        }
+                    });
+        } catch (IOException e) {
+            logger.error("Error accessing backup directory: " + fullPath, e);
         }
     }
 

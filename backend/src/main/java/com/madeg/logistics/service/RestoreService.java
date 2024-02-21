@@ -37,8 +37,7 @@ public class RestoreService {
         String backupPath = databaseUtil.getBackupPath(winBackupPath, linuxBackupPath);
         String fullPath = basePath + backupPath;
         String dbName = databaseUtil.getDbName(dbUrl);
-        String osName = System.getProperty("os.name").toLowerCase();
-        boolean isWindows = osName.contains("win");
+        boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
 
         String[] cmd;
         if (isWindows) {
