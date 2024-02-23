@@ -35,20 +35,18 @@ public class RestoreService {
         String fullPath = databaseUtil.getFullBackupPath(winBackupPath, linuxBackupPath);
         boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
 
-        String[] cmd;
-        if (isWindows) {
-            String dockerCopyCmd = "docker cp " + fullPath + backupFileName + " madeg_postgres:/tmp/" + backupFileName;
-            String dockerRestoreCmd = "docker exec -i madeg_postgres psql -U " + userName + " -d " + dbName
-                    + " -f /tmp/" + backupFileName;
-            cmd = new String[] { "cmd.exe", "/c", dockerCopyCmd + " && " + dockerRestoreCmd };
-        } else {
-            String restoreCmd = "sudo -u postgres psql -U " + userName + " -d " + dbName + " -f " + fullPath
-                    + backupFileName;
-            cmd = new String[] { "/bin/bash", "-c", restoreCmd };
-        }
+        String[] winCmd = new String[] { "cmd.exe", "/c", "docker cp " + fullPath + backupFileName
+                + " madeg_postgres:/tmp/" + backupFileName + " && " + "docker exec -i madeg_postgres psql -U "
+                + userName + " -d " + dbName + " -f /tmp/"
+                + backupFileName };
 
+        String[] linuxCmd = new String[] { "/bin/bash", "-c",
+                "sudo -u postgres psql -U " + userName + " -d " + dbName + " -f " + fullPath
+                        + backupFileName };
+
+        String[] cmd = isWindows ? winCmd : linuxCmd;
+        ProcessBuilder pb = new ProcessBuilder(cmd);
         try {
-            ProcessBuilder pb = new ProcessBuilder(cmd);
             Process process = pb.start();
             boolean finish = process.waitFor(60, TimeUnit.SECONDS);
 

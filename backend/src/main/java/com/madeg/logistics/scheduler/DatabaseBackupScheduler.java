@@ -48,6 +48,7 @@ public class DatabaseBackupScheduler {
         String backupFileName = "db_backup_" + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")) + ".sql";
         String dbName = databaseUtil.getDbName(dbUrl);
         String fullPath = databaseUtil.getFullBackupPath(winBackupPath, linuxBackupPath);
+        boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
 
         String[] winCmd = {
                 "cmd.exe", "/c",
@@ -61,7 +62,7 @@ public class DatabaseBackupScheduler {
                 "sudo -u postgres pg_dump -U " + userName + " -d " + dbName + " -f " + fullPath + backupFileName
         };
 
-        String[] cmd = System.getProperty("os.name").toLowerCase().contains("win") ? winCmd : linuxCmd;
+        String[] cmd = isWindows ? winCmd : linuxCmd;
         ProcessBuilder pb = new ProcessBuilder(cmd);
         try {
             Process process = pb.start();
