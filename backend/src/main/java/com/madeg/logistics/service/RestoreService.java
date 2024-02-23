@@ -3,15 +3,16 @@ package com.madeg.logistics.service;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.madeg.logistics.util.DatabaseUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class RestoreService {
 
     @Autowired
@@ -28,8 +29,6 @@ public class RestoreService {
 
     @Value("${backup.path.linux}")
     private String linuxBackupPath;
-
-    private static final Logger logger = LoggerFactory.getLogger(RestoreService.class);
 
     public void restoreDatabase(String backupFileName) {
         String dbName = databaseUtil.getDbName(dbUrl);
@@ -54,12 +53,12 @@ public class RestoreService {
             boolean finish = process.waitFor(60, TimeUnit.SECONDS);
 
             if (finish && process.exitValue() == 0) {
-                logger.info("Database restored successfully from " + fullPath);
+                log.info("Database restored successfully from " + fullPath);
             } else {
-                logger.error("Error occurred during database restoration or timeout reached.");
+                log.error("Error occurred during database restoration or timeout reached.");
             }
         } catch (InterruptedException | IOException e) {
-            logger.error("Exception occurred during restore process", e);
+            log.error("Exception occurred during restore process", e);
         }
     }
 

@@ -1,13 +1,13 @@
 package com.madeg.logistics.scheduler;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.madeg.logistics.util.DatabaseUtil;
+
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 @Component
+@Slf4j
 public class DatabaseBackupScheduler {
 
     @Autowired
@@ -39,7 +40,6 @@ public class DatabaseBackupScheduler {
     @Value("${backup.path.linux}")
     private String linuxBackupPath;
 
-    private static final Logger logger = LoggerFactory.getLogger(DatabaseBackupScheduler.class);
     private final ExecutorService executor = Executors.newCachedThreadPool();
 
     // @Scheduled(cron = "*/15 * * * * ?") // FOR TEST
@@ -67,12 +67,12 @@ public class DatabaseBackupScheduler {
             Process process = pb.start();
             boolean finished = process.waitFor(60, TimeUnit.SECONDS);
             if (finished && process.exitValue() == 0) {
-                logger.info("Database backup created successfully at " + fullPath + backupFileName);
+                log.info("Database backup created successfully at " + fullPath + backupFileName);
             } else {
-                logger.error("Error occurred during database backup or timeout reached.");
+                log.error("Error occurred during database backup or timeout reached.");
             }
         } catch (InterruptedException | IOException e) {
-            logger.error("Exception occurred during backup process", e);
+            log.error("Exception occurred during backup process", e);
         } finally {
             executor.shutdownNow();
         }
@@ -95,17 +95,17 @@ public class DatabaseBackupScheduler {
                             if (fileDate.isBefore(threeMonthAgo)) {
                                 File file = path.toFile();
                                 if (file.delete()) {
-                                    logger.info("Deleted old backup file: " + file.getPath());
+                                    log.info("Deleted old backup file: " + file.getPath());
                                 } else {
-                                    logger.error("Failed to delete file: " + file.getPath());
+                                    log.error("Failed to delete file: " + file.getPath());
                                 }
                             }
                         } catch (Exception e) {
-                            logger.error("Error deleting file: " + path, e);
+                            log.error("Error deleting file: " + path, e);
                         }
                     });
         } catch (IOException e) {
-            logger.error("Error accessing backup directory: " + fullPath, e);
+            log.error("Error accessing backup directory: " + fullPath, e);
         }
     }
 
