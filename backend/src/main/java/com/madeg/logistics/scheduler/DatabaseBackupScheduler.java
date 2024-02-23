@@ -82,7 +82,7 @@ public class DatabaseBackupScheduler {
     @Scheduled(cron = "0 2 * * * 0") // Every Sunday at 2AM
     public void deleteOldBackups() {
         String fullPath = databaseUtil.getFullBackupPath(winBackupPath, linuxBackupPath);
-        LocalDate oneMonthAgo = LocalDate.now().minusMonths(1);
+        LocalDate threeMonthAgo = LocalDate.now().minusMonths(3);
 
         try (Stream<Path> files = Files.walk(Paths.get(fullPath))) {
             files.filter(Files::isRegularFile)
@@ -92,7 +92,7 @@ public class DatabaseBackupScheduler {
                         String datePart = fileName.replace("db_backup_", "").replace(".sql", "");
                         try {
                             LocalDate fileDate = LocalDate.parse(datePart, DateTimeFormatter.ofPattern("yyyyMMdd"));
-                            if (fileDate.isBefore(oneMonthAgo)) {
+                            if (fileDate.isBefore(threeMonthAgo)) {
                                 File file = path.toFile();
                                 if (file.delete()) {
                                     logger.info("Deleted old backup file: " + file.getPath());
