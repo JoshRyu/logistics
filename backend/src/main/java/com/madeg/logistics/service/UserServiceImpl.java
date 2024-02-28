@@ -126,7 +126,7 @@ public class UserServiceImpl implements UserService {
       return new CommonRes(ResponseCode.NOT_FOUND.getCode(), ResponseCode.NOT_FOUND.getMessage("사용자"));
     }
 
-    if (user.getRole().equals(Role.ADMIN) &&
+    if (user.getRole() == Role.ADMIN &&
         userRepository.countByRole(Role.ADMIN) == 1) {
       return new CommonRes(
           ResponseCode.BAD_REQUEST.getCode(),

@@ -14,7 +14,7 @@ public enum ResponseCode {
     RETRIEVED(HttpStatus.OK, "{0} 조회에 성공하였습니다."),
     UPDATED(HttpStatus.OK, "{0} 업데이트에 성공하였습니다."),
     CREATED(HttpStatus.CREATED, "{0}이(가) 생성되었습니다."),
-    DELETED(HttpStatus.NO_CONTENT, null),
+    DELETED(HttpStatus.NO_CONTENT, "{0}이(가) 생성되었습니다."),
 
     UNCHANGED(HttpStatus.NO_CONTENT, "{0}은(는) 변경 사항이 없어 업데이트되지 않았습니다."),
     CONFLICT(HttpStatus.CONFLICT, "{0}이(가) 이미 존재합니다."),
