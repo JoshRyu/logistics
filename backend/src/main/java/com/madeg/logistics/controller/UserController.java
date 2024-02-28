@@ -17,7 +17,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,17 +34,20 @@ import org.springframework.web.server.ResponseStatusException;
 @RequestMapping(path = "/api/v1/user")
 public class UserController {
 
-  @Autowired
   private UserService userService;
+
+  public UserController(UserService userService) {
+    this.userService = userService;
+  }
 
   @Operation(summary = "Login with username and password")
   @ApiResponse(content = @Content(schema = @Schema(implementation = UserLoginRes.class)))
   @PostMapping("/login")
-  public ResponseEntity<Object> login(
+  public ResponseEntity<UserLoginRes> login(
       @RequestBody @Valid UserLoginInput loginInfo) {
-    return new ResponseEntity<>(
-        userService.userLogin(loginInfo),
-        ResponseCode.SUCCESS.getStatus());
+
+    return ResponseEntity.status(ResponseCode.SUCCESS.getStatus())
+        .body(userService.userLogin(loginInfo));
   }
 
   @Operation(summary = "Get Access Token with Refresh Token")

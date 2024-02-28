@@ -3,6 +3,7 @@ package com.madeg.logistics.enums;
 import java.text.MessageFormat;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.lang.NonNull;
 
 import lombok.Getter;
 
@@ -33,7 +34,8 @@ public enum ResponseCode {
         return MessageFormat.format(this.message, (Object[]) args);
     }
 
-    public HttpStatus getStatus() {
+    @SuppressWarnings("null")
+    public @NonNull HttpStatus getStatus() {
         return this.status;
     }
 
