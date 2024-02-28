@@ -37,7 +37,7 @@ public class JwtUtil {
 
   private SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
   private Key signingKey;
-  private UserRepository userRepository;
+  private final UserRepository userRepository;
 
   public JwtUtil(UserRepository userRepository) {
     this.userRepository = userRepository;
