@@ -16,9 +16,6 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: update
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
 
 backup:
   path:
