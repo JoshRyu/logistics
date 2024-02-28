@@ -19,6 +19,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -37,6 +38,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  @Transactional
   public UserLoginRes userLogin(UserLoginInput loginInfo) {
     User user = userRepository.findByUsername(loginInfo.getUserName());
 
@@ -72,6 +74,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  @Transactional
   public CommonRes createUser(UserInput userInput) {
     if (userRepository.findByUsername(userInput.getUsername()) != null) {
       return new CommonRes(
@@ -93,6 +96,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  @Transactional
   public CommonRes patchUser(Long id, UserPatch patchInput) {
     User user = userRepository.findById(id).orElse(null);
     if (user == null) {
@@ -120,6 +124,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  @Transactional
   public CommonRes deleteUser(Long id) {
     User user = userRepository.findById(id).orElse(null);
     if (user == null) {
