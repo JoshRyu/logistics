@@ -2,6 +2,7 @@ package com.madeg.logistics.service;
 
 import java.util.List;
 
+import com.madeg.logistics.domain.CommonRes;
 import com.madeg.logistics.domain.UserInput;
 import com.madeg.logistics.domain.UserLoginInput;
 import com.madeg.logistics.domain.UserLoginRes;
@@ -17,9 +18,9 @@ public interface UserService {
 
     List<User> getUsers();
 
-    void createUser(UserInput userInput);
+    CommonRes createUser(UserInput userInput);
 
-    void patchUser(Long id, UserPatch patchInput);
+    CommonRes patchUser(Long id, UserPatch patchInput);
 
-    void deleteUser(Long id);
+    CommonRes deleteUser(Long id);
 }

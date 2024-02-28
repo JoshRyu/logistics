@@ -46,38 +46,36 @@ public class UserController {
   public ResponseEntity<UserLoginRes> login(
       @RequestBody @Valid UserLoginInput loginInfo) {
 
-    return ResponseEntity.status(ResponseCode.SUCCESS.getStatus())
-        .body(userService.userLogin(loginInfo));
+    UserLoginRes userLoginRes = userService.userLogin(loginInfo);
+    return ResponseEntity.status(userLoginRes.getStatus())
+        .body(userLoginRes);
   }
 
   @Operation(summary = "Get Access Token with Refresh Token")
   @ApiResponse(content = @Content(schema = @Schema(implementation = UserRefreshRes.class)))
   @GetMapping("/refresh")
-  public ResponseEntity<?> refreshAccessToken(@RequestParam("refreshToken") String refreshToken) {
-    try {
-      return new ResponseEntity<>(
-          userService.refreshAccessToken(refreshToken),
-          ResponseCode.SUCCESS.getStatus());
-    } catch (IllegalArgumentException e) {
-      return ResponseEntity.status(ResponseCode.BAD_REQUEST.getStatus())
-          .body(ResponseCode.BAD_REQUEST.getMessage("유효하지 않은 Refresh Token 입니다"));
-    }
+  public ResponseEntity<UserRefreshRes> refreshAccessToken(@RequestParam("refreshToken") String refreshToken) {
+
+    UserRefreshRes userRefreshRes = userService.refreshAccessToken(refreshToken);
+    return ResponseEntity.status(userRefreshRes.getStatus())
+        .body(userRefreshRes);
+
   }
 
   @Operation(summary = "Register new User")
   @ApiResponse(content = @Content(schema = @Schema(implementation = UserLoginRes.class)))
   @PostMapping
-  public ResponseEntity<Object> create(
+  public ResponseEntity<CommonRes> create(
       @RequestBody @Valid UserInput userInput) {
     try {
-      userService.createUser(userInput);
+      CommonRes commonRes = userService.createUser(userInput);
       return ResponseEntity
-          .status(ResponseCode.CREATED.getStatus())
-          .body(new CommonRes(ResponseCode.CREATED.getCode(), ResponseCode.CREATED.getMessage("사용자")));
-    } catch (ResponseStatusException ex) {
+          .status(commonRes.getStatus())
+          .body(commonRes);
+    } catch (Exception e) {
       return ResponseEntity
-          .status(ex.getStatusCode())
-          .body(new CommonRes(ex.getStatusCode().value(), ex.getReason()));
+          .status(ResponseCode.INTERNAL_ERROR.getStatus())
+          .body(new CommonRes(ResponseCode.INTERNAL_ERROR.getCode(), ResponseCode.INTERNAL_ERROR.getMessage()));
     }
   }
 
@@ -97,33 +95,34 @@ public class UserController {
   @Operation(summary = "Update a Specific User by Id")
   @ApiResponse(content = @Content(schema = @Schema(implementation = CommonRes.class)))
   @PatchMapping("/{id}")
-  public ResponseEntity<Object> patch(
+  public ResponseEntity<CommonRes> patch(
       @PathVariable(name = "id", required = true) Long id,
       @RequestBody @Valid UserPatch patchInfo) {
     try {
-      userService.patchUser(id, patchInfo);
+      CommonRes commonRes = userService.patchUser(id, patchInfo);
       return ResponseEntity
-          .status(ResponseCode.UPDATED.getStatus())
-          .body(new CommonRes(ResponseCode.UPDATED.getCode(), ResponseCode.UPDATED.getMessage("사용자")));
-    } catch (ResponseStatusException ex) {
+          .status(commonRes.getStatus())
+          .body(commonRes);
+    } catch (Exception e) {
+      e.printStackTrace();
       return ResponseEntity
-          .status(ex.getStatusCode())
-          .body(new CommonRes(ex.getStatusCode().value(), ex.getReason()));
+          .status(ResponseCode.INTERNAL_ERROR.getStatus())
+          .body(new CommonRes(ResponseCode.INTERNAL_ERROR.getCode(), ResponseCode.INTERNAL_ERROR.getMessage()));
     }
   }
 
   @Operation(summary = "Delete a Specific User by Id")
   @ApiResponse(content = @Content(schema = @Schema(implementation = CommonRes.class)))
   @DeleteMapping("/{id}")
-  public ResponseEntity<Object> delete(
+  public ResponseEntity<CommonRes> delete(
       @PathVariable(name = "id", required = true) Long id) {
     try {
-      userService.deleteUser(id);
-      return ResponseEntity.status(ResponseCode.DELETED.getStatus()).build();
-    } catch (ResponseStatusException ex) {
+      CommonRes commonRes = userService.deleteUser(id);
+      return ResponseEntity.status(commonRes.getStatus()).body(commonRes);
+    } catch (Exception e) {
       return ResponseEntity
-          .status(ex.getStatusCode())
-          .body(new CommonRes(ex.getStatusCode().value(), ex.getReason()));
+          .status(ResponseCode.INTERNAL_ERROR.getStatus())
+          .body(new CommonRes(ResponseCode.INTERNAL_ERROR.getCode(), ResponseCode.INTERNAL_ERROR.getMessage()));
     }
   }
 }

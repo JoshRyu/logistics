@@ -1,5 +1,6 @@
 package com.madeg.logistics.service;
 
+import com.madeg.logistics.domain.CommonRes;
 import com.madeg.logistics.domain.UserInput;
 import com.madeg.logistics.domain.UserLogin;
 import com.madeg.logistics.domain.UserLoginInput;
@@ -14,21 +15,25 @@ import com.madeg.logistics.util.JwtUtil;
 
 import java.util.List;
 
+import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class UserServiceImpl implements UserService {
 
-  private UserRepository userRepository;
-  private JwtUtil jwtUtil;
-  private PasswordEncoder passwordEncoder;
+  private final UserRepository userRepository;
+  private final JwtUtil jwtUtil;
+  private final PasswordEncoder passwordEncoder;
+  private final ModelMapper modelMapper;
 
   public UserServiceImpl(UserRepository userRepository, JwtUtil jwtUtil, PasswordEncoder passwordEncoder) {
     this.userRepository = userRepository;
     this.jwtUtil = jwtUtil;
     this.passwordEncoder = passwordEncoder;
+    this.modelMapper = new ModelMapper();
+    this.modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
   }
 
   @Override
@@ -36,33 +41,50 @@ public class UserServiceImpl implements UserService {
     User user = userRepository.findByUsername(loginInfo.getUserName());
 
     if (user == null) {
-      throw new ResponseStatusException(ResponseCode.NOT_FOUND.getStatus(), ResponseCode.NOT_FOUND.getMessage("사용자"));
+      return new UserLoginRes(ResponseCode.NOT_FOUND.getCode(), ResponseCode.NOT_FOUND.getMessage("사용자"), null);
     }
 
-    if (passwordEncoder.matches(loginInfo.getPassword(), user.getPassword())) {
-
-      UserLogin userLogin = UserLogin.builder().userName(loginInfo.getUserName()).password(loginInfo.getPassword())
-          .role(user.getRole()).accessToken(jwtUtil.generateAccessToken(
-              user.getUsername(),
-              user.getRole()))
-          .refreshToken(jwtUtil.generateRefreshToken(user.getUsername())).build();
-
-      return new UserLoginRes(ResponseCode.RETRIEVED.getCode(),
-          ResponseCode.RETRIEVED.getMessage("로그인 정보"), userLogin);
+    if (!passwordEncoder.matches(loginInfo.getPassword(), user.getPassword())) {
+      return new UserLoginRes(
+          ResponseCode.BAD_REQUEST.getCode(),
+          ResponseCode.BAD_REQUEST.getMessage("유효하지 않은 비밀번호입니다"), null);
     }
 
-    throw new ResponseStatusException(
-        ResponseCode.BAD_REQUEST.getStatus(),
-        ResponseCode.BAD_REQUEST.getMessage("유효하지 않은 비밀번호입니다"));
+    UserLogin userLogin = modelMapper.map(user, UserLogin.class);
+    userLogin.setAccessToken(jwtUtil.generateAccessToken(user.getUsername(), user.getRole()));
+    userLogin.setRefreshToken(jwtUtil.generateRefreshToken(user.getUsername()));
+
+    return new UserLoginRes(ResponseCode.RETRIEVED.getCode(),
+        ResponseCode.RETRIEVED.getMessage("로그인 정보"),
+        userLogin);
   }
 
   @Override
   public UserRefreshRes refreshAccessToken(String refreshToken) {
+    try {
+      String newAccessToken = jwtUtil.refreshAccessToken(refreshToken);
+      return new UserRefreshRes(ResponseCode.RETRIEVED.getCode(),
+          ResponseCode.RETRIEVED.getMessage("Access 토큰 정보"), newAccessToken);
+    } catch (Exception e) {
+      return new UserRefreshRes(ResponseCode.BAD_REQUEST.getCode(),
+          ResponseCode.BAD_REQUEST.getMessage("유효하지 않은 Refresh Token 입니다"), null);
+    }
+  }
 
-    String newAccessToken = jwtUtil.refreshAccessToken(refreshToken);
+  @Override
+  public CommonRes createUser(UserInput userInput) {
+    if (userRepository.findByUsername(userInput.getUsername()) != null) {
+      return new CommonRes(
+          ResponseCode.CONFLICT.getCode(),
+          ResponseCode.CONFLICT.getMessage("사용자"));
+    }
 
-    return new UserRefreshRes(ResponseCode.RETRIEVED.getCode(),
-        ResponseCode.RETRIEVED.getMessage("Access 토큰 정보"), newAccessToken);
+    User user = modelMapper.map(userInput, User.class);
+    user.setPassword(passwordEncoder.encode(userInput.getPassword()));
+    user.setRole(userInput.getRole() != null ? userInput.getRole() : Role.USER);
+
+    userRepository.save(user);
+    return new CommonRes(ResponseCode.CREATED.getCode(), ResponseCode.CREATED.getMessage("사용자"));
   }
 
   @Override
@@ -71,71 +93,48 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public void createUser(UserInput userInput) {
-    User previousUser = userRepository.findByUsername(userInput.getUsername());
-    if (previousUser != null) {
-      throw new ResponseStatusException(
-          ResponseCode.CONFLICT.getStatus(),
-          ResponseCode.CONFLICT.getMessage("사용자"));
+  public CommonRes patchUser(Long id, UserPatch patchInput) {
+    User user = userRepository.findById(id).orElse(null);
+    if (user == null) {
+      return new CommonRes(ResponseCode.NOT_FOUND.getCode(), ResponseCode.NOT_FOUND.getMessage("사용자"));
     }
-
-    Role userRole = Role.USER;
-
-    if (userInput.getRole() != null) {
-      userRole = userInput.getRole();
-    }
-
-    User user = User
-        .builder()
-        .username(userInput.getUsername())
-        .password(passwordEncoder.encode(userInput.getPassword()))
-        .role(userRole)
-        .build();
-
-    userRepository.save(user);
-  }
-
-  @Override
-  public void patchUser(Long id, UserPatch patchInput) {
-    User previousUser = userRepository
-        .findById(id)
-        .orElseThrow(() -> new ResponseStatusException(ResponseCode.NOT_FOUND.getStatus(),
-            ResponseCode.NOT_FOUND.getMessage("사용자")));
 
     if (patchInput.getPassword() != null) {
-      previousUser.setPassword(
-          passwordEncoder.encode(patchInput.getPassword()));
+      user.setPassword(passwordEncoder.encode(patchInput.getPassword()));
     }
 
     if (patchInput.getRole() != null) {
-      if (previousUser.getRole().equals(Role.ADMIN) &&
-          patchInput.getRole() == Role.USER &&
-          userRepository.countByRole(Role.ADMIN.name()) == 1) {
-        throw new ResponseStatusException(
-            ResponseCode.BAD_REQUEST.getStatus(),
-            ResponseCode.BAD_REQUEST.getMessage("유일한 관리자 권한의 사용자의 권한을 바꿀 수 없습니다"));
+      if (user.getRole() == Role.ADMIN && patchInput.getRole() == Role.USER
+          && userRepository.countByRole(Role.ADMIN) == 1) {
+
+        return new CommonRes(
+            ResponseCode.BAD_REQUEST.getCode(),
+            ResponseCode.BAD_REQUEST.getMessage("유일한 관리자 권한을 다른 사용자로 변경할 수 없습니다"));
       }
-      previousUser.setRole(patchInput.getRole());
+      user.setRole(patchInput.getRole());
     }
 
-    userRepository.save(previousUser);
+    userRepository.save(user);
+    return new CommonRes(ResponseCode.UPDATED.getCode(), ResponseCode.UPDATED.getMessage("사용자"));
+
   }
 
   @Override
-  public void deleteUser(Long id) {
-    User previousUser = userRepository
-        .findById(id)
-        .orElseThrow(() -> new ResponseStatusException(ResponseCode.NOT_FOUND.getStatus(),
-            ResponseCode.NOT_FOUND.getMessage("사용자")));
+  public CommonRes deleteUser(Long id) {
+    User user = userRepository.findById(id).orElse(null);
+    if (user == null) {
+      return new CommonRes(ResponseCode.NOT_FOUND.getCode(), ResponseCode.NOT_FOUND.getMessage("사용자"));
+    }
 
-    if (previousUser.getRole().equals(Role.ADMIN) &&
-        userRepository.countByRole(Role.ADMIN.name()) == 1) {
-      throw new ResponseStatusException(
-          ResponseCode.BAD_REQUEST.getStatus(),
+    if (user.getRole().equals(Role.ADMIN) &&
+        userRepository.countByRole(Role.ADMIN) == 1) {
+      return new CommonRes(
+          ResponseCode.BAD_REQUEST.getCode(),
           ResponseCode.BAD_REQUEST.getMessage("유일한 관리자 권한의 사용자를 삭제할 수 없습니다"));
     }
 
-    userRepository.delete(previousUser);
+    userRepository.delete(user);
+    return new CommonRes(ResponseCode.DELETED.getCode(), ResponseCode.DELETED.getMessage("사용자"));
   }
 
 }
