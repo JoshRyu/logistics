@@ -80,8 +80,8 @@ public class UserServiceImpl implements UserService {
     }
 
     User user = modelMapper.map(userInput, User.class);
-    user.setPassword(passwordEncoder.encode(userInput.getPassword()));
-    user.setRole(userInput.getRole() != null ? userInput.getRole() : Role.USER);
+    user.updatePassword(passwordEncoder.encode(userInput.getPassword()));
+    user.updateRole(userInput.getRole() != null ? userInput.getRole() : Role.USER);
 
     userRepository.save(user);
     return new CommonRes(ResponseCode.CREATED.getCode(), ResponseCode.CREATED.getMessage("사용자"));
@@ -100,7 +100,7 @@ public class UserServiceImpl implements UserService {
     }
 
     if (patchInput.getPassword() != null) {
-      user.setPassword(passwordEncoder.encode(patchInput.getPassword()));
+      user.updatePassword(passwordEncoder.encode(patchInput.getPassword()));
     }
 
     if (patchInput.getRole() != null) {
@@ -111,7 +111,7 @@ public class UserServiceImpl implements UserService {
             ResponseCode.BAD_REQUEST.getCode(),
             ResponseCode.BAD_REQUEST.getMessage("유일한 관리자 권한을 다른 사용자로 변경할 수 없습니다"));
       }
-      user.setRole(patchInput.getRole());
+      user.updateRole(patchInput.getRole());
     }
 
     userRepository.save(user);

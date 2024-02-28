@@ -7,24 +7,25 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.madeg.logistics.enums.Role;
 
-@Entity(name = "member")
-@Getter
-@Setter
+@Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Table(name = "member")
 public class User implements UserDetails {
 
   @Id
@@ -33,10 +34,19 @@ public class User implements UserDetails {
   private Long id;
 
   private String username;
+
   private String password;
 
   @Enumerated(EnumType.STRING)
   private Role role;
+
+  public void updatePassword(String password) {
+    this.password = password;
+  }
+
+  public void updateRole(Role role) {
+    this.role = role;
+  }
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
