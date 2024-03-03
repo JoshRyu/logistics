@@ -3,7 +3,6 @@ package com.madeg.logistics.util;
 import com.madeg.logistics.entity.User;
 import com.madeg.logistics.enums.Role;
 import com.madeg.logistics.repository.UserRepository;
-import com.madeg.logistics.service.UserServiceImpl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -16,11 +15,11 @@ import java.util.Map;
 import java.util.function.Function;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 
@@ -38,12 +37,11 @@ public class JwtUtil {
 
   private SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
   private Key signingKey;
+  private final UserRepository userRepository;
 
-  @Autowired
-  private UserServiceImpl userServiceImpl;
-
-  @Autowired
-  private UserRepository userRepository;
+  public JwtUtil(UserRepository userRepository) {
+    this.userRepository = userRepository;
+  }
 
   @PostConstruct
   public void init() {
@@ -131,11 +129,22 @@ public class JwtUtil {
   }
 
   public Authentication getAuthentication(String token) {
-    UserDetails userDetails = userServiceImpl.loadUserByUsername(
+    UserDetails userDetails = loadUserByUsername(
         extractUsername(token));
     return new UsernamePasswordAuthenticationToken(
         userDetails,
         "",
         userDetails.getAuthorities());
+  }
+
+  private UserDetails loadUserByUsername(String username)
+      throws UsernameNotFoundException {
+    User user = userRepository.findByUsername(username);
+
+    if (user == null) {
+      throw new UsernameNotFoundException(
+          String.format("User %s not found", username));
+    }
+    return user;
   }
 }

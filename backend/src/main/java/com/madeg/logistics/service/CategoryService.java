@@ -5,17 +5,22 @@ import com.madeg.logistics.domain.CategoryPatch;
 import com.madeg.logistics.entity.Category;
 import com.madeg.logistics.enums.ResponseCode;
 import com.madeg.logistics.repository.CategoryRepository;
+import com.madeg.logistics.util.CommonUtil;
 
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
-public class CategoryService extends CommonService {
+public class CategoryService {
 
-  @Autowired
   private CategoryRepository categoryRepository;
+  private CommonUtil commonUtil;
+
+  public CategoryService(CategoryRepository categoryRepository, CommonUtil commonUtil) {
+    this.categoryRepository = categoryRepository;
+    this.commonUtil = commonUtil;
+  }
 
   public void createCategory(CategoryInput categoryInput) {
     Category existCategory = categoryRepository.findByName(
@@ -51,7 +56,7 @@ public class CategoryService extends CommonService {
   }
 
   public void patchCategory(String categoryCode, CategoryPatch patchInput) {
-    Category previousCategory = findCategoryByCode(categoryCode);
+    Category previousCategory = commonUtil.findCategoryByCode(categoryCode);
 
     if (categoryRepository.findByCategoryCode(patchInput.getName()) != null)
       throw new ResponseStatusException(
@@ -94,7 +99,7 @@ public class CategoryService extends CommonService {
   }
 
   public void deleteCategory(String categoryCode) {
-    Category previousCategory = findCategoryByCode(categoryCode);
+    Category previousCategory = commonUtil.findCategoryByCode(categoryCode);
     categoryRepository.delete(previousCategory);
   }
 }

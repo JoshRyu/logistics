@@ -12,8 +12,9 @@ import com.madeg.logistics.enums.ProductType;
 import com.madeg.logistics.enums.ResponseCode;
 import com.madeg.logistics.repository.CategoryRepository;
 import com.madeg.logistics.repository.ProductRepository;
+import com.madeg.logistics.util.CommonUtil;
+
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -21,13 +22,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
-public class ProductService extends CommonService {
+public class ProductService {
 
-  @Autowired
   private ProductRepository productRepository;
-
-  @Autowired
   private CategoryRepository categoryRepository;
+  private CommonUtil commonUtil;
+
+  public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository,
+      CommonUtil commonUtil) {
+    this.productRepository = productRepository;
+    this.categoryRepository = categoryRepository;
+    this.commonUtil = commonUtil;
+
+  }
 
   public void createProduct(ProductInput productInput) {
     Product existProduct = productRepository.findByName(productInput.getName());
@@ -47,7 +54,7 @@ public class ProductService extends CommonService {
           ResponseCode.NOT_FOUND.getMessage("카테고리"));
     }
 
-    byte[] imageBytes = getImageBytes(productInput.getImg());
+    byte[] imageBytes = commonUtil.getImageBytes(productInput.getImg());
 
     Product product = Product
         .builder()
@@ -69,7 +76,7 @@ public class ProductService extends CommonService {
     Page<Product> page = productRepository.findAll(spec, pageable);
     List<Product> content = page.getContent();
 
-    SimplePageInfo simplePageInfo = createSimplePageInfo(page);
+    SimplePageInfo simplePageInfo = commonUtil.createSimplePageInfo(page);
 
     return new ProductRes(
         ResponseCode.RETRIEVED.getCode(),
@@ -79,13 +86,13 @@ public class ProductService extends CommonService {
   }
 
   public Product getProductByCode(String productCode) {
-    return findProductByCode(productCode);
+    return commonUtil.findProductByCode(productCode);
   }
 
   public void patchProduct(String productCode, ProductPatch patchInput) {
-    Product previousProduct = findProductByCode(productCode);
+    Product previousProduct = commonUtil.findProductByCode(productCode);
 
-    byte[] newImgBytes = getImageBytes(patchInput.getImg());
+    byte[] newImgBytes = commonUtil.getImageBytes(patchInput.getImg());
 
     if (previousProduct.isStateChanged(patchInput, newImgBytes)) {
       if (patchInput.getName() != null)
@@ -131,7 +138,7 @@ public class ProductService extends CommonService {
   }
 
   public void deleteProduct(String productCode) {
-    Product previousProduct = findProductByCode(productCode);
+    Product previousProduct = commonUtil.findProductByCode(productCode);
     productRepository.delete(previousProduct);
   }
 }

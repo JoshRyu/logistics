@@ -11,29 +11,35 @@ import com.madeg.logistics.entity.StoreProduct;
 import com.madeg.logistics.enums.ResponseCode;
 import com.madeg.logistics.repository.ProductRepository;
 import com.madeg.logistics.repository.StoreProductRepository;
+import com.madeg.logistics.util.CommonUtil;
+
 import java.util.ArrayList;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
-public class StoreProductService extends CommonService {
+public class StoreProductService {
 
-  @Autowired
   private ProductRepository productRepository;
-
-  @Autowired
   private StoreProductRepository storeProductRepository;
+  private CommonUtil commonUtil;
+
+  public StoreProductService(ProductRepository productRepository, StoreProductRepository storeProductRepository,
+      CommonUtil commonUtil) {
+    this.productRepository = productRepository;
+    this.storeProductRepository = storeProductRepository;
+    this.commonUtil = commonUtil;
+  }
 
   public void registerStoreProduct(
       String storeCode,
       String productCode,
       StoreProductInput storeProductInput) {
-    Store store = findStoreByCode(storeCode);
-    Product product = findProductByCode(productCode);
+    Store store = commonUtil.findStoreByCode(storeCode);
+    Product product = commonUtil.findProductByCode(productCode);
 
     StoreProduct existStoreProduct = storeProductRepository.findByStoreAndProduct(
         store,
@@ -49,7 +55,7 @@ public class StoreProductService extends CommonService {
         ? 0
         : storeProductInput.getIncomeCnt();
 
-    validateStock(
+    commonUtil.validateStock(
         (int) Math.round(product.getStock()),
         income,
         "매장 제품 재고 수는 미등록 제품 재고 수보다 작거나 같아야 합니다");
@@ -94,7 +100,7 @@ public class StoreProductService extends CommonService {
       content.add(output);
     }
 
-    SimplePageInfo simplePageInfo = createSimplePageInfo(page);
+    SimplePageInfo simplePageInfo = commonUtil.createSimplePageInfo(page);
 
     return new StoreProductRes(
         ResponseCode.RETRIEVED.getCode(),
@@ -107,9 +113,9 @@ public class StoreProductService extends CommonService {
       String storeCode,
       String productCode,
       StoreProductPatch patchInput) {
-    Store store = findStoreByCode(storeCode);
-    Product product = findProductByCode(productCode);
-    StoreProduct previousStoreProduct = findStoreProduct(store, product);
+    Store store = commonUtil.findStoreByCode(storeCode);
+    Product product = commonUtil.findProductByCode(productCode);
+    StoreProduct previousStoreProduct = commonUtil.findStoreProduct(store, product);
 
     if (previousStoreProduct.isStateChanged((patchInput))) {
       if (patchInput.getStorePrice() != null) {
@@ -127,9 +133,9 @@ public class StoreProductService extends CommonService {
   }
 
   public void disableStoreProduct(String storeCode, String productCode) {
-    Store store = findStoreByCode(storeCode);
-    Product product = findProductByCode(productCode);
-    StoreProduct previousStoreProduct = findStoreProduct(store, product);
+    Store store = commonUtil.findStoreByCode(storeCode);
+    Product product = commonUtil.findProductByCode(productCode);
+    StoreProduct previousStoreProduct = commonUtil.findStoreProduct(store, product);
 
     previousStoreProduct.updateShowFlag(false);
 
@@ -140,11 +146,11 @@ public class StoreProductService extends CommonService {
       String storeCode,
       String productCode,
       Integer restockCnt) {
-    Store store = findStoreByCode(storeCode);
-    Product product = findProductByCode(productCode);
-    StoreProduct previousStoreProduct = findStoreProduct(store, product);
+    Store store = commonUtil.findStoreByCode(storeCode);
+    Product product = commonUtil.findProductByCode(productCode);
+    StoreProduct previousStoreProduct = commonUtil.findStoreProduct(store, product);
 
-    validateStock(
+    commonUtil.validateStock(
         (int) Math.round(product.getStock()),
         restockCnt,
         "재입고 수량은 등록된 제품 재고 수보다 작거나 같아야 합니다");
@@ -170,9 +176,9 @@ public class StoreProductService extends CommonService {
       String storeCode,
       String productCode,
       Integer defectCnt) {
-    Store store = findStoreByCode(storeCode);
-    Product product = findProductByCode(productCode);
-    StoreProduct previousStoreProduct = findStoreProduct(store, product);
+    Store store = commonUtil.findStoreByCode(storeCode);
+    Product product = commonUtil.findProductByCode(productCode);
+    StoreProduct previousStoreProduct = commonUtil.findStoreProduct(store, product);
 
     Integer currentStockCnt = previousStoreProduct.getStockCnt() == null
         ? 0
