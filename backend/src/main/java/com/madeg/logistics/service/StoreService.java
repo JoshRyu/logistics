@@ -6,16 +6,22 @@ import com.madeg.logistics.entity.Store;
 import com.madeg.logistics.enums.ResponseCode;
 import com.madeg.logistics.enums.StoreType;
 import com.madeg.logistics.repository.StoreRepository;
+import com.madeg.logistics.util.CommonUtil;
+
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
-public class StoreService extends CommonService {
+public class StoreService {
 
-  @Autowired
   private StoreRepository storeRepository;
+  private CommonUtil commonUtil;
+
+  public StoreService(StoreRepository storeRepository, CommonUtil commonUtil) {
+    this.storeRepository = storeRepository;
+    this.commonUtil = commonUtil;
+  }
 
   public void createStore(StoreInput storeInput) {
     Store existStore = storeRepository.findByName(storeInput.getName());
@@ -46,7 +52,7 @@ public class StoreService extends CommonService {
   }
 
   public void patchStore(String storeCode, StorePatch patchInput) {
-    Store previousStore = findStoreByCode(storeCode);
+    Store previousStore = commonUtil.findStoreByCode(storeCode);
 
     if (previousStore.isStateChanged(patchInput)) {
       if (patchInput.getName() != null)
@@ -89,7 +95,7 @@ public class StoreService extends CommonService {
   }
 
   public void deleteStore(String storeCode) {
-    Store previousStore = findStoreByCode(storeCode);
+    Store previousStore = commonUtil.findStoreByCode(storeCode);
     storeRepository.delete(previousStore);
   }
 }

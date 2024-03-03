@@ -9,32 +9,38 @@ import com.madeg.logistics.enums.ResponseCode;
 import com.madeg.logistics.repository.SalesHistoryRepository;
 import com.madeg.logistics.repository.StoreProductRepository;
 import com.madeg.logistics.repository.StoreStatisticsRepository;
+import com.madeg.logistics.util.CommonUtil;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
-public class StoreStatisticsService extends CommonService {
+public class StoreStatisticsService {
 
-  @Autowired
   private StoreProductRepository storeProductRepository;
-
-  @Autowired
   private SalesHistoryRepository salesHistoryRepository;
-
-  @Autowired
   private StoreStatisticsRepository storeStatisticsRepository;
+  private CommonUtil commonUtil;
+
+  public StoreStatisticsService(StoreProductRepository storeProductRepository,
+      SalesHistoryRepository salesHistoryRepository, StoreStatisticsRepository storeStatisticsRepository,
+      CommonUtil commonUtil) {
+    this.storeProductRepository = storeProductRepository;
+    this.salesHistoryRepository = salesHistoryRepository;
+    this.storeStatisticsRepository = storeStatisticsRepository;
+    this.commonUtil = commonUtil;
+  }
 
   public void calculateStatistics(
       String storeCode,
       Integer year,
       Integer month) {
-    String targetMonth = generateMonthFormat(year, month);
-    Store store = findStoreByCode(storeCode);
+    String targetMonth = commonUtil.generateMonthFormat(year, month);
+    Store store = commonUtil.findStoreByCode(storeCode);
 
     List<Long> storeProductIds = storeProductRepository.findStoreProductIdsByStore(
         storeCode);
@@ -83,14 +89,14 @@ public class StoreStatisticsService extends CommonService {
   public StoreStatisticsRes getStoreStatistics(
       String storeCode,
       Pageable pageable) {
-    Store store = findStoreByCode(storeCode);
+    Store store = commonUtil.findStoreByCode(storeCode);
 
     Page<StoreStatistics> page = storeStatisticsRepository.findByStoreOrderByMonth(
         store,
         pageable);
 
     List<StoreStatistics> content = page.getContent();
-    SimplePageInfo simplePageInfo = createSimplePageInfo(page);
+    SimplePageInfo simplePageInfo = commonUtil.createSimplePageInfo(page);
 
     return new StoreStatisticsRes(
         ResponseCode.RETRIEVED.getCode(),

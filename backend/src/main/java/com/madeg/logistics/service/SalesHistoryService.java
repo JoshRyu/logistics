@@ -11,31 +11,37 @@ import com.madeg.logistics.entity.StoreProduct;
 import com.madeg.logistics.enums.ResponseCode;
 import com.madeg.logistics.repository.SalesHistoryRepository;
 import com.madeg.logistics.repository.StoreProductRepository;
+import com.madeg.logistics.util.CommonUtil;
+
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
-public class SalesHistoryService extends CommonService {
+public class SalesHistoryService {
 
-  @Autowired
   private StoreProductRepository storeProductRepository;
-
-  @Autowired
   private SalesHistoryRepository salesHistoryRepository;
+  private CommonUtil commonUtil;
+
+  public SalesHistoryService(StoreProductRepository storeProductRepository,
+      SalesHistoryRepository salesHistoryRepository, CommonUtil commonUtil) {
+    this.storeProductRepository = storeProductRepository;
+    this.salesHistoryRepository = salesHistoryRepository;
+    this.commonUtil = commonUtil;
+  }
 
   public void registerSalesHistory(
       String storeCode,
       String productCode,
       SalesHistoryInput salesHistoryInput) {
-    Store store = findStoreByCode(storeCode);
-    Product product = findProductByCode(productCode);
-    StoreProduct previousStoreProduct = findStoreProduct(store, product);
+    Store store = commonUtil.findStoreByCode(storeCode);
+    Product product = commonUtil.findProductByCode(productCode);
+    StoreProduct previousStoreProduct = commonUtil.findStoreProduct(store, product);
 
-    String month = generateMonthFormat(
+    String month = commonUtil.generateMonthFormat(
         salesHistoryInput.getSalesYear(),
         salesHistoryInput.getSalesMonth());
 
@@ -70,16 +76,16 @@ public class SalesHistoryService extends CommonService {
       String storeCode,
       String productCode,
       Pageable pageable) {
-    Store store = findStoreByCode(storeCode);
-    Product product = findProductByCode(productCode);
-    StoreProduct storeProduct = findStoreProduct(store, product);
+    Store store = commonUtil.findStoreByCode(storeCode);
+    Product product = commonUtil.findProductByCode(productCode);
+    StoreProduct storeProduct = commonUtil.findStoreProduct(store, product);
 
     Page<SalesHistory> page = salesHistoryRepository.findByStoreProductOrderBySalesMonth(
         storeProduct,
         pageable);
 
     List<SalesHistory> content = page.getContent();
-    SimplePageInfo simplePageInfo = createSimplePageInfo(page);
+    SimplePageInfo simplePageInfo = commonUtil.createSimplePageInfo(page);
 
     return new SalesHistoryRes(
         ResponseCode.RETRIEVED.getCode(),
@@ -93,7 +99,7 @@ public class SalesHistoryService extends CommonService {
       Integer salesYear,
       Integer salesMonth,
       Pageable pageable) {
-    Store store = findStoreByCode(storeCode);
+    Store store = commonUtil.findStoreByCode(storeCode);
     StoreProduct storeProduct = storeProductRepository.findByStore(store);
 
     if (storeProduct == null) {
@@ -104,11 +110,11 @@ public class SalesHistoryService extends CommonService {
 
     Page<SalesHistory> page = salesHistoryRepository.findByStoreProductAndSalesMonth(
         storeProduct,
-        generateMonthFormat(salesYear, salesMonth),
+        commonUtil.generateMonthFormat(salesYear, salesMonth),
         pageable);
 
     List<SalesHistory> content = page.getContent();
-    SimplePageInfo simplePageInfo = createSimplePageInfo(page);
+    SimplePageInfo simplePageInfo = commonUtil.createSimplePageInfo(page);
 
     return new SalesHistoryRes(
         ResponseCode.RETRIEVED.getCode(),
@@ -121,14 +127,14 @@ public class SalesHistoryService extends CommonService {
       String storeCode,
       String productCode,
       SalesHistoryPatch patchInput) {
-    Store store = findStoreByCode(storeCode);
-    Product product = findProductByCode(productCode);
-    StoreProduct storeProduct = findStoreProduct(store, product);
-    SalesHistory previousSalesHistory = findSalesHistory(
+    Store store = commonUtil.findStoreByCode(storeCode);
+    Product product = commonUtil.findProductByCode(productCode);
+    StoreProduct storeProduct = commonUtil.findStoreProduct(store, product);
+    SalesHistory previousSalesHistory = commonUtil.findSalesHistory(
         storeProduct,
-        generateMonthFormat(patchInput.getSalesYear(), patchInput.getSalesMonth()));
+        commonUtil.generateMonthFormat(patchInput.getSalesYear(), patchInput.getSalesMonth()));
 
-    validateStock(
+    commonUtil.validateStock(
         storeProduct.getStockCnt(),
         (patchInput.getQuantity() - previousSalesHistory.getQuantity()),
         "추가 수량은 매장 제품 재고 수량보다 작거나 같아야 합니다");
