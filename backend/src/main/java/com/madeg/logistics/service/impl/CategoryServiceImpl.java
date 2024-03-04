@@ -15,6 +15,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
@@ -70,62 +71,66 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public CommonRes patchCategory(String categoryCode, CategoryPatch patchInput) {
-        Category previousCategory = commonUtil.findCategoryByCode(categoryCode);
+        try {
+            Category previousCategory = commonUtil.findCategoryByCode(categoryCode);
 
-        if (categoryRepository.findByCategoryCode(patchInput.getName()) != null)
-            return new CommonRes(
-                    ResponseCode.CONFLICT.getCode(),
-                    ResponseCode.CONFLICT.getMessage("카테고리 이름"));
-
-        if (patchInput.getParentCategoryCode() != null &&
-                patchInput.getParentCategoryCode().equals(categoryCode)) {
-            return new CommonRes(
-                    ResponseCode.BAD_REQUEST.getCode(),
-                    ResponseCode.BAD_REQUEST.getMessage("부모 카테고리 코드는 카테고리 코드와 달라야 합니다"));
-        }
-
-        Category parentCategory = null;
-        if (patchInput.getParentCategoryCode() != null) {
-            parentCategory = categoryRepository.findByCategoryCode(
-                    patchInput.getParentCategoryCode());
-            if (parentCategory == null) {
+            if (!previousCategory.getName().equals(patchInput.getName())
+                    && categoryRepository.findByName(patchInput.getName()) != null)
                 return new CommonRes(
-                        ResponseCode.NOT_FOUND.getCode(),
-                        ResponseCode.NOT_FOUND.getMessage("부모 카테고리"));
-            }
-        }
-        Category updatedCategory = new Category();
-        updatedCategory.updateName(patchInput.getName());
-        updatedCategory.updateDescription(patchInput.getDescription());
-        updatedCategory.updateParentCategory(parentCategory);
+                        ResponseCode.CONFLICT.getCode(),
+                        ResponseCode.CONFLICT.getMessage("카테고리 이름"));
 
-        if (previousCategory.isStateChanged(updatedCategory)) {
-            previousCategory.updateName(updatedCategory.getName());
-            previousCategory.updateDescription(updatedCategory.getDescription());
-            previousCategory.updateParentCategory(
-                    updatedCategory.getParentCategory());
-            categoryRepository.save(previousCategory);
-        } else {
-            return new CommonRes(
-                    ResponseCode.UNCHANGED.getCode(),
-                    ResponseCode.UNCHANGED.getMessage("카테고리"));
+            if (patchInput.getParentCategoryCode() != null &&
+                    patchInput.getParentCategoryCode().equals(categoryCode)) {
+                return new CommonRes(
+                        ResponseCode.BAD_REQUEST.getCode(),
+                        ResponseCode.BAD_REQUEST.getMessage("부모 카테고리 코드는 카테고리 코드와 달라야 합니다"));
+            }
+
+            Category parentCategory = null;
+            if (patchInput.getParentCategoryCode() != null) {
+                parentCategory = categoryRepository.findByCategoryCode(
+                        patchInput.getParentCategoryCode());
+                if (parentCategory == null) {
+                    return new CommonRes(
+                            ResponseCode.NOT_FOUND.getCode(),
+                            ResponseCode.NOT_FOUND.getMessage("부모 카테고리"));
+                }
+            }
+            Category updatedCategory = new Category();
+            updatedCategory.updateName(patchInput.getName());
+            updatedCategory.updateDescription(patchInput.getDescription());
+            updatedCategory.updateParentCategory(parentCategory);
+
+            if (previousCategory.isStateChanged(updatedCategory)) {
+                previousCategory.updateName(updatedCategory.getName());
+                previousCategory.updateDescription(updatedCategory.getDescription());
+                previousCategory.updateParentCategory(
+                        updatedCategory.getParentCategory());
+                categoryRepository.save(previousCategory);
+            } else {
+                return new CommonRes(
+                        ResponseCode.UNCHANGED.getCode(),
+                        ResponseCode.UNCHANGED.getMessage("카테고리"));
+            }
+            return new CommonRes(ResponseCode.UPDATED.getCode(), ResponseCode.UPDATED.getMessage("카테고리"));
+        } catch (ResponseStatusException e) {
+            return new CommonRes(ResponseCode.NOT_FOUND.getCode(), ResponseCode.NOT_FOUND.getMessage("카테고리"));
         }
-        return new CommonRes(ResponseCode.UPDATED.getCode(), ResponseCode.UPDATED.getMessage("카테고리"));
 
     }
 
     @Override
     @Transactional
     public CommonRes deleteCategory(String categoryCode) {
-        Category previousCategory = commonUtil.findCategoryByCode(categoryCode);
+        try {
+            Category previousCategory = commonUtil.findCategoryByCode(categoryCode);
+            categoryRepository.delete(previousCategory);
 
-        if (previousCategory == null) {
-            return new CommonRes(
-                    ResponseCode.NOT_FOUND.getCode(),
-                    ResponseCode.NOT_FOUND.getMessage("카테고리"));
+            return new CommonRes(ResponseCode.DELETED.getCode(), ResponseCode.DELETED.getMessage("카테고리"));
+        } catch (ResponseStatusException e) {
+            return new CommonRes(ResponseCode.NOT_FOUND.getCode(), ResponseCode.NOT_FOUND.getMessage("카테고리"));
         }
-        categoryRepository.delete(previousCategory);
 
-        return new CommonRes(ResponseCode.DELETED.getCode(), ResponseCode.DELETED.getMessage("카테고리"));
     }
 }

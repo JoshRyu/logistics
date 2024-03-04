@@ -90,8 +90,7 @@ public class CategoryController {
       @PathVariable(name = "category_code", required = true) String categoryCode) {
     try {
       CommonRes commonRes = categoryService.deleteCategory(categoryCode);
-      return ResponseEntity
-          .status(commonRes.getStatus()).build();
+      return ResponseEntity.status(commonRes.getStatus()).body(commonRes);
     } catch (Exception e) {
       return ResponseEntity
           .status(ResponseCode.INTERNAL_ERROR.getStatus())
