@@ -39,14 +39,14 @@ public class CategoryController {
   public ResponseEntity<Object> create(
       @RequestBody @Valid CategoryInput categoryInput) {
     try {
-      categoryService.createCategory(categoryInput);
+      CommonRes commonRes = categoryService.createCategory(categoryInput);
       return ResponseEntity
-          .status(ResponseCode.CREATED.getStatus())
-          .body(new CommonRes(ResponseCode.CREATED.getCode(), ResponseCode.CREATED.getMessage("카테고리")));
-    } catch (ResponseStatusException ex) {
+          .status(commonRes.getStatus())
+          .body(commonRes);
+    } catch (Exception e) {
       return ResponseEntity
-          .status(ex.getStatusCode())
-          .body(new CommonRes(ex.getStatusCode().value(), ex.getReason()));
+          .status(ResponseCode.INTERNAL_ERROR.getStatus())
+          .body(new CommonRes(ResponseCode.INTERNAL_ERROR.getCode(), ResponseCode.INTERNAL_ERROR.getMessage()));
     }
   }
 
