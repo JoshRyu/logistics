@@ -15,7 +15,6 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
@@ -70,18 +69,18 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
-    public void patchCategory(String categoryCode, CategoryPatch patchInput) {
+    public CommonRes patchCategory(String categoryCode, CategoryPatch patchInput) {
         Category previousCategory = commonUtil.findCategoryByCode(categoryCode);
 
         if (categoryRepository.findByCategoryCode(patchInput.getName()) != null)
-            throw new ResponseStatusException(
-                    ResponseCode.CONFLICT.getStatus(),
+            return new CommonRes(
+                    ResponseCode.CONFLICT.getCode(),
                     ResponseCode.CONFLICT.getMessage("카테고리 이름"));
 
         if (patchInput.getParentCategoryCode() != null &&
                 patchInput.getParentCategoryCode().equals(categoryCode)) {
-            throw new ResponseStatusException(
-                    ResponseCode.BAD_REQUEST.getStatus(),
+            return new CommonRes(
+                    ResponseCode.BAD_REQUEST.getCode(),
                     ResponseCode.BAD_REQUEST.getMessage("부모 카테고리 코드는 카테고리 코드와 달라야 합니다"));
         }
 
@@ -90,8 +89,8 @@ public class CategoryServiceImpl implements CategoryService {
             parentCategory = categoryRepository.findByCategoryCode(
                     patchInput.getParentCategoryCode());
             if (parentCategory == null) {
-                throw new ResponseStatusException(
-                        ResponseCode.NOT_FOUND.getStatus(),
+                return new CommonRes(
+                        ResponseCode.NOT_FOUND.getCode(),
                         ResponseCode.NOT_FOUND.getMessage("부모 카테고리"));
             }
         }
@@ -107,16 +106,26 @@ public class CategoryServiceImpl implements CategoryService {
                     updatedCategory.getParentCategory());
             categoryRepository.save(previousCategory);
         } else {
-            throw new ResponseStatusException(
-                    ResponseCode.UNCHANGED.getStatus(),
+            return new CommonRes(
+                    ResponseCode.UNCHANGED.getCode(),
                     ResponseCode.UNCHANGED.getMessage("카테고리"));
         }
+        return new CommonRes(ResponseCode.UPDATED.getCode(), ResponseCode.UPDATED.getMessage("카테고리"));
+
     }
 
     @Override
     @Transactional
-    public void deleteCategory(String categoryCode) {
+    public CommonRes deleteCategory(String categoryCode) {
         Category previousCategory = commonUtil.findCategoryByCode(categoryCode);
+
+        if (previousCategory == null) {
+            return new CommonRes(
+                    ResponseCode.NOT_FOUND.getCode(),
+                    ResponseCode.NOT_FOUND.getMessage("카테고리"));
+        }
         categoryRepository.delete(previousCategory);
+
+        return new CommonRes(ResponseCode.DELETED.getCode(), ResponseCode.DELETED.getMessage("카테고리"));
     }
 }

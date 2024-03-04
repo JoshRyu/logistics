@@ -23,20 +23,22 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 @Tag(name = "Category")
 @RestController
 @RequestMapping(path = "/api/v1/category")
 public class CategoryController {
 
-  @Autowired
-  private CategoryService categoryService;
+  private final CategoryService categoryService;
+
+  public CategoryController(CategoryService categoryService) {
+    this.categoryService = categoryService;
+  }
 
   @Operation(summary = "Register new Category")
   @ApiResponse(content = @Content(schema = @Schema(implementation = CommonRes.class)))
   @PostMapping
-  public ResponseEntity<Object> create(
+  public ResponseEntity<CommonRes> create(
       @RequestBody @Valid CategoryInput categoryInput) {
     try {
       CommonRes commonRes = categoryService.createCategory(categoryInput);
@@ -66,35 +68,34 @@ public class CategoryController {
   @Operation(summary = "Update a Specific Category by Code")
   @ApiResponse(content = @Content(schema = @Schema(implementation = CommonRes.class)))
   @PatchMapping("/{category_code}")
-  public ResponseEntity<Object> patch(
+  public ResponseEntity<CommonRes> patch(
       @PathVariable(name = "category_code", required = true) String categoryCode,
       @RequestBody @Valid CategoryPatch patchInput) {
     try {
-      categoryService.patchCategory(categoryCode, patchInput);
+      CommonRes commonRes = categoryService.patchCategory(categoryCode, patchInput);
       return ResponseEntity
-          .status(ResponseCode.UPDATED.getStatus())
-          .body(
-              new CommonRes(ResponseCode.UPDATED.getCode(), ResponseCode.UPDATED.getMessage("카테고리")));
-    } catch (ResponseStatusException ex) {
+          .status(commonRes.getStatus())
+          .body(commonRes);
+    } catch (Exception e) {
       return ResponseEntity
-          .status(ex.getStatusCode())
-          .body(new CommonRes(ex.getStatusCode().value(), ex.getReason()));
+          .status(ResponseCode.INTERNAL_ERROR.getStatus())
+          .body(new CommonRes(ResponseCode.INTERNAL_ERROR.getCode(), ResponseCode.INTERNAL_ERROR.getMessage()));
     }
   }
 
   @Operation(summary = "Delete a Specific Category by Code")
   @ApiResponse(content = @Content(schema = @Schema(implementation = CommonRes.class)))
   @DeleteMapping("/{category_code}")
-  public ResponseEntity<Object> delete(
+  public ResponseEntity<CommonRes> delete(
       @PathVariable(name = "category_code", required = true) String categoryCode) {
     try {
-      categoryService.deleteCategory(categoryCode);
+      CommonRes commonRes = categoryService.deleteCategory(categoryCode);
       return ResponseEntity
-          .status(ResponseCode.DELETED.getStatus()).build();
-    } catch (ResponseStatusException ex) {
+          .status(commonRes.getStatus()).build();
+    } catch (Exception e) {
       return ResponseEntity
-          .status(ex.getStatusCode())
-          .body(new CommonRes(ex.getStatusCode().value(), ex.getReason()));
+          .status(ResponseCode.INTERNAL_ERROR.getStatus())
+          .body(new CommonRes(ResponseCode.INTERNAL_ERROR.getCode(), ResponseCode.INTERNAL_ERROR.getMessage()));
     }
   }
 }

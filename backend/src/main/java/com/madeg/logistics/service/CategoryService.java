@@ -12,7 +12,7 @@ public interface CategoryService {
 
   List<Category> getCategories();
 
-  void patchCategory(String categoryCode, CategoryPatch patchInput);
+  CommonRes patchCategory(String categoryCode, CategoryPatch patchInput);
 
-  void deleteCategory(String categoryCode);
+  CommonRes deleteCategory(String categoryCode);
 }
