@@ -1,4 +1,4 @@
-package com.madeg.logistics.service;
+package com.madeg.logistics.service.impl;
 
 import com.madeg.logistics.domain.CommonRes;
 import com.madeg.logistics.domain.UserInput;
@@ -11,6 +11,7 @@ import com.madeg.logistics.entity.User;
 import com.madeg.logistics.enums.ResponseCode;
 import com.madeg.logistics.enums.Role;
 import com.madeg.logistics.repository.UserRepository;
+import com.madeg.logistics.service.UserService;
 import com.madeg.logistics.util.JwtUtil;
 
 import java.util.List;
