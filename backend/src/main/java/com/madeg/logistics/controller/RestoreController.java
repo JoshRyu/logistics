@@ -31,10 +31,10 @@ public class RestoreController {
     public ResponseEntity<Object> restoreData(
             @RequestParam String fileName) {
         try {
-            restoreService.restoreDatabase(fileName);
+            CommonRes commonRes = restoreService.restoreDatabase(fileName);
             return ResponseEntity
-                    .status(ResponseCode.SUCCESS.getStatus())
-                    .body(new CommonRes(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getMessage("DB 복구")));
+                    .status(commonRes.getStatus())
+                    .body(commonRes);
         } catch (ResponseStatusException ex) {
             return ResponseEntity
                     .status(ex.getStatusCode())
