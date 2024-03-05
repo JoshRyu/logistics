@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.madeg.logistics.domain.CommonRes;
 import com.madeg.logistics.enums.ResponseCode;
@@ -37,6 +38,8 @@ public class RestoreServiceImpl implements RestoreService {
         this.linuxBackupPath = env.getProperty("backup.path.linux");
     }
 
+    @Override
+    @Transactional
     public CommonRes restoreDatabase(String backupFileName) {
         String dbName = databaseUtil.getDbName(dbUrl);
         String fullPath = databaseUtil.getFullBackupPath(winBackupPath, linuxBackupPath);
