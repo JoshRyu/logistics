@@ -65,6 +65,15 @@ public class CategoryControllerTest {
 
     @Test
     @WithMockUser(authorities = "ADMIN")
+    @Sql("/CategorySetup.sql")
+    @DisplayName("카테고리 생성 실패 - 빈 카테고리 이름")
+    public void createCategoryFailInvalidCategoryName() throws Exception {
+        String requestBodyJson = objectMapper.writeValueAsString(new CategoryInput(null, null, "양털이 몽글몽글"));
+        TestUtil.performRequest(mockMvc, CATEGORY_API_URL, requestBodyJson, "POST", 400, 400);
+    }
+
+    @Test
+    @WithMockUser(authorities = "ADMIN")
     @DisplayName("카테고리 생성 실패 - 부모 카테고리를 찾을 수 없음")
     public void createCategoryFailParentNotFound() throws Exception {
         String requestBodyJson = objectMapper.writeValueAsString(new CategoryInput("목도리", "INVALID", "양털이 몽글몽글"));
@@ -156,7 +165,7 @@ public class CategoryControllerTest {
     @Sql("/CategorySetup.sql")
     @DisplayName("카테고리 삭제 성공")
     public void deleteCategorySuccess() throws Exception {
-        TestUtil.performRequest(mockMvc, CATEGORY_API_URL + "/" + getCodeByName("목도리"), null, "DELETE", 204, 204);
+        TestUtil.performRequest(mockMvc, CATEGORY_API_URL + "/" + getCodeByName("귀도리"), null, "DELETE", 204, 204);
     }
 
     @Test
@@ -165,6 +174,14 @@ public class CategoryControllerTest {
     @DisplayName("카테고리 삭제 실패 - 카테고리를 찾을 수 없음")
     public void deleteCategoryFailCategoryNotFound() throws Exception {
         TestUtil.performRequest(mockMvc, CATEGORY_API_URL + "/INVALID_CODE", null, "DELETE", 404, 404);
+    }
+
+    @Test
+    @WithMockUser(authorities = "ADMIN")
+    @Sql("/CategorySetup.sql")
+    @DisplayName("카테고리 삭제 실패 - 상위 카테고리 삭제 시도")
+    public void deleteCategoryFailParentCategoryCannotBeDeleted() throws Exception {
+        TestUtil.performRequest(mockMvc, CATEGORY_API_URL + "/" + getCodeByName("목도리"), null, "DELETE", 400, 400);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

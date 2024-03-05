@@ -125,6 +125,10 @@ public class CategoryServiceImpl implements CategoryService {
     public CommonRes deleteCategory(String categoryCode) {
         try {
             Category previousCategory = commonUtil.findCategoryByCode(categoryCode);
+            if (!categoryRepository.findByParentCategoryCategoryCode(categoryCode).isEmpty()) {
+                return new CommonRes(ResponseCode.BAD_REQUEST.getCode(),
+                        ResponseCode.BAD_REQUEST.getMessage("하위 카테고리가 존재하여 지울 수 없습니다"));
+            }
             categoryRepository.delete(previousCategory);
 
             return new CommonRes(ResponseCode.DELETED.getCode(), ResponseCode.DELETED.getMessage("카테고리"));
